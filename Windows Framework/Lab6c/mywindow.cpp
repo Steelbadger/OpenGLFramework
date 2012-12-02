@@ -12,7 +12,7 @@ WindowWizard::WindowWizard(void)
 
 WindowWizard::WindowWizard(LPSTR WindowName, int width, int height, HINSTANCE hInstance)
 {
-	WindowCreate(WindowName, width, height, 0, 0, hInstance);
+	WindowCreate(WindowName, width, height, (WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN), 0, hInstance);
 }
 
 
@@ -183,7 +183,7 @@ void WindowWizard::WindowCreate(LPSTR strWindowName, int width, int height, DWOR
 	
 	RegisterClass(&wcex);// Register the class
 
-	dwStyle = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+	//dwStyle = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
 	//Set the Client area of the window to be our resolution.
 	RECT glwindow;

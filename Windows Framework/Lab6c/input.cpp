@@ -1,10 +1,8 @@
 #include "input.h"
 #include "mouse.h"
 #include <string.h>
-#ifndef _WINDOWS_H_DEFINED_
-#define _WINDOWS_H_DEFINED_
 #include <windows.h>
-#endif
+
 
 Input::Input(void)
 {

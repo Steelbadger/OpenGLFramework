@@ -20,15 +20,16 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 {	
 
     MSG msg;
-	Input input;
 	Camera myCam;
 	float rot = 0.0;
 
-	WindowWizard MyWindow("My Window", 1000, 500, hInstance, false, 0);
+	Input input;
+
+	WindowWizard MyWindow("My Window", 1000, 500, hInstance);
 	MyWindow.InitializeGraphics(45.0f);
 	MyWindow.SetCursorToCentre();
 	
-	Cube cube(0,0,0,1,1,1, "Crate.tga");
+	CubeArray cube(1,1,1, "Crate.tga");
 
 	while (true)					
     {							
@@ -87,15 +88,15 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			glLightfv(GL_LIGHT1, GL_POSITION, Light_Position);
 			glEnable(GL_LIGHT1);
 
+
 			for (int i = 0; i < 5; i++) {
 				for (int j = 0; j < 5; j++) {
 					glTranslatef(2.0f, 0.0f, 0.0f);
-					glBegin (GL_QUADS);//Begin drawing state
 					cube.Draw();
-					glEnd();
 				}
 				glTranslatef(-10.0f, 2.0f, 0.0f);
 			}
+	
 	
 			MyWindow.FlipBuffers();
 		}
