@@ -38,7 +38,6 @@ WindowWizard::~WindowWizard(void)
 	PostQuitMessage (0);		// Post a QUIT message to the window
 }
 
-
 void WindowWizard::SetCursorToCentre()
 {
 	SetCursorPos(gWidth/2+windowRect.left,gHeight/2+windowRect.top);
@@ -92,12 +91,6 @@ void WindowWizard::FlipBuffers()
 void WindowWizard::PrepareForDrawing()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Clear The Screen And The Depth Buffer
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	//calculate aspect ratio
-	gluPerspective(fieldOfView, (GLfloat)gWidth/(GLfloat)gHeight, 1 ,150.0f);
-	glMatrixMode(GL_MODELVIEW);// Select The Modelview Matrix
-	glLoadIdentity();// load Identity Matrix	
 }
 
 
@@ -106,7 +99,11 @@ void WindowWizard::OnResize(int width, int height)
 	ResizeGLWindow(width, height);
 	GetClientRect(handleToWindow, &graphicsRect);
 	GetWindowRect(handleToWindow, &windowRect);
-	
+}
+
+void WindowWizard::OnMove()
+{
+	GetWindowRect(handleToWindow, &windowRect);
 }
 
 
@@ -231,7 +228,7 @@ LRESULT CALLBACK WindowWizard::WndProc (HWND hwnd, UINT message, WPARAM wParam, 
     else
     {
 		WindowWizard* pWindow = WindowMap[hwnd];
-
+		
         switch (message)
         {
             case WM_PAINT:
@@ -247,10 +244,11 @@ LRESULT CALLBACK WindowWizard::WndProc (HWND hwnd, UINT message, WPARAM wParam, 
             case WM_LBUTTONDOWN:
 			case WM_RBUTTONDOWN:
             case WM_RBUTTONUP:
+			case WM_MOUSEWHEEL:
             case WM_MOUSEMOVE:
 			case WM_KEYDOWN:
 			case WM_KEYUP:
-				Input::GetSingleton().Message(message, wParam, lParam);
+				input.Message(message, wParam, lParam);
 				break;
             case WM_DESTROY:
                 PostQuitMessage(0);

@@ -2,6 +2,7 @@
 #include <windows.h>
 #include "mouse.h"
 #include "singleton.h"
+#define input Input::GetSingleton()
 
 
 
@@ -35,6 +36,8 @@ public:
 	int GetMouseDY(){return mouse.FrameDY();}
 	void SetMouseLocked(int x, int y){mouse.SetLocked(x, y);}
 	int ReportMouseLocation(Mouse::axis Axis) {return mouse.Location(Axis);}
+	bool CheckMouseWheel(){return mouse.CheckWheelMoved();}
+	int GetMouseWheelDelta(){return mouse.GetWheelDelta();}
 private:
 	bool keys[256];
 	bool pressed[256];

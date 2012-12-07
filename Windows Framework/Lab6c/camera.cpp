@@ -23,10 +23,43 @@ Camera::~Camera(void)
 
 void Camera::Update()
 {
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	//calculate aspect ratio
+	gluPerspective(fieldOfView, (GLfloat)windowWidth/(GLfloat)windowHeight, nearClipPlane, farClipPlane);
+	glMatrixMode(GL_MODELVIEW);// Select The Modelview Matrix
+	glLoadIdentity();
 	gluLookAt((GLdouble)Position.x, (GLdouble)Position.y, (GLdouble)Position.z,
 				(GLdouble)LookAt.x, (GLdouble)LookAt.y, (GLdouble)LookAt.z,
 				(GLdouble)upVector.x, (GLdouble)upVector.y, (GLdouble)upVector.z);
 
+}
+
+void Camera::Zoom(int zoom)
+{
+	fieldOfView -= zoom/120;
+	if (fieldOfView > 45.0f) {
+		fieldOfView = 45.0f;
+	} else if (fieldOfView < 1.0f) {
+		fieldOfView = 1.0f;
+	}
+}
+
+void Camera::SetWindowSize(int width, int height)
+{
+	windowWidth = width;
+	windowHeight = height;
+}
+
+void Camera::SetClipPlanes(float n, float f)
+{
+	nearClipPlane = n;
+	farClipPlane = f;
+}
+
+void Camera::SetFieldOfView(float fov)
+{
+	fieldOfView = fov;
 }
 
 
@@ -39,6 +72,7 @@ void Camera::RotateYaw(float Rotation)
 	LookAt = LookAt + Position;
 	forwardVector = RotationMatrix * forwardVector;
 	rightVector = RotationMatrix * rightVector;
+	SetLocalVectors();
 }
 void Camera::RotatePitch(float Rotation)
 {
@@ -110,4 +144,3 @@ void Camera::SetLocalVectors()
 	upVector = rightVector.Cross(forwardVector);
 	upVector.NormaliseSelf();
 }
-

@@ -30,14 +30,17 @@ void Mouse::UpdatePosition(LPARAM lParam)
 	y = GET_Y_LPARAM(lParam)+30; 
 }
 
-void Mouse::Message(UINT message, LPARAM lParam)
+void Mouse::Message(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
 		case WM_MOUSEMOVE:
 			UpdatePosition(lParam);
 			break;
-
+		case WM_MOUSEWHEEL:
+			wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+			wheelMoved = true;
+			break;
 		case WM_LBUTTONDOWN:
 			lmouse = true;
 			break;	
@@ -59,6 +62,11 @@ void Mouse::Update()
 	rmouseclick = false;
 	lrelease = false;
 	rrelease = false;
+	wheelWasMoved = wheelMoved;
+	if (wheelMoved == false) {
+		wheelDelta = 0;
+	}
+	wheelMoved = false;
 	if (lmouse == true && lastlmouse == false)
 	{
 		lmouseclick = true;

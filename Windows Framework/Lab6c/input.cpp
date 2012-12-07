@@ -4,6 +4,8 @@
 #include <windows.h>
 
 
+Input ourInputSingleton;
+
 Input::Input(void)
 {
 	for (int i = 255; i >= 0; i--)
@@ -33,11 +35,12 @@ void Input::Message(UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case WM_MOUSEMOVE:
+		case WM_MOUSEWHEEL:
 		case WM_LBUTTONDOWN:
 		case WM_LBUTTONUP:
 		case WM_RBUTTONDOWN:
 		case WM_RBUTTONUP:
-			mouse.Message(message, lParam);
+			mouse.Message(message, wParam, lParam);
 			break;
 	}
 

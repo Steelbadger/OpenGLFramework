@@ -12,7 +12,7 @@ public:
 
 	int GetX() {return x;}
 	int GetY() {return y;}
-	void Message(UINT, LPARAM);
+	void Message(UINT, WPARAM, LPARAM);
 	void Update();
 	bool RButton() {return rmouse;}
 	bool LButton() {return lmouse;}
@@ -26,6 +26,8 @@ public:
 	int FrameDY(){return (y-Lockedy);}
 	int Location(axis);
 	void SetLocked(int xl, int yl){Lockedx = xl;Lockedy=yl;x=xl;y=yl;}
+	int GetWheelDelta(){return wheelDelta;}
+	bool CheckWheelMoved(){return wheelWasMoved;}
 
 private:
 	int x, y;
@@ -35,6 +37,9 @@ private:
 	bool lastlmouse, lastrmouse;
 	bool lmouseclick, rmouseclick;
 	bool lrelease, rrelease;
+	bool wheelMoved;
+	bool wheelWasMoved;
+	int wheelDelta;
 
 
 	void UpdatePosition(LPARAM);

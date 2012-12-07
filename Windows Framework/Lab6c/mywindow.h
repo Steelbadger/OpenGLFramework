@@ -19,8 +19,14 @@ public:
 
 	void InitializeGraphics(GLdouble fov);
 	void OnResize(int width, int height);
+	void OnMove();
 	void FlipBuffers();
 	void PrepareForDrawing();
+
+	int GetWidth(){return graphicsRect.right;}
+	int GetHeight(){return graphicsRect.bottom;}
+	int GetX(){return windowRect.left;};
+	int GetY(){return windowRect.top;}
 
 	void SetCursorToCentre();
 	void SetMouseLockedCentre(){Input::GetSingleton().SetMouseLocked(gWidth/2,gHeight/2);}

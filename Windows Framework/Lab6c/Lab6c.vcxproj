@@ -64,8 +64,10 @@
   <ItemGroup>
     <ClCompile Include="application.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="gameobject.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="mesh.cpp" />
     <ClCompile Include="mouse.cpp" />
     <ClCompile Include="my4x4matrix.cpp" />
     <ClCompile Include="myvector4.cpp" />
@@ -76,7 +78,9 @@
   <ItemGroup>
     <ClInclude Include="application.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="gameobject.h" />
     <ClInclude Include="input.h" />
+    <ClInclude Include="mesh.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="my4x4matrix.h" />
     <ClInclude Include="myvector4.h" />

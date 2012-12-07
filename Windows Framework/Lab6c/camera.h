@@ -17,8 +17,13 @@ public:
 
 	void SetVectors(float xPos, float yPos, float zPos, float xLookAt, float yLookAt, float zLookAt);
 	void SetGlobalUp(float x, float y, float z);
+	void SetWindowSize(int width, int height);
+	void SetClipPlanes(float near, float far);
+	void SetFieldOfView(float fov);
 
 	void Update();
+
+	void Zoom(int zoom);
 
 	void RotateYaw(float Rotation);
 	void RotatePitch(float Rotation);
@@ -33,6 +38,12 @@ public:
 	
 private:
 	void SetLocalVectors();
+
+	int windowWidth;
+	int windowHeight;
+	float fieldOfView;
+	float nearClipPlane;
+	float farClipPlane;
 
 	Vector4 forwardVector;
 	Vector4 upVector;
