@@ -37,9 +37,9 @@ void Application::MainLoop()
 	input.Update();
 
 	if (input.ReportKeyState('W'))
-		camera.MoveForward(-0.04f);
+		camera.MoveForward(-0.004f);
 	if(input.ReportKeyState('S'))
-		camera.MoveForward(0.04f);
+		camera.MoveForward(0.004f);
 	if(input.ReportKeyRelease('C'))
 		camera.SetVectors(0,0,-6,0,0,0);
 	if(input.ReportRMousePress()) {
@@ -53,14 +53,14 @@ void Application::MainLoop()
 		camera.RotatePitch((float)input.GetMouseDY()/1000.0);
 		window.SetCursorToCentre();
 		if (input.ReportKeyState('D'))
-			camera.Strafe(-0.03f);
+			camera.Strafe(-0.003f);
 		if (input.ReportKeyState('A'))
-			camera.Strafe(0.03f);
+			camera.Strafe(0.003f);
 	} else {
 		if (input.ReportKeyState('D'))
-			camera.RotateYaw(-0.01f);
+			camera.RotateYaw(-0.001f);
 		if (input.ReportKeyState('A'))
-			camera.RotateYaw(0.01f);
+			camera.RotateYaw(0.001f);
 	}
 	if (input.CheckMouseWheel()) {
 		camera.Zoom(input.GetMouseWheelDelta());

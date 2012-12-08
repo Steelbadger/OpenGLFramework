@@ -240,6 +240,8 @@ void CubeArray::Draw()
 
 	// deactivate vertex arrays after drawing
 	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
 	glBindTexture(GL_TEXTURE_2D, NULL);
 
 }
