@@ -5,6 +5,9 @@
 #include <mmsystem.h>
 #include <gl/gl.h>
 #include "tex.h"
+#include "myvector3.h"
+#include "myvector2.h"
+
 
 class Mesh
 {
@@ -18,8 +21,10 @@ public:
 	GLuint texture;
 
 private:
-	std::vector<float> verts;
-	std::vector<float> normals;
-	std::vector<float> texCoords;
+	std::vector<Vector3> verts;
+	std::vector<Vector3> normals;
+	std::vector<Vector2> texCoords;
+
+	GLuint displayList;
 };
 

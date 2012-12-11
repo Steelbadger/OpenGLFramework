@@ -37,9 +37,9 @@ void Application::MainLoop()
 	input.Update();
 
 	if (input.ReportKeyState('W'))
-		camera.MoveForward(-0.004f);
+		camera.MoveForward(-0.04f);
 	if(input.ReportKeyState('S'))
-		camera.MoveForward(0.004f);
+		camera.MoveForward(0.04f);
 	if(input.ReportKeyRelease('C'))
 		camera.SetVectors(0,0,-6,0,0,0);
 	if(input.ReportRMousePress()) {
@@ -53,14 +53,14 @@ void Application::MainLoop()
 		camera.RotatePitch((float)input.GetMouseDY()/1000.0);
 		window.SetCursorToCentre();
 		if (input.ReportKeyState('D'))
-			camera.Strafe(-0.003f);
+			camera.Strafe(-0.03f);
 		if (input.ReportKeyState('A'))
-			camera.Strafe(0.003f);
+			camera.Strafe(0.03f);
 	} else {
 		if (input.ReportKeyState('D'))
-			camera.RotateYaw(-0.001f);
+			camera.RotateYaw(-0.01f);
 		if (input.ReportKeyState('A'))
-			camera.RotateYaw(0.001f);
+			camera.RotateYaw(0.01f);
 	}
 	if (input.CheckMouseWheel()) {
 		camera.Zoom(input.GetMouseWheelDelta());
@@ -81,12 +81,14 @@ void Application::MainLoop()
 
 	ground.Draw();
 
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j < 5; j++) {
+	glTranslatef(-25.0f, 0.0f, -25.0f);
+
+	for (int i = 0; i < 24; i++) {
+		for (int j = 0; j < 24; j++) {
 			glTranslatef(2.0f, 0.0f, 0.0f);
 			cube->Draw();
 		}
-		glTranslatef(-10.0f, 0.0f, 2.0f);
+		glTranslatef(-48.0f, 0.0f, 2.0f);
 	}
 	
 	

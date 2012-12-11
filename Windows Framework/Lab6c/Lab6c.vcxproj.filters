@@ -51,6 +51,15 @@
     <ClCompile Include="mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="myvector3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="myvector2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="collider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Primitives.h">
@@ -87,6 +96,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="myvector3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="myvector2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="collider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

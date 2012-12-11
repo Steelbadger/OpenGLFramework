@@ -35,6 +35,7 @@ public:
 
 	void Initialise(float width, float height, float depth);
 	void ApplyTexture(char *Texture);
+	void GenerateList();
 	void Draw();
 	GLuint texture;
 
@@ -43,4 +44,5 @@ private:
 	GLfloat normals[72];
 	GLfloat texCoords[72];
 	GLubyte indices[36];
+	GLuint displayList;
 };

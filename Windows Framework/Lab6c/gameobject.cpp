@@ -3,9 +3,6 @@
 
 GameObject::GameObject(void)
 {
-	x = 0;
-	y = 0;
-	z = 0;
 }
 
 
@@ -13,66 +10,58 @@ GameObject::~GameObject(void)
 {
 }
 
-void GameObject::SetLocation(float xNew, float yNew, float zNew)
+void GameObject::SetLocation(float x, float y, float z)
 {
-	x = xNew;
-	y = yNew;
-	z = zNew;
-}
-void GameObject::SetRotate(float xRotNew, float yRotNew, float zRotNew)
-{
-	xRot = xRotNew;
-	yRot = yRotNew;
-	zRot = zRotNew;
-}
-void GameObject::MoveDeltaX(float dx)
-{
-	x += dx;
-}
-void GameObject::MoveDeltaY(float dy)
-{
-	y += dy;
-}
-void GameObject::MoveDeltaZ(float dz)
-{
-	z += dz;
+	position.x = x;
+	position.y = y;
+	position.z = z;
+	position.w = 1.0f;
 }
 
-void GameObject::RotateDeltaX(float dx)
+void GameObject::SetLocation(Vector3 pos)
 {
-	xRot += dx;
-}
-void GameObject::RotateDeltaY(float dy)
-{
-	yRot += dy;
-}
-void GameObject::RotateDeltaZ(float dz)
-{
-	zRot += dz;
+	position.x = pos.x;
+	position.y = pos.y;
+	position.z = pos.z;
+	position.w = 1.0f;
 }
 
-float GameObject::GetX()
+void GameObject::SetLocation(Vector4 pos)
 {
-	return x;
-}
-float GameObject::GetY()
-{
-	return y;
-}
-float GameObject::GetZ()
-{
-	return z;
+	position.x = pos.x;
+	position.y = pos.y;
+	position.z = pos.z;
+	position.w = 1.0f;
 }
 
-float GameObject::GetRotationX()
+void GameObject::SetRotate(float xRot, float yRot, float zRot)
 {
-	return xRot;
+	rotation = Matrix4x4::IDENTITY;
+	Matrix4x4 temp;
+	temp.RotationX(xRot);
+	rotation = rotation * temp;
+	temp.RotationY(yRot);
+	rotation = rotation * temp;
+	temp.RotationZ(zRot);
+	rotation = rotation * temp;
 }
-float GameObject::GetRotationY()
+
+void GameObject::RotateDeltaX(float xRot)
 {
-	return yRot;
+	Matrix4x4 temp;
+	temp.RotationX(xRot);
+	rotation = rotation * temp;
 }
-float GameObject::GetRotationZ()
+
+void GameObject::RotateDeltaY(float yRot)
 {
-	return zRot;
+	Matrix4x4 temp;
+	temp.RotationY(yRot);
+	rotation = rotation * temp;
+}
+void GameObject::RotateDeltaZ(float zRot)
+{
+	Matrix4x4 temp;
+	temp.RotationZ(zRot);
+	rotation = rotation * temp;
 }

@@ -15,6 +15,11 @@ Vector4::Vector4(const Vector4 &rhs)
 {
 }
 
+Vector4::Vector4(const Vector3 &rhs):
+	x(rhs.x), y(rhs.y), z(rhs.z), w(1.0f)
+{
+}
+
 Vector4::~Vector4(void)
 {
 }
