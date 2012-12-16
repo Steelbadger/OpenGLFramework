@@ -66,6 +66,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collider.cpp" />
     <ClCompile Include="gameobject.cpp" />
+    <ClCompile Include="heightmap.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="mesh.cpp" />
@@ -83,6 +84,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="collider.h" />
     <ClInclude Include="gameobject.h" />
+    <ClInclude Include="heightmap.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="mouse.h" />

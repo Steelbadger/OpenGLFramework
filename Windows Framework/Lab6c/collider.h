@@ -5,18 +5,26 @@ class AABBCollider;
 class OABBCollider;
 class SphereCollider;
 
+struct Collision
+{
+	Vector4 PointOfCollision;
+	Vector4 NormalToPlane;
+};
+
+
 class Collider
 {
 public:
-	Collider(Vector4 &BasePosition);
+	virtual ~Collider(void);
 
 	virtual bool IsColliding(SphereCollider &other) = 0;
 	virtual bool IsColliding(AABBCollider &other) = 0;
 	virtual bool IsColliding(OABBCollider &other) = 0;
-
+	Collision GetCollision() {return collision;}
 	Vector4 *basePosition;
 protected:
-	~Collider(void);
+	Collider(Vector4 &BasePosition);
+	Collision collision;
 
 };
 
@@ -24,7 +32,7 @@ class SphereCollider : public Collider
 {
 public:
 	SphereCollider(float radius, Vector4 &BasePosition);
-	~SphereCollider();
+	virtual ~SphereCollider();
 
 	virtual bool IsColliding(SphereCollider &other);
 	virtual bool IsColliding(AABBCollider &other);
@@ -37,7 +45,7 @@ class AABBCollider : public Collider
 {
 public:
 	AABBCollider(float width, float height, float depth, Vector4 &BasePosition);
-	~AABBCollider();
+	virtual ~AABBCollider();
 
 	virtual bool IsColliding(SphereCollider &other);
 	virtual bool IsColliding(AABBCollider &other);

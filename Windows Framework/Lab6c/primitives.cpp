@@ -173,7 +173,6 @@ CubeArray::CubeArray(float x, float y, float z, char *Tex)
 {
 	Initialise(x, y, z);
 	ApplyTexture(Tex);
-	GenerateList();
 }
 
 void CubeArray::ApplyTexture(char *TextureFile)
@@ -225,12 +224,8 @@ void CubeArray::Initialise(float width, float height, float depth)
 
 }
 
-void CubeArray::GenerateList()
+void CubeArray::Draw()
 {
-	displayList = glGenLists(1);
-
-	glNewList(displayList,GL_COMPILE);
-
 	// activate and specify pointer to vertex array
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -249,10 +244,4 @@ void CubeArray::GenerateList()
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glBindTexture(GL_TEXTURE_2D, NULL);
 
-	glEndList();
-}
-
-void CubeArray::Draw()
-{
-	glCallList(displayList);
 }

@@ -23,17 +23,20 @@ SphereCollider::~SphereCollider()
 
 bool SphereCollider::IsColliding(SphereCollider &other)
 {
-	Vector4 displacement = *basePosition - *other.basePosition;
+	Vector4 displacement = *other.basePosition - *basePosition;
 	float distance = displacement.LengthSqr();
 	if ((radius * radius + other.radius*other.radius) > distance) {
 		return false;
 	}
+	collision.NormalToPlane = displacement.Normalise();
+	collision.PointOfCollision = *basePosition + displacement; 
 	return true;
 }
 
 bool SphereCollider::IsColliding(AABBCollider &other)
 {
 	Vector4 translatedOther = *other.basePosition - *basePosition;
+
 	Vector4 pointArray[8] = {Vector4(translatedOther.x - other.width/2, translatedOther.y - other.height/2, translatedOther.z - other.depth/2, 1.0f),
 							 Vector4(translatedOther.x + other.width/2, translatedOther.y - other.height/2, translatedOther.z - other.depth/2, 1.0f),
 							 Vector4(translatedOther.x + other.width/2, translatedOther.y + other.height/2, translatedOther.z - other.depth/2, 1.0f),
