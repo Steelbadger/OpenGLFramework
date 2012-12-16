@@ -15,14 +15,15 @@ void Mesh::Create()
 {
 	Heightmap myHeights;
 	float ybase = -0.5f;
+	float xbase = -0.5f;
 	for (float i = -25; i < 25; i++) {
 		for (float j = -25; j < 25; j++) {
-			verts.push_back(Vector3(-0.5f + i*1.0f, myHeights.GetHeight(i+25, j+25), -0.5f + j*1.0f));
-			verts.push_back(Vector3(0.5f + i*1.0f, myHeights.GetHeight(i+25, j+25), 0.5f + j*1.0f));
-			verts.push_back(Vector3(-0.5f + i*1.0f, myHeights.GetHeight(i+25, j+25), 0.5f + j*1.0f));
-			verts.push_back(Vector3(0.5f + i*1.0f, myHeights.GetHeight(i+25, j+25), 0.5f + j*1.0f));
-			verts.push_back(Vector3(-0.5f + i*1.0f, myHeights.GetHeight(i+25, j+25),-0.5f + j*1.0f));
-			verts.push_back(Vector3(0.5f + i*1.0f, myHeights.GetHeight(i+25, j+25), -0.5f + j*1.0f));
+			verts.push_back(Vector3(-0.5f + i*1.0f, ybase, -0.5f + j*1.0f));
+			verts.push_back(Vector3(0.5f + i*1.0f, ybase, 0.5f + j*1.0f));
+			verts.push_back(Vector3(-0.5f + i*1.0f, ybase, 0.5f + j*1.0f));
+			verts.push_back(Vector3(0.5f + i*1.0f, ybase, 0.5f + j*1.0f));
+			verts.push_back(Vector3(-0.5f + i*1.0f, ybase,-0.5f + j*1.0f));
+			verts.push_back(Vector3(0.5f + i*1.0f, ybase, -0.5f + j*1.0f));
 		}
 	}
 
