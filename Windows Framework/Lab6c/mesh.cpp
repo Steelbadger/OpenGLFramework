@@ -54,8 +54,23 @@ void Mesh::Create()
 		glDrawArrays(GL_TRIANGLES, 0, 15000);
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_NORMAL_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEndList();
 
+}
+
+void Mesh::CreateFromSource(std::vector<Vector3> &vertices)
+{
+	verts = vertices;
+	displayList = glGenLists(1);
+
+	glNewList(displayList,GL_COMPILE);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glVertexPointer(3, GL_FLOAT, 0, &verts[0]);
+		glDrawArrays(GL_TRIANGLES, 0, 15000);
+		glDisableClientState(GL_VERTEX_ARRAY);
+	glEndList();
 }
 
 void Mesh::Draw()

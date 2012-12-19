@@ -78,6 +78,7 @@
     <ClCompile Include="mywindow.cpp" />
     <ClCompile Include="Primitives.cpp" />
     <ClCompile Include="tex.cpp" />
+    <ClCompile Include="worldmap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
@@ -96,6 +97,7 @@
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="tex.h" />
+    <ClInclude Include="worldmap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

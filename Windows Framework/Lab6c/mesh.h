@@ -16,6 +16,7 @@ public:
 	~Mesh(void);
 
 	void Create();
+	void CreateFromSource(std::vector<Vector3> &vertices);
 	void Draw();
 
 	GLuint texture;
