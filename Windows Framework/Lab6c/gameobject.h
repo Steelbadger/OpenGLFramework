@@ -28,6 +28,9 @@ public:
 	void RotateLocalDeltaZ(float dz);
 
 	Vector4& GetPosition();
+	Vector4 GetLocalX();
+	Vector4 GetLocalY();
+	Vector4 GetLocalZ();
 
 	Matrix4x4& GetRotation();
 

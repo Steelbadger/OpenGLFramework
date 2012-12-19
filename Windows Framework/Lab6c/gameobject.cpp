@@ -150,6 +150,24 @@ Vector4& GameObject::GetPosition()
 	return position;
 }
 
+Vector4 GameObject::GetLocalX()
+{
+	Vector4 xVector = rotation * GLOBALX;
+	return xVector;
+}
+
+Vector4 GameObject::GetLocalY()
+{
+	Vector4 yVector = rotation * GLOBALY;
+	return yVector;
+}
+
+Vector4 GameObject::GetLocalZ()
+{
+	Vector4 zVector = rotation * GLOBALZ;
+	return zVector;
+}
+
 Matrix4x4& GameObject::GetRotation()
 {
 	return rotation;

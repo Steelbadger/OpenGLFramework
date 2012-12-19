@@ -64,7 +64,9 @@
   <ItemGroup>
     <ClCompile Include="application.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="cameramodule.cpp" />
     <ClCompile Include="collider.cpp" />
+    <ClCompile Include="controller.cpp" />
     <ClCompile Include="gameobject.cpp" />
     <ClCompile Include="heightmap.cpp" />
     <ClCompile Include="input.cpp" />
@@ -76,6 +78,7 @@
     <ClCompile Include="myvector3.cpp" />
     <ClCompile Include="myvector4.cpp" />
     <ClCompile Include="mywindow.cpp" />
+    <ClCompile Include="player.cpp" />
     <ClCompile Include="Primitives.cpp" />
     <ClCompile Include="tex.cpp" />
     <ClCompile Include="worldmap.cpp" />
@@ -83,7 +86,9 @@
   <ItemGroup>
     <ClInclude Include="application.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="cameramodule.h" />
     <ClInclude Include="collider.h" />
+    <ClInclude Include="controller.h" />
     <ClInclude Include="gameobject.h" />
     <ClInclude Include="heightmap.h" />
     <ClInclude Include="input.h" />
@@ -94,6 +99,7 @@
     <ClInclude Include="myvector3.h" />
     <ClInclude Include="myvector4.h" />
     <ClInclude Include="mywindow.h" />
+    <ClInclude Include="player.h" />
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="tex.h" />
