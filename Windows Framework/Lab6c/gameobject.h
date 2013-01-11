@@ -37,6 +37,10 @@ public:
 private:
 	Vector4 position;
 	Matrix4x4 rotation;
+	Vector4 localX;
+	Vector4 localY;
+	Vector4 localZ;
+
 	static const Vector4 GLOBALX;
 	static const Vector4 GLOBALY;
 	static const Vector4 GLOBALZ;

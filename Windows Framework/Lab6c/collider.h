@@ -1,5 +1,6 @@
 #pragma once
 #include "myvector4.h"
+#include <vector>
 
 class AABBCollider;
 class OABBCollider;
@@ -25,6 +26,9 @@ public:
 protected:
 	Collider(Vector4 &BasePosition);
 	Collision collision;
+
+	static std::vector<Collider*> colliders;
+	static void AddToColliders(Collider* collider);
 
 };
 

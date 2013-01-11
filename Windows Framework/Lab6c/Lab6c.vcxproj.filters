@@ -75,6 +75,9 @@
     <ClCompile Include="cameramodule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cameracontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Primitives.h">
@@ -131,10 +134,13 @@
     <ClInclude Include="controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cameramodule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cameramodule.h">
+    <ClInclude Include="cameracontroller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

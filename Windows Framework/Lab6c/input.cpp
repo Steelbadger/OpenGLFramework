@@ -24,8 +24,12 @@ Input::~Input(void)
 
 void Input::Message(UINT message, WPARAM wParam, LPARAM lParam)
 {
+
 	switch (message)
 	{
+		case WM_SIZE:
+			windowResized = true;
+			break;
 		case WM_KEYDOWN:
 			KeyDown(wParam);
 			break;
@@ -60,6 +64,7 @@ void Input::KeyUp(UINT wParam)
 
 void Input::Update()
 {
+	windowResized = false;
 	for (int i = 256; i > 0; i--)
 	{
 		if (keys[i-1] == true && oldkey[i-1] == false)

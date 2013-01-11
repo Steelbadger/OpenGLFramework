@@ -48,6 +48,14 @@ void CameraModule::SetWindowSize(int width, int height)
 	windowHeight = height;
 }
 
+void CameraModule::SetWindowSize()
+{
+	if (targetWindow != NULL) {
+		windowWidth = targetWindow->GetWidth();
+		windowHeight = targetWindow->GetHeight();
+	}
+}
+
 void CameraModule::SetClipPlanes(float n, float f)
 {
 	nearClipPlane = n;
@@ -57,4 +65,23 @@ void CameraModule::SetClipPlanes(float n, float f)
 void CameraModule::SetFieldOfView(float fov)
 {
 	fieldOfView = fov;
+}
+
+void CameraModule::SetTargetWindow(HWND hWnd)
+{
+	targetWindow = WindowWizard::GetWindowReference(hWnd);
+	SetWindowSize();
+}
+
+void CameraModule::SetTargetWindow(WindowWizard* window)
+{
+	targetWindow = window;
+	SetWindowSize();
+}
+
+void CameraModule::LockCursorToCentre()
+{
+	if (targetWindow != NULL) {
+		targetWindow->SetCursorToCentre();
+	}
 }

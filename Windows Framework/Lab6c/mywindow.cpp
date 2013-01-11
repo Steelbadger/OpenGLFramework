@@ -217,6 +217,11 @@ void WindowWizard::WindowCreate(LPSTR strWindowName, int width, int height, DWOR
 
 }
 
+WindowWizard* WindowWizard::GetWindowReference(HWND hwnd)
+{
+	return WindowMap[hwnd];
+}
+
 
 LRESULT CALLBACK WindowWizard::WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -237,7 +242,6 @@ LRESULT CALLBACK WindowWizard::WndProc (HWND hwnd, UINT message, WPARAM wParam, 
 				break;
 			case WM_SIZE:
 				pWindow->OnResize(LOWORD(lParam),HIWORD(lParam));
-				break;
 			case WM_MOVE:
 				GetWindowRect(hwnd,&pWindow->windowRect);
             case WM_LBUTTONUP:

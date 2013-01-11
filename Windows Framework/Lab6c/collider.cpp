@@ -1,14 +1,21 @@
 #include "collider.h"
 
+std::vector<Collider*>Collider::colliders;
 
 Collider::Collider(Vector4 &BasePosition):
 	basePosition(&BasePosition)
 {
+	AddToColliders(this);
 }
 
 
 Collider::~Collider(void)
 {
+}
+
+void Collider::AddToColliders(Collider* collider)
+{
+	colliders.push_back(collider);
 }
 
 SphereCollider::SphereCollider(float r, Vector4 &BasePosition) :

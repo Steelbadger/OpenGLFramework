@@ -6,6 +6,7 @@
 #include "mesh.h"
 #include "mywindow.h"
 #include "camera.h"
+#include "player.h"
 
 class Application
 {
@@ -18,7 +19,9 @@ public:
 
 private:
 	WindowWizard window;
-	Camera camera;
+	//Camera camera;
+	Player player;
+
 
 	CubeArray *cube;
 	Mesh ground;

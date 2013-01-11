@@ -32,6 +32,7 @@ public:
 	void SetMouseLockedCentre(){Input::GetSingleton().SetMouseLocked(gWidth/2,gHeight/2);}
 
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+	static WindowWizard* GetWindowReference(HWND hWnd);
 
 private:
 	void InitializeOpenGL(GLdouble fov);

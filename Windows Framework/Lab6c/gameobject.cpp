@@ -8,7 +8,10 @@ const Vector4 GameObject::GLOBALZ(0.0f, 0.0f, 1.0f, 1.0f);
 
 GameObject::GameObject(void):
 	position(0.0f, 0.0f, 0.0f, 1.0f),
-		rotation(Matrix4x4::IDENTITY)
+		rotation(Matrix4x4::IDENTITY),
+		localX(1.0f, 0.0f, 0.0f, 1.0f),
+		localY(0.0f, 1.0f, 0.0f, 1.0f),
+		localZ(0.0f, 0.0f, 1.0f, 1.0f)
 {
 }
 
@@ -32,24 +35,13 @@ void GameObject::SetRotate(float xRotNew, float yRotNew, float zRotNew)
 	rotation = rotation * temp;
 	temp.RotationZ(zRotNew);
 	rotation = rotation * temp;
+
 }
 
 void GameObject::OrientateAxesToGlobalUp()
 {
-	Vector4 localY;
-	Vector4 localX;
-	Vector4 localZ;
-	localZ = rotation * GLOBALZ;
-
 	localX = localZ.Cross(GLOBALY);
 	localY = localX.Cross(localZ);
-
-	Vector4 rotationCorrectionVector(localY.y, -localY.x, 0.0f, 1.0f);
-	float rotationCorrectionAngle = acos(localY.z);
-
-	Matrix4x4 rotationCorrectionMatrix;
-	rotationCorrectionMatrix.RotationAroundVectorThroughZero(rotationCorrectionVector, rotationCorrectionAngle);
-	rotation = rotation * rotationCorrectionMatrix;
 }
 void GameObject::MoveDeltaX(float dx)
 {
@@ -66,83 +58,77 @@ void GameObject::MoveDeltaZ(float dz)
 
 void GameObject::MoveLocalDeltaX(float dx)
 {
-	Vector4 xTranslator;
-	xTranslator = rotation * GLOBALX;
-	xTranslator.NormaliseSelf();
-	xTranslator *= dx;
+	Vector4 translator = localX.Normalise();
+	translator *= dx;
+	Matrix4x4 TranslationMatrix;
+	TranslationMatrix.Translation(translator.x, translator.y, translator.z);
 
-	Matrix4x4 translationMatrix;
-	translationMatrix.Translation(xTranslator.x, xTranslator.y, xTranslator.z);
-
-	position =  translationMatrix * position;
+	position = TranslationMatrix * position;
 }
 void GameObject::MoveLocalDeltaY(float dy)
 {
-	Vector4 yTranslator;
-	yTranslator = rotation * GLOBALY;
-	yTranslator.NormaliseSelf();
-	yTranslator *= dy;
+	Vector4 translator = localY.Normalise();
+	translator *= dy;
+	Matrix4x4 TranslationMatrix;
+	TranslationMatrix.Translation(translator.x, translator.y, translator.z);
 
-	Matrix4x4 translationMatrix;
-	translationMatrix.Translation(yTranslator.x, yTranslator.y, yTranslator.z);
-
-	position =  translationMatrix * position;
+	position = TranslationMatrix * position;
 }
 void GameObject::MoveLocalDeltaZ(float dz)
 {
-	Vector4 zTranslator;
-	zTranslator = rotation * GLOBALZ;
-	zTranslator.NormaliseSelf();
-	zTranslator *= dz;
+	Vector4 translator = localZ.Normalise();
+	translator *= dz;
+	Matrix4x4 TranslationMatrix;
+	TranslationMatrix.Translation(translator.x, translator.y, translator.z);
 
-	Matrix4x4 translationMatrix;
-	translationMatrix.Translation(zTranslator.x, zTranslator.y, zTranslator.z);
-
-	position =  translationMatrix * position;
+	position = TranslationMatrix * position;
 }
 
 void GameObject::RotateDeltaX(float dx)
 {
-	Matrix4x4 temp;
-	temp.RotationX(dx);
-	rotation = rotation * temp;
+	Matrix4x4 RotationMatrix;
+	RotationMatrix.RotationAroundVectorThroughZero(GLOBALX,dx);
+	localZ = RotationMatrix * localZ;
+	localY = RotationMatrix * localY;
+	localX = RotationMatrix * localX;
 }
 void GameObject::RotateDeltaY(float dy)
 {
-	Matrix4x4 temp;
-	temp.RotationX(dy);
-	rotation = rotation * temp;
+	Matrix4x4 RotationMatrix;
+	RotationMatrix.RotationAroundVectorThroughZero(GLOBALY,dy);
+	localZ = RotationMatrix * localZ;
+	localY = RotationMatrix * localY;
+	localX = RotationMatrix * localX;
 }
 void GameObject::RotateDeltaZ(float dz)
 {
-	Matrix4x4 temp;
-	temp.RotationX(dz);
-	rotation = rotation * temp;
+	Matrix4x4 RotationMatrix;
+	RotationMatrix.RotationAroundVectorThroughZero(GLOBALZ,dz);
+	localZ = RotationMatrix * localZ;
+	localY = RotationMatrix * localY;
+	localX = RotationMatrix * localX;
 }
 
 void GameObject::RotateLocalDeltaX(float dx)
 {
-	Vector4 xVector;
-	xVector = rotation * GLOBALX;
-	Matrix4x4 deltaRotation;
-	deltaRotation.RotationAroundVectorThroughZero(xVector,dx);
-	rotation = rotation * deltaRotation;
+	Matrix4x4 RotationMatrix;
+	RotationMatrix.RotationAroundVectorThroughZero(localX,dx);
+	localZ = RotationMatrix * localZ;
+	localY = RotationMatrix * localY;
 }
 void GameObject::RotateLocalDeltaY(float dy)
 {
-	Vector4 yVector;
-	yVector = rotation * GLOBALY;
-	Matrix4x4 deltaRotation;
-	deltaRotation.RotationAroundVectorThroughZero(yVector,dy);
-	rotation = rotation * deltaRotation;
+	Matrix4x4 RotationMatrix;
+	RotationMatrix.RotationAroundVectorThroughZero(localY,dy);
+	localZ = RotationMatrix * localZ;
+	localX = RotationMatrix * localX;
 }
 void GameObject::RotateLocalDeltaZ(float dz)
 {
-	Vector4 zVector;
-	zVector = rotation * GLOBALZ;
-	Matrix4x4 deltaRotation;
-	deltaRotation.RotationAroundVectorThroughZero(zVector,dz);
-	rotation = rotation * deltaRotation;
+	Matrix4x4 RotationMatrix;
+	RotationMatrix.RotationAroundVectorThroughZero(localZ,dz);
+	localY = RotationMatrix * localY;
+	localX = RotationMatrix * localX;
 }
 
 Vector4& GameObject::GetPosition()
@@ -152,20 +138,17 @@ Vector4& GameObject::GetPosition()
 
 Vector4 GameObject::GetLocalX()
 {
-	Vector4 xVector = rotation * GLOBALX;
-	return xVector;
+	return localX;
 }
 
 Vector4 GameObject::GetLocalY()
 {
-	Vector4 yVector = rotation * GLOBALY;
-	return yVector;
+	return localY;
 }
 
 Vector4 GameObject::GetLocalZ()
 {
-	Vector4 zVector = rotation * GLOBALZ;
-	return zVector;
+	return localZ;
 }
 
 Matrix4x4& GameObject::GetRotation()
