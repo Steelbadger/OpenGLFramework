@@ -51,7 +51,7 @@ void Heightmap::GenHeightmap()
 {
 	for (int i = 0; i < 50; i++) {
 		for (int j = 0; j < 50; j++) {
-			heightmap[i][j] = Noise(i, j);
+			heightmap[i][j] = Noise(i/50, j/50);
 		}
 	}
 }

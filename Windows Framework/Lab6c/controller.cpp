@@ -32,9 +32,9 @@ void Controller::CheckInputAndAct()
 		parent->OrientateAxesToGlobalUp();
 	} else {
 		if (input.ReportKeyState(keyMap['D']))
-			parent->RotateLocalDeltaY(0.01f);
+			parent->RotateLocalDeltaY(-0.03f);
 		if (input.ReportKeyState(keyMap['A']))
-			parent->RotateLocalDeltaY(-0.01f);
+			parent->RotateLocalDeltaY(0.03f);
 		parent->OrientateAxesToGlobalUp();
 	}
 }
