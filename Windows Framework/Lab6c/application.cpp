@@ -83,13 +83,13 @@ void Application::MainLoop()
 
 	glTranslatef(-25.0f, 0.0f, -25.0f);
 
-//	for (int i = 0; i < 24; i++) {
-//		for (int j = 0; j < 24; j++) {
-//			glTranslatef(2.0f, 0.0f, 0.0f);
-//			cube->Draw();
-//		}
-//		glTranslatef(-48.0f, 0.0f, 2.0f);
-//	}	
+	for (int i = 0; i < 24; i++) {
+		for (int j = 0; j < 24; j++) {
+			glTranslatef(2.0f, 0.0f, 0.0f);
+			cube->Draw();
+		}
+		glTranslatef(-48.0f, 0.0f, 2.0f);
+	}	
 	
 	window.FlipBuffers();
 }
