@@ -1,4 +1,5 @@
 #include "application.h"
+#include <iostream>
 
 Application::Application(void)
 {
@@ -21,6 +22,7 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	cube = new CubeArray(1,1,1, "Crate.tga");
 	ground.Create();
+	std::cout << "OpenGL Version: " << glGetString(GL_VERSION);
 }
 
 void Application::MainLoop()
@@ -53,8 +55,10 @@ void Application::MainLoop()
 	glEnable(GL_LIGHT1);
 
 	ground.Draw();
+	
 
 	glTranslatef(-25.0f, 0.0f, -25.0f);
+	
 
 	for (int i = 0; i < 24; i++) {
 		for (int j = 0; j < 24; j++) {

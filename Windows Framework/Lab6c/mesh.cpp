@@ -13,7 +13,7 @@ Mesh::~Mesh(void)
 
 void Mesh::Create()
 {
-	Heightmap myHeights;
+//	Heightmap myHeights;
 	float ybase = -0.5f;
 	float xbase = -0.5f;
 	for (float i = -25; i < 25; i++) {

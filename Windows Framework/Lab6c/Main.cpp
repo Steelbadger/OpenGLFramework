@@ -3,7 +3,7 @@
 #include <mmsystem.h>
 #include "application.h"
 
-int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
+int main (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     PSTR szCmdLine, int nCmdShow)			
 {	
     MSG msg;
