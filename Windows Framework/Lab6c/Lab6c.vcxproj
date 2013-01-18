@@ -97,7 +97,6 @@
     <ClInclude Include="collider.h" />
     <ClInclude Include="controller.h" />
     <ClInclude Include="gameobject.h" />
-    <ClInclude Include="glext.h" />
     <ClInclude Include="heightmap.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="mesh.h" />

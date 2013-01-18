@@ -1,5 +1,6 @@
 #include "application.h"
 #include <iostream>
+#include <time.h>
 
 Application::Application(void)
 {
@@ -13,7 +14,6 @@ Application::~Application(void)
 void Application::Initialize(HINSTANCE hInstance)
 {
 	float rot = 0.0;
-
 	window.WindowCreate("OpenGL Framework", 1000, 500, (WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN), 0, hInstance);
 	window.InitializeGraphics(45.0f);
 	window.SetCursorToCentre();
@@ -22,11 +22,22 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	cube = new CubeArray(1,1,1, "Crate.tga");
 	ground.Create();
-	std::cout << "OpenGL Version: " << glGetString(GL_VERSION);
+	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
+
+	lastTime = time(NULL);
+	nbFrames = 0;
+
 }
 
 void Application::MainLoop()
 {
+     double currentTime = time(NULL);
+     nbFrames++;
+     if ( currentTime - lastTime >= 1.0 ){
+		 std::cout << 1000.0/double(nbFrames) << " ms/frame\t" << "(" << nbFrames << "FPS)" << std::endl;
+         nbFrames = 0;
+         lastTime += 1.0;
+     }
 
 	GLfloat Light_Ambient[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	GLfloat Light_Diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};

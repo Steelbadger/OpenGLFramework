@@ -22,6 +22,9 @@ private:
 	//Camera camera;
 	Player player;
 
+	double lastTime;
+	int nbFrames;
+	double currentTime;
 
 	CubeArray *cube;
 	Mesh ground;
