@@ -1,19 +1,26 @@
 #pragma once
+#include <vector>
+
 class Heightmap
 {
 public:
-	Heightmap(void);
+	Heightmap(int iterations);
 	~Heightmap(void);
 	float GetHeight(int x, int y){return heightmap[x][y];}
 
 private:
 
 	void GenHeightmap();
-	float heightmap[50][50];
+	void SquareStep(int xLow, int xHigh, int yLow, int yHigh, int iteration);
+	void DiamondStep(int xLow, int xHigh, int yLow, int yHigh, int iteration);
 
-	float Noise(float x, float y);
-	float Grad(int hash, float x, float y);
-	const static unsigned char perm[512];
+	float GetRandom(float range);
 
+	std::vector<std::vector<float> > heightmap;
+	const int totalIterations;
+	int squareSize;
+
+	static const int SIZE = 256;
+	static const int MAGNITUDE = 10;
 };
 

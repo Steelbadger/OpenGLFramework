@@ -1,5 +1,6 @@
 #include "mesh.h"
 #include "heightmap.h"
+#include "myvector4.h"
 
 
 Mesh::Mesh(void)
@@ -13,22 +14,48 @@ Mesh::~Mesh(void)
 
 void Mesh::Create()
 {
-//	Heightmap myHeights;
+	Heightmap heightmap = Heightmap(8);
+
 	float ybase = -0.5f;
 	float xbase = -0.5f;
+	//for (float i = -25; i < 25; i++) {
+	//	for (float j = -25; j < 25; j++) {
+	//		verts.push_back(Vector3(-0.5f + i*1.0f, ybase, -0.5f + j*1.0f));
+	//		verts.push_back(Vector3(0.5f + i*1.0f, ybase, 0.5f + j*1.0f));
+	//		verts.push_back(Vector3(-0.5f + i*1.0f, ybase, 0.5f + j*1.0f));
+	//		verts.push_back(Vector3(0.5f + i*1.0f, ybase, 0.5f + j*1.0f));
+	//		verts.push_back(Vector3(-0.5f + i*1.0f, ybase,-0.5f + j*1.0f));
+	//		verts.push_back(Vector3(0.5f + i*1.0f, ybase, -0.5f + j*1.0f));
+	//	}
+	//}
+
 	for (float i = -25; i < 25; i++) {
 		for (float j = -25; j < 25; j++) {
-			verts.push_back(Vector3(-0.5f + i*1.0f, ybase, -0.5f + j*1.0f));
-			verts.push_back(Vector3(0.5f + i*1.0f, ybase, 0.5f + j*1.0f));
-			verts.push_back(Vector3(-0.5f + i*1.0f, ybase, 0.5f + j*1.0f));
-			verts.push_back(Vector3(0.5f + i*1.0f, ybase, 0.5f + j*1.0f));
-			verts.push_back(Vector3(-0.5f + i*1.0f, ybase,-0.5f + j*1.0f));
-			verts.push_back(Vector3(0.5f + i*1.0f, ybase, -0.5f + j*1.0f));
+			verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i+25, j+25), -0.5f + j*1.0f));
+			verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i+25, 1+j+25), 0.5f + j*1.0f));
+			verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i+25, 1+j+25), 0.5f + j*1.0f));
+			verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i+25, 1+j+25), 0.5f + j*1.0f));
+			verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i+25, j+25),-0.5f + j*1.0f));
+			verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i+25, j+25), -0.5f + j*1.0f));
 		}
 	}
 
-	for (int i = 0; i < 15000 ; i++) {
-		normals.push_back(Vector3(0.0f, 1.0f, 0.0f));
+
+	//for (int i = 0; i < 15000 ; i++) {
+	//	normals.push_back(Vector3(0.0f, 1.0f, 0.0f));
+	//}
+	for (float i = -25; i < 25; i++) {
+		for (float j = -25; j < 25; j++) {
+			for (int i = 0; i < 3 ; i++) {
+				normals.push_back(CalcNormal(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i+25, j+25), -0.5f + j*1.0f)
+											,Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i+25, 1+j+25), 0.5f + j*1.0f)
+											,Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i+25, 1+j+25), 0.5f + j*1.0f)));
+				normals.push_back(CalcNormal(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i+25, j+25),-0.5f + j*1.0f)		
+											,Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i+25, j+25), -0.5f + j*1.0f)
+											,Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i+25, 1+j+25), 0.5f + j*1.0f)));
+
+			}
+		}
 	}
 
 	for (int i = 0; i < 2500; i++) {
@@ -76,4 +103,21 @@ void Mesh::CreateFromSource(std::vector<Vector3> &vertices)
 void Mesh::Draw()
 {
 	glCallList(displayList);
+}
+
+Vector3 Mesh::CalcNormal(Vector3 pointA, Vector3 pointB, Vector3 pointC)
+{
+	Vector4 A(pointA);
+	Vector4 B(pointB);
+	Vector4 C(pointC);
+
+	Vector4 AB = B - A;
+	Vector4 AC = C - A;
+
+	Vector4 Normal = AC.Cross(AB);
+	Normal.NormaliseSelf();
+	Vector3 output(Normal);
+
+	return output;
+
 }
