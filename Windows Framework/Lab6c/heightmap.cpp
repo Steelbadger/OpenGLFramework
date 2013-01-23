@@ -24,10 +24,10 @@ Heightmap::Heightmap(int iterations) :
 
 
 	//  Seed the Map
-	heightmap[0][0] = -0.5f;
-	heightmap[squareSize][0] = -0.5f;
-	heightmap[0][squareSize] = -0.5f;
-	heightmap[squareSize][squareSize] = -0.5f;
+	heightmap[0][0] = 10.0f;
+	heightmap[squareSize][0] = 3.5f;
+	heightmap[0][squareSize] = -1.5f;
+	heightmap[squareSize][squareSize] = -4.5f;
 
 	GenHeightmap();
 }
@@ -72,10 +72,10 @@ void Heightmap::SquareStep(int xLow, int xHigh, int yLow, int yHigh, int iterati
 	int xMid = (xHigh-xLow)/2 + xLow;
 	int yMid = (yHigh-yLow)/2 + yLow;
 	float midHeight = heightmap[xMid][yMid];
-	if (midHeight == 0.0f) {
-		midHeight = (heightmap[xLow][yLow] + heightmap[xLow][yHigh] + heightmap[xHigh][yLow] + heightmap[xHigh][yHigh])/4;
-	}
-	midHeight += GetRandom(MAGNITUDE/(float(iteration)*float(iteration)*float(iteration)));
+
+	midHeight = (heightmap[xLow][yLow] + heightmap[xLow][yHigh] + heightmap[xHigh][yLow] + heightmap[xHigh][yHigh])/4;
+
+	midHeight += GetRandom(MAGNITUDE/(float(iteration)*float(iteration)*float(iteration)+5));
 
 	heightmap[xMid][yMid] = midHeight;
 }
@@ -92,39 +92,36 @@ void Heightmap::DiamondStep(int xLow, int xHigh, int yLow, int yHigh, int iterat
 	leftMidHeight = heightmap[xLow][yMid];
 	rightMidHeight = heightmap[xHigh][yMid];
 
-	if (topMidHeight == 0.0f) {
-		if (yLow == 0) {
-			topMidHeight = (heightmap[xLow][yLow] + heightmap[xHigh][yLow] + heightmap[xMid][yMid])/3;
-		} else {
-			topMidHeight = (heightmap[xLow][yLow] + heightmap[xHigh][yLow] + heightmap[xMid][yMid] + heightmap[xMid][2*yLow-yMid])/4;
-		}
-	}
-	if (bottomMidHeight == 0.0f) {
-		if (yHigh == heightmap[0].size()-1) {
-			bottomMidHeight = (heightmap[xLow][yHigh] + heightmap[xHigh][yHigh] + heightmap[xMid][yMid])/3;
-		} else {
-			bottomMidHeight = (heightmap[xLow][yHigh] + heightmap[xHigh][yHigh] + heightmap[xMid][yMid] + heightmap[xMid][2*yHigh-yMid])/4;
-		}
-	}
-	if (leftMidHeight == 0.0f) {
-		if (xLow == 0) {
-			leftMidHeight = (heightmap[xLow][yLow] + heightmap[xLow][yHigh] + heightmap[xMid][yMid])/3;
-		} else {
-			leftMidHeight = (heightmap[xLow][yLow] + heightmap[xLow][yHigh] + heightmap[xMid][yMid] + heightmap[2*xLow-xMid][yMid])/4;
-		}
-	}
-	if (rightMidHeight == 0.0f) {
-		if (xHigh == heightmap.size()-1) {
-			rightMidHeight = (heightmap[xHigh][yLow] + heightmap[xHigh][yHigh] + heightmap[xMid][yMid])/3;
-		} else {
-			rightMidHeight = (heightmap[xHigh][yLow] + heightmap[xHigh][yHigh] + heightmap[xMid][yMid] + heightmap[2*xHigh - xMid][yMid])/4;
-		}
+
+	if (yLow == 0) {
+		topMidHeight = (heightmap[xLow][yLow] + heightmap[xHigh][yLow] + heightmap[xMid][yMid])/3;
+	} else {
+		topMidHeight = (heightmap[xLow][yLow] + heightmap[xHigh][yLow] + heightmap[xMid][yMid] + heightmap[xMid][2*yLow-yMid])/4;
 	}
 
-	topMidHeight += GetRandom(MAGNITUDE/(float(iteration)*float(iteration)*float(iteration)));
-	bottomMidHeight += GetRandom(MAGNITUDE/(float(iteration)*float(iteration)*float(iteration)));
-	leftMidHeight += GetRandom(MAGNITUDE/(float(iteration)*float(iteration)*float(iteration)));
-	rightMidHeight += GetRandom(MAGNITUDE/(float(iteration)*float(iteration)*float(iteration)));
+	if (yHigh == heightmap[0].size()-1) {
+		bottomMidHeight = (heightmap[xLow][yHigh] + heightmap[xHigh][yHigh] + heightmap[xMid][yMid])/3;
+	} else {
+		bottomMidHeight = (heightmap[xLow][yHigh] + heightmap[xHigh][yHigh] + heightmap[xMid][yMid] + heightmap[xMid][2*yHigh-yMid])/4;
+	}
+
+	if (xLow == 0) {
+		leftMidHeight = (heightmap[xLow][yLow] + heightmap[xLow][yHigh] + heightmap[xMid][yMid])/3;
+	} else {
+		leftMidHeight = (heightmap[xLow][yLow] + heightmap[xLow][yHigh] + heightmap[xMid][yMid] + heightmap[2*xLow-xMid][yMid])/4;
+	}
+
+	if (xHigh == heightmap.size()-1) {
+		rightMidHeight = (heightmap[xHigh][yLow] + heightmap[xHigh][yHigh] + heightmap[xMid][yMid])/3;
+	} else {
+		rightMidHeight = (heightmap[xHigh][yLow] + heightmap[xHigh][yHigh] + heightmap[xMid][yMid] + heightmap[2*xHigh - xMid][yMid])/4;
+	}
+
+
+	topMidHeight += GetRandom(MAGNITUDE/(float(iteration)*float(iteration)*float(iteration)+8));
+	bottomMidHeight += GetRandom(MAGNITUDE/(float(iteration)*float(iteration)*float(iteration)+8));
+	leftMidHeight += GetRandom(MAGNITUDE/(float(iteration)*float(iteration)*float(iteration)+8));
+	rightMidHeight += GetRandom(MAGNITUDE/(float(iteration)*float(iteration)*float(iteration)+8));
 
 	heightmap[xMid][yLow] = topMidHeight;
 	heightmap[xMid][yHigh] = bottomMidHeight;

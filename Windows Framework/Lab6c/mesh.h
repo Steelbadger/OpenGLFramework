@@ -29,5 +29,6 @@ private:
 	GLuint displayList;
 
 	Vector3 CalcNormal(Vector3 A, Vector3 B, Vector3 C);
+	void SmoothNormals();
 };
 

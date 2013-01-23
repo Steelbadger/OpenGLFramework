@@ -21,17 +21,6 @@ void Mesh::Create()
 
 	int size = heightmap.GetSize();
 
-	//for (float i = -25; i < 25; i++) {
-	//	for (float j = -25; j < 25; j++) {
-	//		verts.push_back(Vector3(-0.5f + i*1.0f, ybase, -0.5f + j*1.0f));
-	//		verts.push_back(Vector3(0.5f + i*1.0f, ybase, 0.5f + j*1.0f));
-	//		verts.push_back(Vector3(-0.5f + i*1.0f, ybase, 0.5f + j*1.0f));
-	//		verts.push_back(Vector3(0.5f + i*1.0f, ybase, 0.5f + j*1.0f));
-	//		verts.push_back(Vector3(-0.5f + i*1.0f, ybase,-0.5f + j*1.0f));
-	//		verts.push_back(Vector3(0.5f + i*1.0f, ybase, -0.5f + j*1.0f));
-	//	}
-	//}
-
 	for (float i = 0; i < size-1; i++) {
 		for (float j = 0; j < size-1; j++) {
 			verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j), -0.5f + j*1.0f));
@@ -43,9 +32,6 @@ void Mesh::Create()
 		}
 	}
 
-	//for (int i = 0; i < 15000 ; i++) {
-	//	normals.push_back(Vector3(0.0f, 1.0f, 0.0f));
-	//}
 	for (float i = 0; i < size-1; i++) {
 		for (float j = 0; j < size-1; j++) {
 			for (int k = 0; k < 3 ; k++) {
@@ -60,6 +46,8 @@ void Mesh::Create()
 			}
 		}
 	}
+
+	SmoothNormals();
 
 	for (int i = 0; i < size*size; i++) {
 		texCoords.push_back(Vector2(0.0f, 1.0f));
@@ -123,5 +111,42 @@ Vector3 Mesh::CalcNormal(Vector3 pointA, Vector3 pointB, Vector3 pointC)
 	Vector3 output(Normal);
 
 	return output;
+
+}
+
+void Mesh::SmoothNormals()
+{
+	std::vector<Vector3> smoothedNormals;
+	std::vector<bool> checkedMap;
+	std::vector<Vector3> knownNormals;
+
+	checkedMap.resize(verts.size());
+	knownNormals.resize(verts.size());
+	smoothedNormals.resize(verts.size());
+
+	for (int i = 0; i < checkedMap.size(); i++) {
+		checkedMap[i] = false;
+	}
+
+	for (int i = 0; i < verts.size(); i++) {
+		if (checkedMap[i] == false) {
+			Vector3 searchNode = verts[i];
+			std::vector<int> found;
+			Vector4 averagedNode = Vector3(0.0f, 0.0f, 0.0f);
+			for (int j = 0; j < verts.size(); j++) {
+				if (verts[j] == searchNode) {
+					found.push_back(j);
+					checkedMap[j] = true;
+					averagedNode += Vector4(normals[j]);
+				}
+			}
+			averagedNode /= found.size();
+			for (int j = 0; j < found.size(); j++) {
+				smoothedNormals[found[j]] = averagedNode;
+			}
+		}
+	}
+
+	normals = smoothedNormals;
 
 }

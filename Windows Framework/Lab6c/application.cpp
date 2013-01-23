@@ -13,6 +13,7 @@ Application::~Application(void)
 
 void Application::Initialize(HINSTANCE hInstance)
 {
+	srand(unsigned int("herpdederp"));
 	float rot = 0.0;
 	window.WindowCreate("OpenGL Framework", 1000, 500, (WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN), 0, hInstance);
 	window.InitializeGraphics(45.0f);
@@ -26,7 +27,6 @@ void Application::Initialize(HINSTANCE hInstance)
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
 	lastTime = time(NULL);
-//	srand(lastTime);
 	nbFrames = 0;
 
 }

@@ -11,6 +11,9 @@ public:
 	Vector3(const Vector4 & rhs);
 	~Vector3(void);
 
+
+	bool operator==(const Vector3 & rhs) const;
+
 	float x, y, z;
 };
 

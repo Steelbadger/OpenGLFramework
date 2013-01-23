@@ -21,6 +21,11 @@ Vector3::Vector3(const Vector4 &rhs):
 
 }
 
+bool Vector3::operator ==(const Vector3 & rhs) const
+{
+	return ((x == rhs.x) && (y == rhs.y) && (z == rhs.z));
+}
+
 
 Vector3::~Vector3(void)
 {
