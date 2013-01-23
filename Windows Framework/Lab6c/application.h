@@ -25,6 +25,8 @@ private:
 	double lastTime;
 	int nbFrames;
 	double currentTime;
+	bool walking;
+	bool framerateLogging;
 
 	CubeArray *cube;
 	Mesh ground;

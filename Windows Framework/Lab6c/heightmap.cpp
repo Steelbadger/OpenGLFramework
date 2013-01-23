@@ -45,6 +45,12 @@ float Heightmap::GetFloatHeight(float x, float y)
 	int yLow = floor(y);
 	int yHigh = ceil(y);
 
+	if (xLow == xHigh) {
+		xHigh += 1;
+	} else if (yLow == yHigh) {
+		yHigh += 1;
+	}
+
 	if (xLow < 0.0f || yLow < 0.0f || xHigh > heightmap.size()-1 || yHigh > heightmap.size()-1) {
 		return 0.0f;
 	}
@@ -59,14 +65,6 @@ float Heightmap::GetFloatHeight(float x, float y)
 		A = Vector3(xHigh, heightmap[xHigh][yLow], yLow);
 		B = Vector3(xLow, heightmap[xLow][yLow], yLow);
 		C = Vector3(xLow, heightmap[xLow][yHigh], yHigh);		
-	}
-
-	if (xLow == xHigh && yLow == yHigh) {
-		return heightmap[xLow][yLow];
-	} else if (xLow == xHigh) {
-		return ((y-yLow)*heightmap[xLow][yLow]+(yHigh-y)*heightmap[xLow][yHigh]);
-	} else if (yLow == yHigh) {
-		return ((x-xLow)*heightmap[xLow][yLow]+(xHigh-x)*heightmap[xHigh][yLow]);
 	}
 
 	Vector4 AB = B - A;
@@ -89,7 +87,7 @@ float Heightmap::GetFloatHeight(float x, float y)
 
 float Heightmap::GetRelativeFloatHeight(float x, float y)
 {
-	if (x > 1.0f || y > 1.0f) {
+	if (x > 1.0f || y > 1.0f || x < 0.0f || y < 0.0f) {
 		return 0.0f;
 	}
 

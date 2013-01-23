@@ -5,7 +5,7 @@
 
 
 Mesh::Mesh(void):
-	heightmap(8)
+	heightmap(7)
 {
 }
 
@@ -21,13 +21,14 @@ void Mesh::Create()
 
 	float height = 0;
 
-	height = heightmap.GetFloatHeight(0.0f, 0.0f);
-	height = heightmap.GetFloatHeight(1.0f, 1.0f);
-	height = heightmap.GetFloatHeight(0.236f, 0.314f);
-	height = heightmap.GetFloatHeight(0.5f, 0.5f);
-	height = heightmap.GetFloatHeight(0.0052f, 0.0021f);
+	height = heightmap.GetFloatHeight(12.0f, 13.0f);
+	height = heightmap.GetFloatHeight(12.0001f, 13.0001f);
+	height = heightmap.GetFloatHeight(11.9999f, 12.9999f);
+
 
 	int size = heightmap.GetSize();
+
+	float step = 1.0f/(size-1);
 
 	for (float i = 0; i < size-1; i++) {
 		for (float j = 0; j < size-1; j++) {

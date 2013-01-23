@@ -28,32 +28,35 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	lastTime = time(NULL);
 	nbFrames = 0;
+	walking = false;
+	framerateLogging = false;
 
 }
 
 void Application::MainLoop()
 {
-     double currentTime = time(NULL);
-     nbFrames++;
-     if ( currentTime - lastTime >= 1.0 ){
-		 std::cout << 1000.0/double(nbFrames) << " ms/frame\t" << "(" << nbFrames << "FPS)" << std::endl;
-         nbFrames = 0;
-         lastTime += 1.0;
-     }
+	double currentTime = time(NULL);
+	nbFrames++;
+	if ( currentTime - lastTime >= 1.0 ){
+		if (framerateLogging) {
+			std::cout << 1000.0/double(nbFrames) << " ms/frame\t" << "(" << nbFrames << "FPS)" << std::endl;
+		}
+		nbFrames = 0;
+		lastTime += 1.0;
+	}
 
 	GLfloat Light_Ambient[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	GLfloat Light_Diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 	GLfloat Light_Position[]= {3.0f, 3.0f, 0.0f, 1.0f};
-	if (player.GetPosition().y < 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z) || player.GetPosition().y > 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z)) {
-		player.SetLocation(player.GetPosition().x, 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z), player.GetPosition().z);
-	}
-
 
 	window.PrepareForDrawing();
 
 	player.Update();
-	if (player.GetPosition().y < 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z) || player.GetPosition().y > 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z)) {
-		player.SetLocation(player.GetPosition().x, 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z), player.GetPosition().z);
+
+	if (walking) {
+		if (player.GetPosition().y < 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z) || player.GetPosition().y > 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z)) {
+			player.SetLocation(player.GetPosition().x, 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z), player.GetPosition().z);
+		}
 	}
 
 	input.Update();
@@ -61,6 +64,19 @@ void Application::MainLoop()
 	if(input.ReportRMousePress()) {
 		window.SetCursorToCentre();
 		window.SetMouseLockedCentre();
+	}
+
+	if (input.ReportKeyPress('T')) {
+		walking = !walking;
+	}
+
+	if (input.ReportKeyPress('F')) {
+		framerateLogging = !framerateLogging;
+	}
+
+	if (input.ReportKeyPress('L')) {
+		std::cout << std::endl << "Position: (" << player.GetPosition().x << ", "<< player.GetPosition().y << ", " << player.GetPosition().z << ")\t";
+		std::cout << "Forward Vector: (" << player.GetLocalZ().x << ", " << player.GetLocalZ().y << ", " << player.GetLocalZ().z << ")";
 	}
 
 	if (input.ReportKeyPress(VK_ESCAPE))
