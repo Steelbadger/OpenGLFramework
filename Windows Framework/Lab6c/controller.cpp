@@ -4,7 +4,7 @@
 
 Controller::Controller(GameObject* p):
 	parent(p),
-	sensitivity(0.2f)
+	sensitivity(0.02f)
 {
 	for (int i = 0; i < 256; i++) {
 		keyMap[i] = 0;

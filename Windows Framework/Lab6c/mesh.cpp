@@ -4,7 +4,8 @@
 #include <iostream>
 
 
-Mesh::Mesh(void)
+Mesh::Mesh(void):
+	heightmap(8)
 {
 }
 
@@ -15,10 +16,16 @@ Mesh::~Mesh(void)
 
 void Mesh::Create()
 {
-	Heightmap heightmap = Heightmap(7);
-
 	float ybase = -0.5f;
 	float xbase = -0.5f;
+
+	float height = 0;
+
+	height = heightmap.GetFloatHeight(0.0f, 0.0f);
+	height = heightmap.GetFloatHeight(1.0f, 1.0f);
+	height = heightmap.GetFloatHeight(0.236f, 0.314f);
+	height = heightmap.GetFloatHeight(0.5f, 0.5f);
+	height = heightmap.GetFloatHeight(0.0052f, 0.0021f);
 
 	int size = heightmap.GetSize();
 

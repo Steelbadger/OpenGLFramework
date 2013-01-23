@@ -8,6 +8,8 @@ public:
 	~Heightmap(void);
 	float GetHeight(int x, int y){return heightmap[x][y];}
 	int GetSize() {return heightmap.size();}
+	float GetFloatHeight(float x, float y);
+	float GetRelativeFloatHeight(float x, float y);
 
 private:
 
@@ -22,6 +24,6 @@ private:
 	int squareSize;
 
 	static const int SIZE = 256;
-	static const int MAGNITUDE = 200;
+	static const int MAGNITUDE = 80;
 };
 

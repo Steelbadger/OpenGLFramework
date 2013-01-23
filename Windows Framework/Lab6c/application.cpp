@@ -45,8 +45,13 @@ void Application::MainLoop()
 	GLfloat Light_Diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 	GLfloat Light_Position[]= {3.0f, 3.0f, 0.0f, 1.0f};
 
+
 	window.PrepareForDrawing();
 	player.Update();
+	if (player.GetPosition().y < 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z) || player.GetPosition().y > 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z)) {
+		player.SetLocation(player.GetPosition().x, 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z), player.GetPosition().z);
+	}
+
 	input.Update();
 
 	if(input.ReportRMousePress()) {

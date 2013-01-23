@@ -7,6 +7,7 @@
 #include "tex.h"
 #include "myvector3.h"
 #include "myvector2.h"
+#include "heightmap.h"
 
 
 class Mesh
@@ -19,6 +20,8 @@ public:
 	void CreateFromSource(std::vector<Vector3> &vertices);
 	void Draw();
 
+	float GetHeight(float x, float z){return heightmap.GetFloatHeight(x, z);}
+
 	GLuint texture;
 
 private:
@@ -27,6 +30,8 @@ private:
 	std::vector<Vector2> texCoords;
 
 	GLuint displayList;
+
+	Heightmap heightmap;
 
 	Vector3 CalcNormal(Vector3 A, Vector3 B, Vector3 C);
 	void SmoothNormals();

@@ -1,4 +1,5 @@
 #include "heightmap.h"
+#include "myvector4.h"
 
 
 
@@ -35,6 +36,105 @@ Heightmap::Heightmap(int iterations) :
 Heightmap::~Heightmap()
 {
 
+}
+
+float Heightmap::GetFloatHeight(float x, float y)
+{
+	int xLow = floor(x);
+	int xHigh = ceil(x);
+	int yLow = floor(y);
+	int yHigh = ceil(y);
+
+	if (xLow < 0.0f || yLow < 0.0f || xHigh > heightmap.size()-1 || yHigh > heightmap.size()-1) {
+		return 0.0f;
+	}
+
+	Vector4 A, B, C;
+
+	if (y > 1.0f-x) {
+		A = Vector3(xHigh, heightmap[xHigh][yLow], yLow);
+		B = Vector3(xLow, heightmap[xLow][yHigh], yHigh);
+		C = Vector3(xHigh, heightmap[xHigh][yHigh], yHigh);
+	} else {
+		A = Vector3(xHigh, heightmap[xHigh][yLow], yLow);
+		B = Vector3(xLow, heightmap[xLow][yLow], yLow);
+		C = Vector3(xLow, heightmap[xLow][yHigh], yHigh);		
+	}
+
+	if (xLow == xHigh && yLow == yHigh) {
+		return heightmap[xLow][yLow];
+	} else if (xLow == xHigh) {
+		return ((y-yLow)*heightmap[xLow][yLow]+(yHigh-y)*heightmap[xLow][yHigh]);
+	} else if (yLow == yHigh) {
+		return ((x-xLow)*heightmap[xLow][yLow]+(xHigh-x)*heightmap[xHigh][yLow]);
+	}
+
+	Vector4 AB = B - A;
+	Vector4 AC = C - A;
+
+	Vector4 normal = AC.Cross(AB);
+	normal.NormaliseSelf();
+
+	Vector4 lookUp(0.0f, 1.0f, 0.0f, 1.0f);
+
+	Vector4 diff = A - Vector4(x, 0.0f, y, 1.0f);
+
+	float height = diff.Dot3(normal)/lookUp.Dot3(normal);
+
+	return height;
+
+}
+
+
+
+float Heightmap::GetRelativeFloatHeight(float x, float y)
+{
+	if (x > 1.0f || y > 1.0f) {
+		return 0.0f;
+	}
+
+	x = x*(heightmap.size()-1);
+	y = y*(heightmap.size()-1);
+
+
+	int xLow = floor(x);
+	int xHigh = ceil(x);
+	int yLow = floor(y);
+	int yHigh = ceil(y);
+
+	Vector4 A, B, C;
+
+	if (y > 1.0f-x) {
+		A = Vector3(xHigh, heightmap[xHigh][yLow], yLow);
+		B = Vector3(xLow, heightmap[xLow][yHigh], yHigh);
+		C = Vector3(xHigh, heightmap[xHigh][yHigh], yHigh);
+	} else {
+		A = Vector3(xHigh, heightmap[xHigh][yLow], yLow);
+		B = Vector3(xLow, heightmap[xLow][yLow], yLow);
+		C = Vector3(xLow, heightmap[xLow][yHigh], yHigh);		
+	}
+
+	if (xLow == xHigh && yLow == yHigh) {
+		return heightmap[xLow][yLow];
+	} else if (xLow == xHigh) {
+		return ((y-yLow)*heightmap[xLow][yLow]+(yHigh-y)*heightmap[xLow][yHigh]);
+	} else if (yLow == yHigh) {
+		return ((x-xLow)*heightmap[xLow][yLow]+(xHigh-x)*heightmap[xHigh][yLow]);
+	}
+
+	Vector4 AB = B - A;
+	Vector4 AC = C - A;
+
+	Vector4 normal = AC.Cross(AB);
+	normal.NormaliseSelf();
+
+	Vector4 lookUp(0.0f, 1.0f, 0.0f, 1.0f);
+
+	Vector4 diff = A - Vector4(x, 0.0f, y, 1.0f);
+
+	float height = diff.Dot3(normal)/lookUp.Dot3(normal);
+
+	return height;
 }
 
 void Heightmap::GenHeightmap()
