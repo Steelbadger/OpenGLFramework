@@ -3,7 +3,8 @@
 
 
 Controller::Controller(GameObject* p):
-	parent(p)
+	parent(p),
+	sensitivity(0.2f)
 {
 	for (int i = 0; i < 256; i++) {
 		keyMap[i] = 0;
@@ -18,23 +19,23 @@ Controller::~Controller(void)
 void Controller::CheckInputAndAct()
 {
 	if (input.ReportKeyState(keyMap['W']))
-		parent->MoveLocalDeltaZ(0.04f);
+		parent->MoveLocalDeltaZ(sensitivity);
 	if(input.ReportKeyState(keyMap['S']))
-		parent->MoveLocalDeltaZ(-0.04f);
+		parent->MoveLocalDeltaZ(-sensitivity);
 
 	if (input.GetMouseR()) {
 		parent->RotateLocalDeltaY(-(float)input.GetMouseDX()/1000.0);
 		parent->RotateLocalDeltaX(-(float)input.GetMouseDY()/1000.0);
 		if (input.ReportKeyState(keyMap['D']))
-			parent->MoveLocalDeltaX(0.03f);
+			parent->MoveLocalDeltaX(sensitivity);
 		if (input.ReportKeyState(keyMap['A']))
-			parent->MoveLocalDeltaX(-0.03f);
+			parent->MoveLocalDeltaX(-sensitivity);
 		parent->OrientateAxesToGlobalUp();
 	} else {
 		if (input.ReportKeyState(keyMap['D']))
-			parent->RotateLocalDeltaY(-0.03f);
+			parent->RotateLocalDeltaY(-sensitivity/5);
 		if (input.ReportKeyState(keyMap['A']))
-			parent->RotateLocalDeltaY(0.03f);
+			parent->RotateLocalDeltaY(sensitivity/5);
 		parent->OrientateAxesToGlobalUp();
 	}
 }

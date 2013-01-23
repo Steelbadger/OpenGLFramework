@@ -122,7 +122,7 @@ void WindowWizard::ResizeGLWindow(int width, int height)// Initialize The GL Win
 	glLoadIdentity();
 
 	//calculate aspect ratio
-	gluPerspective(fieldOfView,(GLfloat)width/(GLfloat)height, 1 ,150.0f);
+	gluPerspective(fieldOfView,(GLfloat)width/(GLfloat)height, 1 ,1000.0f);
 
 	glMatrixMode(GL_MODELVIEW);// Select The Modelview Matrix
 	glLoadIdentity();// Reset The Modelview Matrix

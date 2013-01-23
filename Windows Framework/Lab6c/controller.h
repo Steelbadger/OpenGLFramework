@@ -12,5 +12,6 @@ public:
 private:
 	GameObject* parent;
 	char keyMap[256];
+	const float sensitivity;
 };
 

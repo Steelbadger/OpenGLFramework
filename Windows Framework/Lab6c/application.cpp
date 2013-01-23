@@ -17,6 +17,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	window.WindowCreate("OpenGL Framework", 1000, 500, (WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN), 0, hInstance);
 	window.InitializeGraphics(45.0f);
 	window.SetCursorToCentre();
+	player.SetLocation(50.0f, 30.0f, 50.0f);
 
 	player.SetCameraTargetWindow(&window);
 
@@ -25,6 +26,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
 	lastTime = time(NULL);
+//	srand(lastTime);
 	nbFrames = 0;
 
 }
@@ -71,13 +73,13 @@ void Application::MainLoop()
 	glTranslatef(-25.0f, 0.0f, -25.0f);
 	
 
-	for (int i = 0; i < 24; i++) {
-		for (int j = 0; j < 24; j++) {
-			glTranslatef(2.0f, 0.0f, 0.0f);
-			cube->Draw();
-		}
-		glTranslatef(-48.0f, 0.0f, 2.0f);
-	}	
+	//for (int i = 0; i < 24; i++) {
+	//	for (int j = 0; j < 24; j++) {
+	//		glTranslatef(2.0f, 0.0f, 0.0f);
+	//		cube->Draw();
+	//	}
+	//	glTranslatef(-48.0f, 0.0f, 2.0f);
+	//}	
 	
 	window.FlipBuffers();
 }
