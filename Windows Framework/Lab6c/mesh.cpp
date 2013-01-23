@@ -1,6 +1,7 @@
 #include "mesh.h"
 #include "heightmap.h"
 #include "myvector4.h"
+#include <iostream>
 
 
 Mesh::Mesh(void)
@@ -14,7 +15,7 @@ Mesh::~Mesh(void)
 
 void Mesh::Create()
 {
-	Heightmap heightmap = Heightmap(8);
+	Heightmap heightmap = Heightmap(7);
 
 	float ybase = -0.5f;
 	float xbase = -0.5f;
@@ -124,6 +125,8 @@ void Mesh::SmoothNormals()
 	knownNormals.resize(verts.size());
 	smoothedNormals.resize(verts.size());
 
+	int counter = 0;
+
 	for (int i = 0; i < checkedMap.size(); i++) {
 		checkedMap[i] = false;
 	}
@@ -140,6 +143,7 @@ void Mesh::SmoothNormals()
 					averagedNode += Vector4(normals[j]);
 				}
 			}
+			counter++;
 			averagedNode /= found.size();
 			for (int j = 0; j < found.size(); j++) {
 				smoothedNormals[found[j]] = averagedNode;
@@ -148,5 +152,7 @@ void Mesh::SmoothNormals()
 	}
 
 	normals = smoothedNormals;
+	std::cout << "Unsmoothed " << verts.size() << " normals." << std::endl;
+	std::cout << "Smoothed " << counter << " normals." << std::endl;
 
 }

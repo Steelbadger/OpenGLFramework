@@ -22,6 +22,6 @@ private:
 	int squareSize;
 
 	static const int SIZE = 256;
-	static const int MAGNITUDE = 100;
+	static const int MAGNITUDE = 200;
 };
 
