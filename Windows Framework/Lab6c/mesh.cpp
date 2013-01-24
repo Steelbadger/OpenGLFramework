@@ -5,7 +5,7 @@
 
 
 Mesh::Mesh(void):
-	heightmap(7)
+	heightmap(9)
 {
 }
 
@@ -19,16 +19,24 @@ void Mesh::Create()
 	float ybase = -0.5f;
 	float xbase = -0.5f;
 
+	heightmap.Initialise();
+
 	float height = 0;
-
-	height = heightmap.GetFloatHeight(12.0f, 13.0f);
-	height = heightmap.GetFloatHeight(12.0001f, 13.0001f);
-	height = heightmap.GetFloatHeight(11.9999f, 12.9999f);
-
 
 	int size = heightmap.GetSize();
 
 	float step = 1.0f/(size-1);
+
+	//for (float i = 0; i < size-1; i++) {
+	//	for (float j = 0; j < size-1; j++) {
+	//		verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j), -0.5f + j*1.0f));
+	//		verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f));
+	//		verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, 1+j), 0.5f + j*1.0f));
+	//		verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f));
+	//		verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j),-0.5f + j*1.0f));
+	//		verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, j), -0.5f + j*1.0f));
+	//	}
+	//}
 
 	for (float i = 0; i < size-1; i++) {
 		for (float j = 0; j < size-1; j++) {
@@ -38,25 +46,32 @@ void Mesh::Create()
 			verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f));
 			verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j),-0.5f + j*1.0f));
 			verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, j), -0.5f + j*1.0f));
+
+			normals.push_back(heightmap.GetNormal(i, j));
+			normals.push_back(heightmap.GetNormal(1+i, 1+j));
+			normals.push_back(heightmap.GetNormal(i, 1+j));
+			normals.push_back(heightmap.GetNormal(1+i, 1+j));
+			normals.push_back(heightmap.GetNormal(i, j));
+			normals.push_back(heightmap.GetNormal(1+i, j));
 		}
 	}
 
-	for (float i = 0; i < size-1; i++) {
-		for (float j = 0; j < size-1; j++) {
-			for (int k = 0; k < 3 ; k++) {
-				normals.push_back(CalcNormal(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j), -0.5f + j*1.0f)
-											,Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f)
-											,Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, 1+j), 0.5f + j*1.0f)));
-			}
-			for (int k = 0; k < 3 ; k++) {
-				normals.push_back(CalcNormal(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f)
-											,Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j),-0.5f + j*1.0f)
-											,Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, j), -0.5f + j*1.0f)));
-			}
-		}
-	}
+	//for (float i = 0; i < size-1; i++) {
+	//	for (float j = 0; j < size-1; j++) {
+	//		for (int k = 0; k < 3 ; k++) {
+	//			normals.push_back(CalcNormal(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j), -0.5f + j*1.0f)
+	//										,Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f)
+	//										,Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, 1+j), 0.5f + j*1.0f)));
+	//		}
+	//		for (int k = 0; k < 3 ; k++) {
+	//			normals.push_back(CalcNormal(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f)
+	//										,Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j),-0.5f + j*1.0f)
+	//										,Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, j), -0.5f + j*1.0f)));
+	//		}
+	//	}
+	//}
 
-	SmoothNormals();
+	//SmoothNormals();
 
 	for (int i = 0; i < size*size; i++) {
 		texCoords.push_back(Vector2(0.0f, 1.0f));

@@ -26,6 +26,14 @@ bool Vector3::operator ==(const Vector3 & rhs) const
 	return ((x == rhs.x) && (y == rhs.y) && (z == rhs.z));
 }
 
+Vector3 & Vector3::operator +=(const Vector3 &rhs)
+{
+	x += rhs.x;
+	y += rhs.y;
+	z += rhs.z;
+
+	return *this;
+}
 
 Vector3::~Vector3(void)
 {

@@ -13,6 +13,7 @@ public:
 
 
 	bool operator==(const Vector3 & rhs) const;
+	Vector3 & operator+=(const Vector3 & rhs);
 
 	float x, y, z;
 };

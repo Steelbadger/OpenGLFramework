@@ -13,11 +13,12 @@ public:
 
 	void Update();
 	void SetCameraTargetWindow(WindowWizard* window);
+	Controller controller;
+
 
 private:
 	SphereCollider collider;
 	CameraModule camera;
-	Controller controller;
 	CameraController camController;
 };
 

@@ -8,10 +8,11 @@ public:
 
 	void CheckInputAndAct();
 	void SetKeyMap(char KeyToMap, char KeyToMapTo);
+	void SetSensitivity(float s){sensitivity = s;}
 
 private:
 	GameObject* parent;
 	char keyMap[256];
-	const float sensitivity;
+	float sensitivity;
 };
 

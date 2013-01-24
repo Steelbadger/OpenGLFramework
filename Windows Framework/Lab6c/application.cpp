@@ -13,7 +13,7 @@ Application::~Application(void)
 
 void Application::Initialize(HINSTANCE hInstance)
 {
-	srand(unsigned int("herpdederp"));
+	srand(651);
 	float rot = 0.0;
 	window.WindowCreate("OpenGL Framework", 1000, 500, (WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN), 0, hInstance);
 	window.InitializeGraphics(45.0f);
@@ -23,8 +23,15 @@ void Application::Initialize(HINSTANCE hInstance)
 	player.SetCameraTargetWindow(&window);
 
 	cube = new CubeArray(1,1,1, "Crate.tga");
+
+	double myTimer = time(NULL);
+
 	ground.Create();
+
+	myTimer = time(NULL) - myTimer;
+
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
+	std::cout << std::endl << "Time to Initialise: " << myTimer << "ms";
 
 	lastTime = time(NULL);
 	nbFrames = 0;
@@ -68,6 +75,11 @@ void Application::MainLoop()
 
 	if (input.ReportKeyPress('T')) {
 		walking = !walking;
+		if (walking == true){
+			player.controller.SetSensitivity(0.1f);
+		} else {
+			player.controller.SetSensitivity(0.5f);
+		}
 	}
 
 	if (input.ReportKeyPress('F')) {
