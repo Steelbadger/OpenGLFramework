@@ -66,7 +66,7 @@ void Mesh::Create()
 		texCoords.push_back(Vector2(0.0f, 1.0f));
 		texCoords.push_back(Vector2(1.0f, 1.0f));
 	}
-	CreateGLTexture("tiles.tga", texture);
+	CreateGLTexture("grass.tga", texture);
 	int numVerts = size*size*6;
 
 	displayList = glGenLists(1);
