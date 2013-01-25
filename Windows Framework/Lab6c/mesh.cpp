@@ -1,11 +1,13 @@
 #include "mesh.h"
 #include "heightmap.h"
 #include "myvector4.h"
+#include "my4x4matrix.h"
 #include <iostream>
 
 
-Mesh::Mesh(void):
-	heightmap(9)
+Mesh::Mesh(double s):
+	heightmap(9),
+		squareSize(s)
 {
 }
 
@@ -16,62 +18,51 @@ Mesh::~Mesh(void)
 
 void Mesh::Create()
 {
-	float ybase = -0.5f;
-	float xbase = -0.5f;
-
 	heightmap.Initialise();
 
 	float height = 0;
 
 	int size = heightmap.GetSize();
 
-	float step = 1.0f/(size-1);
+	float step = squareSize/(size-1);
 
-	//for (float i = 0; i < size-1; i++) {
-	//	for (float j = 0; j < size-1; j++) {
-	//		verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j), -0.5f + j*1.0f));
-	//		verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f));
-	//		verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, 1+j), 0.5f + j*1.0f));
-	//		verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f));
-	//		verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j),-0.5f + j*1.0f));
-	//		verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, j), -0.5f + j*1.0f));
-	//	}
-	//}
+	Matrix4x4 scaleMatrix(Matrix4x4::IDENTITY);
+	scaleMatrix.Scale(1/step, 1.0f, 1/step);
 
 	for (float i = 0; i < size-1; i++) {
 		for (float j = 0; j < size-1; j++) {
-			verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j), -0.5f + j*1.0f));
-			verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f));
-			verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, 1+j), 0.5f + j*1.0f));
-			verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f));
-			verts.push_back(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j),-0.5f + j*1.0f));
-			verts.push_back(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, j), -0.5f + j*1.0f));
+			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, j), j*step));
+			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, 1+j), step + j*step));
+			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, 1+j), step + j*step));
+			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, 1+j), step + j*step));
+			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, j),j*step));
+			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, j), j*step));
 
-			normals.push_back(heightmap.GetNormal(i, j));
-			normals.push_back(heightmap.GetNormal(1+i, 1+j));
-			normals.push_back(heightmap.GetNormal(i, 1+j));
-			normals.push_back(heightmap.GetNormal(1+i, 1+j));
-			normals.push_back(heightmap.GetNormal(i, j));
-			normals.push_back(heightmap.GetNormal(1+i, j));
+			Vector4 normalA, normalB, normalC, normalD;
+
+			normalA = heightmap.GetNormal(i,j);
+			normalB = heightmap.GetNormal(1+i, 1+j);
+			normalC = heightmap.GetNormal(i, 1+j);
+			normalD = heightmap.GetNormal(1+i, j);
+
+			normalA = scaleMatrix * normalA;
+			normalB = scaleMatrix * normalB;
+			normalC = scaleMatrix * normalC;
+			normalD = scaleMatrix * normalD;
+
+			normalA.NormaliseSelf();
+			normalB.NormaliseSelf();
+			normalC.NormaliseSelf();
+			normalD.NormaliseSelf();
+
+			normals.push_back(normalA);
+			normals.push_back(normalB);
+			normals.push_back(normalC);
+			normals.push_back(normalB);
+			normals.push_back(normalA);
+			normals.push_back(normalD);
 		}
 	}
-
-	//for (float i = 0; i < size-1; i++) {
-	//	for (float j = 0; j < size-1; j++) {
-	//		for (int k = 0; k < 3 ; k++) {
-	//			normals.push_back(CalcNormal(Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j), -0.5f + j*1.0f)
-	//										,Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f)
-	//										,Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, 1+j), 0.5f + j*1.0f)));
-	//		}
-	//		for (int k = 0; k < 3 ; k++) {
-	//			normals.push_back(CalcNormal(Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, 1+j), 0.5f + j*1.0f)
-	//										,Vector3(-0.5f + i*1.0f, heightmap.GetHeight(i, j),-0.5f + j*1.0f)
-	//										,Vector3(0.5f + i*1.0f, heightmap.GetHeight(1+i, j), -0.5f + j*1.0f)));
-	//		}
-	//	}
-	//}
-
-	//SmoothNormals();
 
 	for (int i = 0; i < size*size; i++) {
 		texCoords.push_back(Vector2(0.0f, 1.0f));
@@ -100,6 +91,14 @@ void Mesh::Create()
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEndList();
 
+}
+
+float Mesh::GetHeight(float x, float z)
+{
+	int size = heightmap.GetSize();
+	float step = squareSize/(size-1);
+
+	return (heightmap.GetFloatHeight(x/step,z/step));
 }
 
 void Mesh::CreateFromSource(std::vector<Vector3> &vertices)

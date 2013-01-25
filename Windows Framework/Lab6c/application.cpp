@@ -2,7 +2,8 @@
 #include <iostream>
 #include <time.h>
 
-Application::Application(void)
+Application::Application(void):
+	ground(1500.0f)
 {
 }
 
@@ -13,11 +14,13 @@ Application::~Application(void)
 
 void Application::Initialize(HINSTANCE hInstance)
 {
-	srand(651);
+	srand(51816);
 	float rot = 0.0;
 	window.WindowCreate("OpenGL Framework", 1000, 500, (WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN), 0, hInstance);
 	window.InitializeGraphics(45.0f);
 	window.SetCursorToCentre();
+
+	glewInit();
 	player.SetLocation(50.0f, 30.0f, 50.0f);
 
 	player.SetCameraTargetWindow(&window);
@@ -31,6 +34,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	myTimer = time(NULL) - myTimer;
 
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
+	std::cout << "OpenGL 4.2 Initialised: " << 	GLEW_VERSION_4_2 << std::endl;
 	std::cout << std::endl << "Time to Initialise: " << myTimer << "ms";
 
 	lastTime = time(NULL);
@@ -58,6 +62,8 @@ void Application::MainLoop()
 
 	window.PrepareForDrawing();
 	player.InputUpdate();
+
+
 
 	player.CheckGroundCollision(ground);
 

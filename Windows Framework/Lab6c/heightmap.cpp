@@ -70,7 +70,7 @@ float Heightmap::GetFloatHeight(float x, float y)
 
 	Vector4 A, B, C;
 
-	if ((y-yLow) > 1.0f-(x-xLow)) {
+	if ((y-yLow) < (x-xLow)) {
 		A = Vector3(xLow, heightmap[xLow][yLow], yLow);
 		B = Vector3(xHigh, heightmap[xHigh][yHigh], yHigh);
 		C = Vector3(xHigh, heightmap[xHigh][yLow], yLow);
@@ -115,7 +115,7 @@ float Heightmap::GetRelativeFloatHeight(float x, float y)
 
 	Vector4 A, B, C;
 
-	if (y > 1.0f-x) {
+	if ((y-yLow) < (x-xLow)) {
 		A = Vector3(xLow, heightmap[xLow][yLow], yLow);
 		B = Vector3(xHigh, heightmap[xHigh][yHigh], yHigh);
 		C = Vector3(xHigh, heightmap[xHigh][yLow], yLow);

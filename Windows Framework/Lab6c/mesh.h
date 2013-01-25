@@ -13,14 +13,14 @@
 class Mesh
 {
 public:
-	Mesh(void);
+	Mesh(double size);
 	~Mesh(void);
 
 	void Create();
 	void CreateFromSource(std::vector<Vector3> &vertices);
 	void Draw();
 
-	float GetHeight(float x, float z){return heightmap.GetFloatHeight(x, z);}
+	float GetHeight(float x, float z);
 
 	GLuint texture;
 
@@ -35,5 +35,7 @@ private:
 
 	Vector3 CalcNormal(Vector3 A, Vector3 B, Vector3 C);
 	void SmoothNormals();
+
+	double squareSize;
 };
 

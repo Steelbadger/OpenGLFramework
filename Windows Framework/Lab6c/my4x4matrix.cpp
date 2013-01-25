@@ -142,6 +142,15 @@ void Matrix4x4::RotationAroundVectorThroughZero(Vector4 Vector, float angle)
 	elem[2][2] = g*g*c1+c;
 }
 
+void Matrix4x4::Scale(float xf, float yf, float zf)
+{
+	memcpy(elem, IDENTITY.elem, sizeof(float) * 16);
+
+	elem[0][0] = xf;
+	elem[1][1] = yf;
+	elem[2][2] = zf;
+}
+
 void Matrix4x4::LookAt(const Vector4 & vFrom, const Vector4 & vTo, const Vector4 & vUp)
 {
 	Vector4 vZ = Normalise(vFrom - vTo);

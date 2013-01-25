@@ -74,6 +74,7 @@
     <ClCompile Include="collider.cpp" />
     <ClCompile Include="controller.cpp" />
     <ClCompile Include="gameobject.cpp" />
+    <ClCompile Include="glew.c" />
     <ClCompile Include="heightmap.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -97,6 +98,7 @@
     <ClInclude Include="collider.h" />
     <ClInclude Include="controller.h" />
     <ClInclude Include="gameobject.h" />
+    <ClInclude Include="glew.h" />
     <ClInclude Include="heightmap.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="mesh.h" />
@@ -110,6 +112,7 @@
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="tex.h" />
+    <ClInclude Include="wglew.h" />
     <ClInclude Include="worldmap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

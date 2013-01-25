@@ -21,6 +21,8 @@ public:
 	void RotationZ(float fAngle);
 	void RotationAroundVectorThroughZero(Vector4 Vector, float angle);
 
+	void Scale(float xScale, float yScale, float zScale);
+
 	void DumpMatrix4x4(char * s = NULL);
 
 	void LookAt(const Vector4 & vFrom,
