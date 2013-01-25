@@ -69,13 +69,13 @@ float Heightmap::GetFloatHeight(float x, float y)
 	Vector4 A, B, C;
 
 	if (y > 1.0f-x) {
-		A = Vector3(xHigh, heightmap[xHigh][yLow], yLow);
-		B = Vector3(xLow, heightmap[xLow][yHigh], yHigh);
-		C = Vector3(xHigh, heightmap[xHigh][yHigh], yHigh);
+		A = Vector3(xLow, heightmap[xLow][yLow], yLow);
+		B = Vector3(xHigh, heightmap[xHigh][yHigh], yHigh);
+		C = Vector3(xHigh, heightmap[xHigh][yLow], yLow);
 	} else {
-		A = Vector3(xHigh, heightmap[xHigh][yLow], yLow);
-		B = Vector3(xLow, heightmap[xLow][yLow], yLow);
-		C = Vector3(xLow, heightmap[xLow][yHigh], yHigh);		
+		A = Vector3(xLow, heightmap[xLow][yLow], yLow);
+		B = Vector3(xLow, heightmap[xLow][yHigh], yHigh);
+		C = Vector3(xHigh, heightmap[xHigh][yHigh], yHigh);		
 	}
 
 	Vector4 AB = B - A;
@@ -114,13 +114,13 @@ float Heightmap::GetRelativeFloatHeight(float x, float y)
 	Vector4 A, B, C;
 
 	if (y > 1.0f-x) {
-		A = Vector3(xHigh, heightmap[xHigh][yLow], yLow);
-		B = Vector3(xLow, heightmap[xLow][yHigh], yHigh);
-		C = Vector3(xHigh, heightmap[xHigh][yHigh], yHigh);
+		A = Vector3(xLow, heightmap[xLow][yLow], yLow);
+		B = Vector3(xHigh, heightmap[xHigh][yHigh], yHigh);
+		C = Vector3(xHigh, heightmap[xHigh][yLow], yLow);
 	} else {
-		A = Vector3(xHigh, heightmap[xHigh][yLow], yLow);
-		B = Vector3(xLow, heightmap[xLow][yLow], yLow);
-		C = Vector3(xLow, heightmap[xLow][yHigh], yHigh);		
+		A = Vector3(xLow, heightmap[xLow][yLow], yLow);
+		B = Vector3(xLow, heightmap[xLow][yHigh], yHigh);
+		C = Vector3(xHigh, heightmap[xHigh][yHigh], yHigh);		
 	}
 
 	if (xLow == xHigh && yLow == yHigh) {

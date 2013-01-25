@@ -76,7 +76,7 @@ void Application::MainLoop()
 	if (input.ReportKeyPress('T')) {
 		walking = !walking;
 		if (walking == true){
-			player.controller.SetSensitivity(0.1f);
+			player.controller.SetSensitivity(0.02f);
 		} else {
 			player.controller.SetSensitivity(0.5f);
 		}
