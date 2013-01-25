@@ -27,5 +27,7 @@ private:
 	std::map<GLuint, int> renderListMap;
 	std::map<GLuint, int> transparentListMap;
 	std::map<GLuint, int> inactiveListMap;
+
+	std::map<int, GLuint> UniqueIDToDListMap;
 };
 

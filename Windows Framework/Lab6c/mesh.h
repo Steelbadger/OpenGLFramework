@@ -25,11 +25,15 @@ public:
 
 	GLuint GetTexture(){return texture;}
 	GLuint GetDisplayList(){return displayList;}
+	int GetUniqueID(){return UID;}
 
 private:
 	std::vector<Vector3> verts;
 	std::vector<Vector3> normals;
 	std::vector<Vector2> texCoords;
+
+
+	int UID;
 
 	GLuint texture;
 	GLuint displayList;
@@ -40,5 +44,7 @@ private:
 	void SmoothNormals();
 
 	double squareSize;
+
+	static int counter;
 };
 

@@ -5,9 +5,12 @@
 #include <iostream>
 
 
+int Mesh::counter=0;
+
 Mesh::Mesh(double s):
 	heightmap(9),
-		squareSize(s)
+		squareSize(s),
+		UID(counter++)
 {
 }
 
