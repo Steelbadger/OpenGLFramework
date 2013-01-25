@@ -39,9 +39,6 @@
     <ClCompile Include="my4x4matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,9 +60,6 @@
     <ClCompile Include="heightmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="worldmap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="controller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -79,6 +73,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="glew.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -107,9 +104,6 @@
     <ClInclude Include="my4x4matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -131,9 +125,6 @@
     <ClInclude Include="heightmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="worldmap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -150,6 +141,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="wglew.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

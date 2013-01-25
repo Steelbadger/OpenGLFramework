@@ -6,7 +6,6 @@
 #include "Primitives.h"
 #include "mesh.h"
 #include "mywindow.h"
-#include "camera.h"
 #include "player.h"
 
 class Application

@@ -21,14 +21,17 @@ public:
 	void Draw();
 
 	float GetHeight(float x, float z);
+	void SetTexture(GLuint);
 
-	GLuint texture;
+	GLuint GetTexture(){return texture;}
+	GLuint GetDisplayList(){return displayList;}
 
 private:
 	std::vector<Vector3> verts;
 	std::vector<Vector3> normals;
 	std::vector<Vector2> texCoords;
 
+	GLuint texture;
 	GLuint displayList;
 
 	Heightmap heightmap;

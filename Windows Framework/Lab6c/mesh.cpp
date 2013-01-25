@@ -72,7 +72,12 @@ void Mesh::Create()
 		texCoords.push_back(Vector2(0.0f, 1.0f));
 		texCoords.push_back(Vector2(1.0f, 1.0f));
 	}
-	CreateGLTexture("grass.tga", texture);
+
+	GLuint tex;
+	CreateGLTexture("grass.tga", tex);
+
+	texture = tex;
+
 	int numVerts = size*size*6;
 
 	displayList = glGenLists(1);
@@ -118,6 +123,11 @@ void Mesh::CreateFromSource(std::vector<Vector3> &vertices)
 void Mesh::Draw()
 {
 	glCallList(displayList);
+}
+
+void Mesh::SetTexture(GLuint t)
+{
+	texture = t;
 }
 
 Vector3 Mesh::CalcNormal(Vector3 pointA, Vector3 pointB, Vector3 pointC)

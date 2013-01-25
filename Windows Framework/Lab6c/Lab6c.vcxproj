@@ -68,7 +68,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
-    <ClCompile Include="camera.cpp" />
     <ClCompile Include="cameracontroller.cpp" />
     <ClCompile Include="cameramodule.cpp" />
     <ClCompile Include="collider.cpp" />
@@ -87,12 +86,11 @@
     <ClCompile Include="mywindow.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="Primitives.cpp" />
+    <ClCompile Include="renderer.cpp" />
     <ClCompile Include="tex.cpp" />
-    <ClCompile Include="worldmap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
-    <ClInclude Include="camera.h" />
     <ClInclude Include="cameracontroller.h" />
     <ClInclude Include="cameramodule.h" />
     <ClInclude Include="collider.h" />
@@ -110,10 +108,10 @@
     <ClInclude Include="mywindow.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="Primitives.h" />
+    <ClInclude Include="renderer.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="tex.h" />
     <ClInclude Include="wglew.h" />
-    <ClInclude Include="worldmap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
