@@ -5,7 +5,7 @@ CameraModule::CameraModule(GameObject* parent):
 	parent(parent),
 	fieldOfView(45.0f),
 	nearClipPlane(0.1f),
-	farClipPlane(200.0f)
+	farClipPlane(300.0f)
 {
 }
 

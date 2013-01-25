@@ -35,7 +35,7 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	lastTime = time(NULL);
 	nbFrames = 0;
-	walking = false;
+	wireframe = false;
 	framerateLogging = false;
 
 }
@@ -57,29 +57,17 @@ void Application::MainLoop()
 	GLfloat Light_Position[]= {3.0f, 3.0f, 0.0f, 1.0f};
 
 	window.PrepareForDrawing();
+	player.InputUpdate();
+
+	player.CheckGroundCollision(ground);
 
 	player.Update();
-
-	if (walking) {
-		if (player.GetPosition().y < 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z) || player.GetPosition().y > 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z)) {
-			player.SetLocation(player.GetPosition().x, 2.0f+ground.GetHeight(player.GetPosition().x, player.GetPosition().z), player.GetPosition().z);
-		}
-	}
 
 	input.Update();
 
 	if(input.ReportRMousePress()) {
 		window.SetCursorToCentre();
 		window.SetMouseLockedCentre();
-	}
-
-	if (input.ReportKeyPress('T')) {
-		walking = !walking;
-		if (walking == true){
-			player.controller.SetSensitivity(0.02f);
-		} else {
-			player.controller.SetSensitivity(0.5f);
-		}
 	}
 
 	if (input.ReportKeyPress('F')) {
@@ -89,6 +77,15 @@ void Application::MainLoop()
 	if (input.ReportKeyPress('L')) {
 		std::cout << std::endl << "Position: (" << player.GetPosition().x << ", "<< player.GetPosition().y << ", " << player.GetPosition().z << ")\t";
 		std::cout << "Forward Vector: (" << player.GetLocalZ().x << ", " << player.GetLocalZ().y << ", " << player.GetLocalZ().z << ")";
+	}
+
+	if (input.ReportKeyPress('I')) {
+		wireframe = !wireframe;
+		if (wireframe) {
+			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		} else {
+			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		}
 	}
 
 	if (input.ReportKeyPress(VK_ESCAPE))

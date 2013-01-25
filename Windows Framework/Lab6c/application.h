@@ -25,7 +25,7 @@ private:
 	double lastTime;
 	int nbFrames;
 	double currentTime;
-	bool walking;
+	bool wireframe;
 	bool framerateLogging;
 
 	CubeArray *cube;
