@@ -87,6 +87,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="Primitives.cpp" />
     <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="rigidbodymodule.cpp" />
     <ClCompile Include="tex.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +110,7 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="renderer.h" />
+    <ClInclude Include="rigidbodymodule.h" />
     <ClInclude Include="singleton.h" />
     <ClInclude Include="tex.h" />
     <ClInclude Include="wglew.h" />

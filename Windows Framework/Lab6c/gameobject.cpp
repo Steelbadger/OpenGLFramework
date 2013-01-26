@@ -155,3 +155,28 @@ Matrix4x4& GameObject::GetRotation()
 {
 	return rotation;
 }
+
+Collider* GameObject::GetCollider()
+{
+	return NULL;
+}
+
+CameraModule* GameObject::GetCamera()
+{
+	return NULL;
+}
+
+Rigidbody* GameObject::GetRigidbody()
+{
+	return NULL;
+}
+
+Mesh* GameObject::GetMesh()
+{
+	return NULL;
+}
+
+Controller* GameObject::GetController()
+{
+	return NULL;
+}

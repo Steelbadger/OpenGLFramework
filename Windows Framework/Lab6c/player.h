@@ -1,4 +1,5 @@
 #pragma once
+//#include "rigidbodymodule.h"
 #include "gameobject.h"
 #include "collider.h"
 #include "cameramodule.h"
@@ -20,6 +21,12 @@ public:
 
 	void CheckGroundCollision(Mesh &ground);
 
+	virtual Collider* GetCollider();
+	virtual CameraModule* GetCamera();
+	virtual Rigidbody* GetRigidbody();
+	virtual Mesh* GetMesh();
+	virtual Controller* GetController();
+
 
 private:
 	bool flying;
@@ -27,5 +34,6 @@ private:
 	SphereCollider collider;
 	CameraModule camera;
 	CameraController camController;
+	Rigidbody rigidbody;
 };
 

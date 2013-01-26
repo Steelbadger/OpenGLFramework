@@ -1,45 +1,32 @@
 #include "renderer.h"
 
 
-Renderer::Renderer(void)
+int RenderManager::UIDCOUNTER = 1;
+
+RenderManager::RenderManager(void)
 {
 }
 
 
-Renderer::~Renderer(void)
+RenderManager::~RenderManager(void)
 {
 }
 
-void Renderer::AddMeshToRenderer(Mesh m)
+void RenderManager::AddMeshToRenderer(Mesh m)
 {
-	renderList.push_back(m.GetDisplayList());
-	renderListMap[m.GetDisplayList()]=renderList.size()-1;
-
-	if (inactiveListMap.count(m.GetDisplayList())) {
-		inactiveListMap.erase(m.GetDisplayList());
-	}
 }
 
-void Renderer::RemoveMeshFromRenderer(Mesh m)
+void RenderManager::RemoveMeshFromRenderer(Mesh m)
 {
-	int index = renderListMap[m.GetDisplayList()];
-	std::vector<GLuint>::iterator it;
-	it = renderList.begin();
-	it += index;
-
-	renderList.erase(it);
-
-	inactiveList.push_back(m.GetDisplayList());
-	inactiveListMap[m.GetDisplayList()]=renderList.size()-1;
 }
 
-void Renderer::RenderMesh(Mesh m)
+void RenderManager::RenderMesh(int meshID)
 {
 
 
 }
 
-void Renderer::RenderAll()
+void RenderManager::RenderAll()
 {
 
 }

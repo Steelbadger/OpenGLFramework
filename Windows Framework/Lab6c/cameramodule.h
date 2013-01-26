@@ -1,11 +1,12 @@
 #pragma once
-#include "myvector4.h"
-#include "gameobject.h"
 #include "mywindow.h"
 #include <windows.h>
 #include <mmsystem.h>
 #include <gl/gl.h>
 #include <gl/glu.h>
+#include "myvector4.h"
+
+class GameObject;
 
 class CameraModule
 {

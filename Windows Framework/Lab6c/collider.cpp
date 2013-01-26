@@ -66,6 +66,12 @@ bool SphereCollider::IsColliding(OABBCollider &other)
 	return false;
 }
 
+bool SphereCollider::IsColliding(Mesh &other)
+{
+	return false;
+}
+
+
 AABBCollider::AABBCollider(float w, float h, float d, Vector4 &BasePosition):
 	Collider(BasePosition),
 	width(w),
@@ -127,6 +133,11 @@ bool AABBCollider::IsColliding(OABBCollider &other)
 	return false;
 }
 
+bool AABBCollider::IsColliding (Mesh &other)
+{
+	return false;
+}
+
 
 OABBCollider::OABBCollider(Vector4 &BasePosition):
 	Collider(BasePosition)
@@ -148,6 +159,11 @@ bool OABBCollider::IsColliding(AABBCollider &other)
 }
 
 bool OABBCollider::IsColliding(OABBCollider &other)
+{
+	return false;
+}
+
+bool OABBCollider::IsColliding(Mesh &other)
 {
 	return false;
 }

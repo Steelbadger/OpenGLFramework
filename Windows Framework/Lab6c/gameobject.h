@@ -1,6 +1,11 @@
 #pragma once
 #include "myvector4.h"
 #include "my4x4matrix.h"
+#include "collider.h"
+#include "cameramodule.h"
+#include "rigidbodymodule.h"
+#include "mesh.h"
+#include "controller.h"
 
 class GameObject
 {
@@ -34,16 +39,22 @@ public:
 
 	Matrix4x4& GetRotation();
 
+	virtual Collider* GetCollider();
+	virtual CameraModule* GetCamera();
+	virtual Rigidbody* GetRigidbody();
+	virtual Mesh* GetMesh();
+	virtual Controller* GetController();
+
+
+	static const Vector4 GLOBALX;
+	static const Vector4 GLOBALY;
+	static const Vector4 GLOBALZ;
 private:
 	Vector4 position;
 	Matrix4x4 rotation;
 	Vector4 localX;
 	Vector4 localY;
 	Vector4 localZ;
-
-	static const Vector4 GLOBALX;
-	static const Vector4 GLOBALY;
-	static const Vector4 GLOBALZ;
 };
 
 

@@ -2,16 +2,13 @@
 
 
 Player::Player(void):
-	collider(10.0f, GetPosition()),
+	collider(2.0f, GetPosition()),
 		controller(this),
 		camera(this),
 		camController(&camera),
-		flying(true)
+		flying(true),
+		rigidbody(this)
 {
-	controller.SetKeyMap('W', 'W');
-	controller.SetKeyMap('A', 'A');
-	controller.SetKeyMap('S', 'S');
-	controller.SetKeyMap('D', 'D');
 }
 
 
@@ -27,10 +24,13 @@ void Player::InputUpdate()
 		flying = !flying;
 		if (flying == false){
 			controller.SetSensitivity(0.1f);
+			rigidbody.SetActive();
 		} else {
 			controller.SetSensitivity(0.5f);
+			rigidbody.SetInactive();
 		}
 	}
+	rigidbody.Update();
 }
 
 
@@ -46,9 +46,33 @@ void Player::SetCameraTargetWindow(WindowWizard* window)
 
 void Player::CheckGroundCollision(Mesh &ground)
 {
-	if (!flying) {
-		if (GetPosition().y < 2.0f+ground.GetHeight(GetPosition().x, GetPosition().z) || GetPosition().y > 2.0f+ground.GetHeight(GetPosition().x, GetPosition().z)) {
-			SetLocation(GetPosition().x, 2.0f+ground.GetHeight(GetPosition().x, GetPosition().z), GetPosition().z);
-		}
+
+	if (rigidbody.CheckGroundCollision(ground)) {
+		controller.SetJumping(false);
 	}
+}
+
+Collider* Player::GetCollider()
+{
+	return &collider;
+}
+
+CameraModule* Player::GetCamera()
+{
+	return &camera;
+}
+
+Rigidbody* Player::GetRigidbody()
+{
+	return &rigidbody;
+}
+
+Controller* Player::GetController()
+{
+	return &controller;
+}
+
+Mesh* Player::GetMesh()
+{
+	return NULL;
 }

@@ -1,4 +1,5 @@
 #include "cameramodule.h"
+#include "gameobject.h"
 
 
 CameraModule::CameraModule(GameObject* parent):

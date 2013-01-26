@@ -1,5 +1,7 @@
 #pragma once
-#include "gameobject.h"
+
+class GameObject;
+
 class Controller
 {
 public:
@@ -7,12 +9,13 @@ public:
 	~Controller(void);
 
 	void CheckInputAndAct();
-	void SetKeyMap(char KeyToMap, char KeyToMapTo);
 	void SetSensitivity(float s){sensitivity = s;}
+	void SetJumping(bool j){jumping = j;}
 
 private:
 	GameObject* parent;
-	char keyMap[256];
 	float sensitivity;
+
+	bool jumping;
 };
 

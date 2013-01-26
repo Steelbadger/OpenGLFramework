@@ -1,6 +1,7 @@
 #pragma once
 #include "myvector4.h"
 #include <vector>
+#include "mesh.h"
 
 class AABBCollider;
 class OABBCollider;
@@ -21,6 +22,7 @@ public:
 	virtual bool IsColliding(SphereCollider &other) = 0;
 	virtual bool IsColliding(AABBCollider &other) = 0;
 	virtual bool IsColliding(OABBCollider &other) = 0;
+	virtual bool IsColliding(Mesh &other) = 0;
 	Collision GetCollision() {return collision;}
 	Vector4 *basePosition;
 protected:
@@ -41,6 +43,7 @@ public:
 	virtual bool IsColliding(SphereCollider &other);
 	virtual bool IsColliding(AABBCollider &other);
 	virtual bool IsColliding(OABBCollider &other);
+	virtual bool IsColliding(Mesh &other);
 
 	float radius;
 };
@@ -54,6 +57,7 @@ public:
 	virtual bool IsColliding(SphereCollider &other);
 	virtual bool IsColliding(AABBCollider &other);
 	virtual bool IsColliding(OABBCollider &other);
+	virtual bool IsColliding(Mesh &other);
 
 	float width, height, depth;
 };
@@ -67,5 +71,7 @@ public:
 	virtual bool IsColliding(SphereCollider &other);
 	virtual bool IsColliding(AABBCollider &other);
 	virtual bool IsColliding(OABBCollider &other);
+	virtual bool IsColliding(Mesh &other);
 };
+
 
