@@ -66,7 +66,7 @@ bool SphereCollider::IsColliding(OABBCollider &other)
 	return false;
 }
 
-bool SphereCollider::IsColliding(Mesh &other)
+bool SphereCollider::IsColliding(Terrain &other)
 {
 	return false;
 }
@@ -133,7 +133,7 @@ bool AABBCollider::IsColliding(OABBCollider &other)
 	return false;
 }
 
-bool AABBCollider::IsColliding (Mesh &other)
+bool AABBCollider::IsColliding (Terrain &other)
 {
 	return false;
 }
@@ -163,7 +163,7 @@ bool OABBCollider::IsColliding(OABBCollider &other)
 	return false;
 }
 
-bool OABBCollider::IsColliding(Mesh &other)
+bool OABBCollider::IsColliding(Terrain &other)
 {
 	return false;
 }

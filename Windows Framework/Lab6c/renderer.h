@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <queue>
-#include "mesh.h"
+#include "Terrain.h"
 
 class RenderManager
 {
@@ -11,12 +11,12 @@ public:
 	RenderManager(void);
 	~RenderManager(void);
 
-	int ImportMesh();
+	int ImportTerrain();
 
-	void AddMeshToRenderer(Mesh m);
-	void RemoveMeshFromRenderer(Mesh m);
+	void AddTerrainToRenderer(Terrain m);
+	void RemoveTerrainFromRenderer(Terrain m);
 
-	void RenderMesh(int MeshID);
+	void RenderTerrain(int TerrainID);
 	void RenderAll();
 
 private:

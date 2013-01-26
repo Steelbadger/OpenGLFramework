@@ -25,6 +25,7 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	player.SetCameraTargetWindow(&window);
 
+	player.InitSkyBox();
 	cube = new CubeArray(1,1,1, "Crate.tga");
 
 	double myTimer = time(NULL);
@@ -46,6 +47,7 @@ void Application::Initialize(HINSTANCE hInstance)
 
 void Application::MainLoop()
 {
+
 	double currentTime = time(NULL);
 	nbFrames++;
 	if ( currentTime - lastTime >= 1.0 ){
@@ -60,6 +62,7 @@ void Application::MainLoop()
 	GLfloat Light_Diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 	GLfloat Light_Position[]= {3.0f, 3.0f, 0.0f, 1.0f};
 
+	glLoadIdentity();
 	window.PrepareForDrawing();
 	player.InputUpdate();
 
@@ -101,25 +104,27 @@ void Application::MainLoop()
 	Light_Position[1] = player.GetPosition().y;
 	Light_Position[2] = player.GetPosition().z;
 
+//	glClear(GL_DEPTH_BUFFER_BIT);
+
 	glEnable(GL_LIGHTING);
 	glLightfv(GL_LIGHT1, GL_AMBIENT,  Light_Ambient);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE,  Light_Diffuse);
 	glLightfv(GL_LIGHT1, GL_POSITION, Light_Position);
 	glEnable(GL_LIGHT1);
 
+	player.DrawSkyBox();
+	glClear(GL_DEPTH_BUFFER_BIT);
 	ground.Draw();
 	
-
 	glTranslatef(-25.0f, 0.0f, -25.0f);
 	
+		for (int i = 0; i < 24; i++) {
+			for (int j = 0; j < 24; j++) {
+				glTranslatef(2.0f, 0.0f, 0.0f);
+				cube->Draw();
+			}
+			glTranslatef(-48.0f, 0.0f, 2.0f);
+		}	
 
-	for (int i = 0; i < 24; i++) {
-		for (int j = 0; j < 24; j++) {
-			glTranslatef(2.0f, 0.0f, 0.0f);
-			cube->Draw();
-		}
-		glTranslatef(-48.0f, 0.0f, 2.0f);
-	}	
-	
 	window.FlipBuffers();
 }

@@ -1,17 +1,15 @@
 #include "mesh.h"
-#include "heightmap.h"
-#include "myvector4.h"
-#include "my4x4matrix.h"
+#include <string>
 #include <iostream>
+#include "tex.h"
+#include "gameobject.h"
 
 
-int Mesh::counter=0;
-
-Mesh::Mesh(double s):
-	heightmap(9),
-		squareSize(s),
-		UID(counter++)
+Mesh::Mesh(const char* mPath, char* tPath, GameObject* p)
 {
+	meshPath = mPath;
+	texturePath = tPath;
+	parent = p;
 }
 
 
@@ -19,175 +17,149 @@ Mesh::~Mesh(void)
 {
 }
 
-void Mesh::Create()
+void Mesh::Initialise()
 {
-	heightmap.Initialise();
-
-	float height = 0;
-
-	int size = heightmap.GetSize();
-
-	float step = squareSize/(size-1);
-
-	Matrix4x4 scaleMatrix(Matrix4x4::IDENTITY);
-	scaleMatrix.Scale(1/step, 1.0f, 1/step);
-
-	for (float i = 0; i < size-1; i++) {
-		for (float j = 0; j < size-1; j++) {
-			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, j), j*step));
-			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, 1+j), step + j*step));
-			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, 1+j), step + j*step));
-			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, 1+j), step + j*step));
-			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, j),j*step));
-			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, j), j*step));
-
-			Vector4 normalA, normalB, normalC, normalD;
-
-			normalA = heightmap.GetNormal(i,j);
-			normalB = heightmap.GetNormal(1+i, 1+j);
-			normalC = heightmap.GetNormal(i, 1+j);
-			normalD = heightmap.GetNormal(1+i, j);
-
-			normalA = scaleMatrix * normalA;
-			normalB = scaleMatrix * normalB;
-			normalC = scaleMatrix * normalC;
-			normalD = scaleMatrix * normalD;
-
-			normalA.NormaliseSelf();
-			normalB.NormaliseSelf();
-			normalC.NormaliseSelf();
-			normalD.NormaliseSelf();
-
-			normals.push_back(normalA);
-			normals.push_back(normalB);
-			normals.push_back(normalC);
-			normals.push_back(normalB);
-			normals.push_back(normalA);
-			normals.push_back(normalD);
-		}
+	if (LoadMesh("skybox.obj") && LoadTexture("skybox.tga")) {
+		successfullBuild = true;
+	} else {
+		successfullBuild = false;
 	}
+	BuildDisplayList();
+}
 
-	for (int i = 0; i < size*size; i++) {
-		texCoords.push_back(Vector2(0.0f, 1.0f));
-		texCoords.push_back(Vector2(1.0f, 0.0f));
-		texCoords.push_back(Vector2(0.0f, 0.0f));
-		texCoords.push_back(Vector2(1.0f, 0.0f));
-		texCoords.push_back(Vector2(0.0f, 1.0f));
-		texCoords.push_back(Vector2(1.0f, 1.0f));
+bool Mesh::LoadMesh(const char* path)
+{
+	std::string fn = path;
+	if(fn.substr(fn.find_last_of(".") + 1) == "obj") {
+		return LoadObj(path);
+	} else {
+		return false;
 	}
+}
 
+void Mesh::Draw()
+{
+	glPushMatrix();
+		glTranslatef(parent->GetPosition().x, parent->GetPosition().y, parent->GetPosition().z);
+		glCallList(dList);
+	glPopMatrix();
+
+}
+
+bool Mesh::LoadTexture(char* path)
+{
 	GLuint tex;
-	CreateGLTexture("grass.tga", tex);
+	std::string fn = path;
+
+	if(fn.substr(fn.find_last_of(".") + 1) == "tga") {
+		CreateGLTexture(path, tex);
+	} else {
+		return false;
+	}
 
 	texture = tex;
+}
 
-	int numVerts = size*size*6;
+void Mesh::BuildDisplayList()
+{
+	dList = glGenLists(1);
 
-	displayList = glGenLists(1);
-
-	glNewList(displayList,GL_COMPILE);
+	glNewList(dList,GL_COMPILE);
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glVertexPointer(3, GL_FLOAT, 0, &verts[0]);
 		glNormalPointer(GL_FLOAT, 0, &normals[0]);
-		glTexCoordPointer(2,GL_FLOAT,0,&texCoords[0]);
-		glDrawArrays(GL_TRIANGLES, 0, numVerts);
+		glTexCoordPointer(2,GL_FLOAT,0,&uvs[0]);
+		glDrawArrays(GL_TRIANGLES, 0, triangles);
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEndList();
-
 }
 
-float Mesh::GetHeight(float x, float z)
+bool Mesh::LoadObj(const char* path)
 {
-	int size = heightmap.GetSize();
-	float step = squareSize/(size-1);
+	std::vector<unsigned int> vertIndices, uvIndices, normalIndices;
+	std::vector<Vector3> tempVerts;
+	std::vector<Vector3> tempNormals;
+	std::vector<Vector2> tempUVs;
 
-	return (heightmap.GetFloatHeight(x/step,z/step));
-}
-
-void Mesh::CreateFromSource(std::vector<Vector3> &vertices)
-{
-	verts = vertices;
-	displayList = glGenLists(1);
-
-	glNewList(displayList,GL_COMPILE);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glVertexPointer(3, GL_FLOAT, 0, &verts[0]);
-		glDrawArrays(GL_TRIANGLES, 0, 15000);
-		glDisableClientState(GL_VERTEX_ARRAY);
-	glEndList();
-}
-
-void Mesh::Draw()
-{
-	glCallList(displayList);
-}
-
-void Mesh::SetTexture(GLuint t)
-{
-	texture = t;
-}
-
-Vector3 Mesh::CalcNormal(Vector3 pointA, Vector3 pointB, Vector3 pointC)
-{
-	Vector4 A(pointA);
-	Vector4 B(pointB);
-	Vector4 C(pointC);
-
-	Vector4 AB = B - A;
-	Vector4 AC = C - A;
-
-	Vector4 Normal = AC.Cross(AB);
-	Normal.NormaliseSelf();
-	Vector3 output(Normal);
-
-	return output;
-
-}
-
-void Mesh::SmoothNormals()
-{
-	std::vector<Vector3> smoothedNormals;
-	std::vector<bool> checkedMap;
-	std::vector<Vector3> knownNormals;
-
-	checkedMap.resize(verts.size());
-	knownNormals.resize(verts.size());
-	smoothedNormals.resize(verts.size());
-
-	int counter = 0;
-
-	for (int i = 0; i < checkedMap.size(); i++) {
-		checkedMap[i] = false;
+	FILE * file = fopen(path, "r");
+	if( file == NULL ){
+		std::cout << "Cannot Open File: " << path << std::endl;
+		return false;
 	}
 
-	for (int i = 0; i < verts.size(); i++) {
-		if (checkedMap[i] == false) {
-			Vector3 searchNode = verts[i];
-			std::vector<int> found;
-			Vector4 averagedNode = Vector3(0.0f, 0.0f, 0.0f);
-			for (int j = 0; j < verts.size(); j++) {
-				if (verts[j] == searchNode) {
-					found.push_back(j);
-					checkedMap[j] = true;
-					averagedNode += Vector4(normals[j]);
-				}
+	while(true){
+
+		char lineHeader[128];
+		// read the first word of the line
+		int res = fscanf(file, "%s", lineHeader);
+		if (res == EOF)
+			break; // EOF = End Of File. Quit the loop.
+
+		// else : parse lineHeader
+		
+		if ( strcmp( lineHeader, "v" ) == 0 ){
+			Vector3 vertex;
+			fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
+			tempVerts.push_back(vertex);
+		}else if ( strcmp( lineHeader, "vt" ) == 0 ){
+			Vector2 uv;
+			fscanf(file, "%f %f\n", &uv.u, &uv.v );
+			tempUVs.push_back(uv);
+		}else if ( strcmp( lineHeader, "vn" ) == 0 ){
+			Vector3 normal;
+			fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z );
+			tempNormals.push_back(normal);
+		}else if ( strcmp( lineHeader, "f" ) == 0 ){
+			std::string vertex1, vertex2, vertex3;
+			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
+			if (matches != 9){
+				std::cout << "Cannot Read File: " << path << std::endl;
+				return false;
 			}
-			counter++;
-			averagedNode /= found.size();
-			for (int j = 0; j < found.size(); j++) {
-				smoothedNormals[found[j]] = averagedNode;
-			}
+			vertIndices.push_back(vertexIndex[0]);
+			vertIndices.push_back(vertexIndex[1]);
+			vertIndices.push_back(vertexIndex[2]);
+			uvIndices.push_back(uvIndex[0]);
+			uvIndices.push_back(uvIndex[1]);
+			uvIndices.push_back(uvIndex[2]);
+			normalIndices.push_back(normalIndex[0]);
+			normalIndices.push_back(normalIndex[1]);
+			normalIndices.push_back(normalIndex[2]);
+		}else{
+			// Probably a comment, eat up the rest of the line
+			char stupidBuffer[1000];
+			fgets(stupidBuffer, 1000, file);
 		}
+
 	}
 
-	normals = smoothedNormals;
-	std::cout << "Unsmoothed " << verts.size() << " normals." << std::endl;
-	std::cout << "Smoothed " << counter << " normals." << std::endl;
+	// For each vertex of each triangle
+	for( unsigned int i=0; i<vertIndices.size(); i++ ){
 
+		// Get the indices of its attributes
+		unsigned int vertexIndex = vertIndices[i];
+		unsigned int uvIndex = uvIndices[i];
+		unsigned int normalIndex = normalIndices[i];
+		
+		// Get the attributes thanks to the index
+		Vector3 vertex = tempVerts[vertexIndex-1];
+		Vector2 uv = tempUVs[uvIndex-1];
+		Vector3 normal = tempNormals[normalIndex-1];
+		
+		// Put the attributes in buffers
+		verts.push_back(vertex);
+		uvs.push_back(uv);
+		normals.push_back(normal);
+	
+	}
+
+	triangles = vertIndices.size();
+
+	return true;
 }

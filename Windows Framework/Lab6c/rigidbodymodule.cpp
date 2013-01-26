@@ -21,7 +21,7 @@ void Rigidbody::SetGravity(float g)
 	GRAVITY = g;
 }
 
-bool Rigidbody::CheckGroundCollision(Mesh &ground)
+bool Rigidbody::CheckGroundCollision(Terrain &ground)
 {
 	if(active) {
 		if (parent->GetPosition().y < 2.0f+ground.GetHeight(parent->GetPosition().x, parent->GetPosition().z)) {

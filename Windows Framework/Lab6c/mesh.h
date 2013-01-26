@@ -4,47 +4,43 @@
 #include <stdio.h>
 #include <mmsystem.h>
 #include <gl/gl.h>
-#include "tex.h"
 #include "myvector3.h"
 #include "myvector2.h"
-#include "heightmap.h"
+#include <string>
+
+class GameObject;
 
 
 class Mesh
 {
 public:
-	Mesh(double size);
+	Mesh(const char* meshPath, char* texturePath, GameObject* parent);
 	~Mesh(void);
 
-	void Create();
-	void CreateFromSource(std::vector<Vector3> &vertices);
+	void Initialise();
+
 	void Draw();
 
-	float GetHeight(float x, float z);
-	void SetTexture(GLuint);
-
-	GLuint GetTexture(){return texture;}
-	GLuint GetDisplayList(){return displayList;}
-	int GetUniqueID(){return UID;}
-
 private:
+	bool LoadMesh(const char* path);
+	bool LoadObj(const char* path);
+	void BuildDisplayList();
+
+	bool LoadTexture(char* path);
+
 	std::vector<Vector3> verts;
 	std::vector<Vector3> normals;
-	std::vector<Vector2> texCoords;
+	std::vector<Vector2> uvs;
 
-
-	int UID;
-
+	GLuint dList;
 	GLuint texture;
-	GLuint displayList;
 
-	Heightmap heightmap;
+	int triangles;
 
-	Vector3 CalcNormal(Vector3 A, Vector3 B, Vector3 C);
-	void SmoothNormals();
+	GameObject* parent;
+	std::string meshPath;
+	std::string texturePath;
 
-	double squareSize;
-
-	static int counter;
+	bool successfullBuild;
 };
 

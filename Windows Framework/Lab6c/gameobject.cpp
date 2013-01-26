@@ -171,7 +171,7 @@ Rigidbody* GameObject::GetRigidbody()
 	return NULL;
 }
 
-Mesh* GameObject::GetMesh()
+Terrain* GameObject::GetTerrain()
 {
 	return NULL;
 }

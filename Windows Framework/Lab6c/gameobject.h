@@ -4,7 +4,7 @@
 #include "collider.h"
 #include "cameramodule.h"
 #include "rigidbodymodule.h"
-#include "mesh.h"
+#include "Terrain.h"
 #include "controller.h"
 
 class GameObject
@@ -42,7 +42,7 @@ public:
 	virtual Collider* GetCollider();
 	virtual CameraModule* GetCamera();
 	virtual Rigidbody* GetRigidbody();
-	virtual Mesh* GetMesh();
+	virtual Terrain* GetTerrain();
 	virtual Controller* GetController();
 
 

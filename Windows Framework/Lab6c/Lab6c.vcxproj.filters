@@ -45,9 +45,6 @@
     <ClCompile Include="gameobject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="myvector3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -81,6 +78,12 @@
     <ClCompile Include="rigidbodymodule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Primitives.h">
@@ -111,9 +114,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gameobject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="myvector3.h">
@@ -150,6 +150,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="rigidbodymodule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="terrain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

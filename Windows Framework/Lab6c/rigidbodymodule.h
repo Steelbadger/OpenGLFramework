@@ -2,7 +2,7 @@
 #include "myvector4.h"
 
 class GameObject;
-class Mesh;
+class Terrain;
 
 class Rigidbody
 {
@@ -15,7 +15,7 @@ public:
 
 	void Update();
 
-	bool CheckGroundCollision(Mesh &ground);
+	bool CheckGroundCollision(Terrain &ground);
 	
 	Vector4 GetVelocity(){return velocity;}
 	void SetVelocity(Vector4 v){velocity = v;}

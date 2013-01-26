@@ -12,15 +12,15 @@ RenderManager::~RenderManager(void)
 {
 }
 
-void RenderManager::AddMeshToRenderer(Mesh m)
+void RenderManager::AddTerrainToRenderer(Terrain m)
 {
 }
 
-void RenderManager::RemoveMeshFromRenderer(Mesh m)
+void RenderManager::RemoveTerrainFromRenderer(Terrain m)
 {
 }
 
-void RenderManager::RenderMesh(int meshID)
+void RenderManager::RenderTerrain(int TerrainID)
 {
 
 

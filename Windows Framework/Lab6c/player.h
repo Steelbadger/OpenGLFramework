@@ -5,6 +5,7 @@
 #include "cameramodule.h"
 #include "controller.h"
 #include "cameracontroller.h"
+#include "Terrain.h"
 #include "mesh.h"
 
 class Player : public GameObject
@@ -19,14 +20,17 @@ public:
 	void SetCameraTargetWindow(WindowWizard* window);
 	Controller controller;
 
-	void CheckGroundCollision(Mesh &ground);
+	void CheckGroundCollision(Terrain &ground);
 
 	virtual Collider* GetCollider();
 	virtual CameraModule* GetCamera();
 	virtual Rigidbody* GetRigidbody();
-	virtual Mesh* GetMesh();
+	virtual Terrain* GetTerrain();
 	virtual Controller* GetController();
 
+	void InitSkyBox(){skybox.Initialise();}
+
+	void DrawSkyBox();
 
 private:
 	bool flying;
@@ -35,5 +39,7 @@ private:
 	CameraModule camera;
 	CameraController camController;
 	Rigidbody rigidbody;
+	Mesh skybox;
+
 };
 

@@ -7,7 +7,8 @@ Player::Player(void):
 		camera(this),
 		camController(&camera),
 		flying(true),
-		rigidbody(this)
+		rigidbody(this),
+		skybox("skybox.obj", "skybox.tga", this)
 {
 }
 
@@ -36,6 +37,8 @@ void Player::InputUpdate()
 
 void Player::Update()
 {
+
+
 	camera.Update();
 }
 
@@ -44,7 +47,7 @@ void Player::SetCameraTargetWindow(WindowWizard* window)
 	camera.SetTargetWindow(window);
 }
 
-void Player::CheckGroundCollision(Mesh &ground)
+void Player::CheckGroundCollision(Terrain &ground)
 {
 
 	if (rigidbody.CheckGroundCollision(ground)) {
@@ -72,7 +75,12 @@ Controller* Player::GetController()
 	return &controller;
 }
 
-Mesh* Player::GetMesh()
+Terrain* Player::GetTerrain()
 {
 	return NULL;
+}
+
+void Player::DrawSkyBox()
+{
+	skybox.Draw();
 }

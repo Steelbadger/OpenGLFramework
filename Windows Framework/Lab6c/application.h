@@ -4,7 +4,7 @@
 #include <mmsystem.h>
 #include "glew.h"
 #include "Primitives.h"
-#include "mesh.h"
+#include "Terrain.h"
 #include "mywindow.h"
 #include "player.h"
 
@@ -28,6 +28,6 @@ private:
 	bool framerateLogging;
 
 	CubeArray *cube;
-	Mesh ground;
+	Terrain ground;
 };
 
