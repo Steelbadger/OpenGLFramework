@@ -33,6 +33,7 @@ public:
 	bool ReportLMouseRelease() {return mouse.lRelease();}
 	bool ReportRMouseRelease() {return mouse.rRelease();}
 	bool WindowResized() {return windowResized;}
+	bool WindowMoved() {return windowMoved;}
 	int GetMouseDX(){return mouse.FrameDX();}
 	int GetMouseDY(){return mouse.FrameDY();}
 	void SetMouseLocked(int x, int y){mouse.SetLocked(x, y);}
@@ -46,6 +47,7 @@ private:
 	bool oldkey[256];
 
 	bool windowResized;
+	bool windowMoved;
 	Mouse mouse;
 
 	void KeyDown(UINT);

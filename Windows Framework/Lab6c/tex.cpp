@@ -17,7 +17,7 @@ GLuint texture_height ;
 GLuint texture_bpp;
 
 //TGA Loader
-bool LoadTGA( char *fname)
+bool LoadTGA(const char *fname)
 {
 	
 												// TGA image data
@@ -65,7 +65,7 @@ bool LoadTGA( char *fname)
 }
 
 
-bool LoadUncompressedTGA(char * filename, FILE * fTGA)	// Load an uncompressed TGA (note, much of this code is based on NeHe's 
+bool LoadUncompressedTGA(const char * filename, FILE * fTGA)	// Load an uncompressed TGA (note, much of this code is based on NeHe's 
 {																			// TGA Loading code nehe.gamedev.net)
 	if(fread(tga.header, sizeof(tga.header), 1, fTGA) == 0)					// Read TGA header
 	{										
@@ -137,7 +137,7 @@ bool LoadUncompressedTGA(char * filename, FILE * fTGA)	// Load an uncompressed T
 
 
 
-bool LoadCompressedTGA( char * filename, FILE * fTGA)		// Load COMPRESSED TGAs
+bool LoadCompressedTGA(const char * filename, FILE * fTGA)		// Load COMPRESSED TGAs
 { 
 	if(fread(tga.header, sizeof(tga.header), 1, fTGA) == 0)					// Attempt to read header
 	{
@@ -338,7 +338,7 @@ bool LoadCompressedTGA( char * filename, FILE * fTGA)		// Load COMPRESSED TGAs
 
 
 
-bool CreateGLTexture(char *name, GLuint & TexID )
+bool CreateGLTexture(const char *name, GLuint & TexID )
 {
 	LoadTGA(name);
 

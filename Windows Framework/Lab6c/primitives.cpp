@@ -26,19 +26,19 @@ Cube::Cube(float x, float y, float z, float w, float h, float d)
 	
 }
 
-Cube::Cube(float x, float y, float z, float w, float h, float d, char *TextureFile)
+Cube::Cube(float x, float y, float z, float w, float h, float d, const char *TextureFile)
 {
 	Initialise(x, y, z, w, h, d, TextureFile);
 }
 
-void Cube::Initialise(float x, float y, float z, float w, float h, float d, char *TextureFile)
+void Cube::Initialise(float x, float y, float z, float w, float h, float d, const char *TextureFile)
 {
 	CreateGLTexture(TextureFile, texture);
 	textured = true;
 	CreateCube(x, y, z, w, h, d);
 }
 
-void Cube::ApplyTexture(char *TextureFile)
+void Cube::ApplyTexture(const char *TextureFile)
 {
 	CreateGLTexture(TextureFile, texture);
 	textured = true;
@@ -169,13 +169,13 @@ CubeArray::CubeArray(float x, float y, float z)
 	Initialise(x, y, z);
 }
 
-CubeArray::CubeArray(float x, float y, float z, char *Tex)
+CubeArray::CubeArray(float x, float y, float z, const char *Tex)
 {
 	Initialise(x, y, z);
 	ApplyTexture(Tex);
 }
 
-void CubeArray::ApplyTexture(char *TextureFile)
+void CubeArray::ApplyTexture(const char *TextureFile)
 {
 	CreateGLTexture(TextureFile, texture);
 }

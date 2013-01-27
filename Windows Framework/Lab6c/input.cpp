@@ -30,14 +30,15 @@ void Input::Message(UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_SIZE:
 			windowResized = true;
 			break;
+		case WM_MOVE:
+			windowMoved = true;
+			break;
 		case WM_KEYDOWN:
 			KeyDown(wParam);
 			break;
-
 		case WM_KEYUP:
 			KeyUp(wParam);
 			break;
-
 		case WM_MOUSEMOVE:
 		case WM_MOUSEWHEEL:
 		case WM_LBUTTONDOWN:
@@ -65,6 +66,7 @@ void Input::KeyUp(UINT wParam)
 void Input::Update()
 {
 	windowResized = false;
+	windowMoved = false;
 	for (int i = 256; i > 0; i--)
 	{
 		if (keys[i-1] == true && oldkey[i-1] == false)

@@ -28,6 +28,6 @@ typedef struct
 } TGA;
 
 
-bool LoadUncompressedTGA(char * filename, FILE * fTGA);
-bool LoadCompressedTGA( char * filename, FILE * fTGA);
-bool CreateGLTexture(char *name, GLuint & TexID  );
+bool LoadUncompressedTGA(const char * filename, FILE * fTGA);
+bool LoadCompressedTGA(const char * filename, FILE * fTGA);
+bool CreateGLTexture(const char *name, GLuint & TexID  );

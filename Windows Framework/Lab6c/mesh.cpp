@@ -5,7 +5,7 @@
 #include "gameobject.h"
 
 
-Mesh::Mesh(const char* mPath, char* tPath, GameObject* p)
+Mesh::Mesh(const char* mPath, const char* tPath, GameObject* p)
 {
 	meshPath = mPath;
 	texturePath = tPath;
@@ -19,7 +19,7 @@ Mesh::~Mesh(void)
 
 void Mesh::Initialise()
 {
-	if (LoadMesh("skybox.obj") && LoadTexture("skybox.tga")) {
+	if (LoadMesh(meshPath.c_str()) && LoadTexture(texturePath.c_str())) {
 		successfullBuild = true;
 	} else {
 		successfullBuild = false;
@@ -46,7 +46,7 @@ void Mesh::Draw()
 
 }
 
-bool Mesh::LoadTexture(char* path)
+bool Mesh::LoadTexture(const char* path)
 {
 	GLuint tex;
 	std::string fn = path;

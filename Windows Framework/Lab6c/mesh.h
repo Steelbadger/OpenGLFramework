@@ -14,7 +14,7 @@ class GameObject;
 class Mesh
 {
 public:
-	Mesh(const char* meshPath, char* texturePath, GameObject* parent);
+	Mesh(const char* meshPath, const char* texturePath, GameObject* parent);
 	~Mesh(void);
 
 	void Initialise();
@@ -26,7 +26,7 @@ private:
 	bool LoadObj(const char* path);
 	void BuildDisplayList();
 
-	bool LoadTexture(char* path);
+	bool LoadTexture(const char* path);
 
 	std::vector<Vector3> verts;
 	std::vector<Vector3> normals;

@@ -31,7 +31,7 @@ WindowWizard::~WindowWizard(void)
 	}
 
 	if (hdc) 
-	ReleaseDC(handleToWindow, hdc);			// Release our HDC from memory
+		ReleaseDC(handleToWindow, hdc);			// Release our HDC from memory
 
 	UnregisterClass(wcex.lpszClassName, wcex.hInstance);// Free the window class
 
@@ -80,7 +80,6 @@ void WindowWizard::InitializeOpenGL(GLdouble fov)
     wglMakeCurrent(hdc, hrc);		//	Use this HRC.
 
 	ResizeGLWindow(graphicsRect.right, graphicsRect.bottom);	// Setup the Screen
-
 }
 
 void WindowWizard::FlipBuffers()
