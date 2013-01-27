@@ -57,7 +57,11 @@ bool RenderManager::AddToRenderer(Mesh m)
 
 void RenderManager::AddSkyBox(Mesh m)
 {
+	std::string fn = m.GetTexturePath();
+	GLuint tex;
 
+	CreateGLTexture(fn.c_str(), tex);
+	skyBox = CompileToDisplayList(m, tex);
 }
 
 void RenderManager::RemoveFromRenderer(Mesh m)
@@ -82,11 +86,30 @@ void RenderManager::RenderAll()
 {
 	std::list<int>::iterator it;
 
+	if (glIsList(skyBox)) {
+		glPushMatrix();
+			glTranslatef(activeCamera->GetParent()->GetPosition().x, activeCamera->GetParent()->GetPosition().y, activeCamera->GetParent()->GetPosition().z);
+			glCallList(skyBox);
+		glPopMatrix();
+	}
+
+	float thetaY, thetaZ, thetaX;
+
 	for (it = renderList.begin(); it != renderList.end(); it++) {
 		//  Get a pointer to the mesh we're about to draw, need this to find it's base position
 		Mesh* m = Mesh::GetMeshPointer(*it);
+
+		Vector4 localX = m->GetParentPointer()->GetLocalX();
+
+		thetaY = Vector4(localX.x, 0.0f, localX.z, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, 0.0f, localX.z, 1.0f).Length());
+		thetaZ = Vector4(localX.x, localX.y, 0.0f, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, localX.y, 0.0f, 1.0f).Length());
+		thetaX = Vector4(0.0f, localX.y, localX.z, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(0.0f, localX.y, localX.z, 1.0f).Length());
+
 		glPushMatrix();
 			glTranslatef(m->GetParentPointer()->GetPosition().x, m->GetParentPointer()->GetPosition().y, m->GetParentPointer()->GetPosition().z);
+			glRotatef(thetaX, 1.0f, 0.0f, 0.0f);
+			glRotatef(thetaY, 0.0f, 1.0f, 0.0f);
+			glRotatef(thetaZ, 0.0f, 0.0f, 1.0f);
 			glCallList(UniqueIDToDListMap[*it]);
 		glPopMatrix();
 	}
@@ -112,7 +135,6 @@ GLuint RenderManager::CompileToDisplayList(Mesh m, GLuint texture)
 	glEndList();
 
 	return dList;
-
 }
 
 bool RenderManager::MeshComparator(int rhs, int lhs)
