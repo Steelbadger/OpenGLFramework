@@ -34,6 +34,10 @@ public:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	static WindowWizard* GetWindowReference(HWND hWnd);
 
+	HDC GetHandleToDeviceContext(){return hdc;};
+	HWND GetHandleToWindow(){return handleToWindow;}
+	HGLRC GetRenderingContext(){return hrc;}
+
 private:
 	void InitializeOpenGL(GLdouble fov);
 	void ResizeGLWindow(int width, int height);

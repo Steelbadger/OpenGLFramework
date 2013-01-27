@@ -1,40 +1,42 @@
 #pragma once
 #include <vector>
+#include <list>
 #include <map>
 #include <string>
 #include <queue>
-#include "Terrain.h"
+#include "mesh.h"
+#include "cameramodule.h"
 
 class RenderManager
 {
 public:
-	RenderManager(void);
+	RenderManager();
 	~RenderManager(void);
 
-	int ImportTerrain();
+	void MaintainRenderList();
 
-	void AddTerrainToRenderer(Terrain m);
-	void RemoveTerrainFromRenderer(Terrain m);
+	void SetActiveCamera(CameraModule& cam){activeCamera = &cam;}
 
-	void RenderTerrain(int TerrainID);
+	bool AddToRenderer(Mesh m);
+	void RemoveFromRenderer(Mesh m);
+	void AddSkyBox(Mesh m);
+
 	void RenderAll();
+
+	static bool MeshComparator(int rhs, int lhs);
 
 private:
 
-	std::vector<GLuint> renderList;
-	std::vector<GLuint> transparentList;
-	std::vector<GLuint> inactiveList;
+	static 	CameraModule* activeCamera;
 
-	std::priority_queue<int> renderQueue;
+	GLuint CompileToDisplayList(Mesh m, GLuint texture);
+
+	std::list<int> renderList;
 
 	GLuint skyBox;
-
-	std::map<GLuint, int> renderListMap;
-	std::map<GLuint, int> transparentListMap;
-	std::map<GLuint, int> inactiveListMap;
+	GLuint terrain;
 
 	std::map<int, GLuint> UniqueIDToDListMap;
-
-	static int UIDCOUNTER;
+	std::map<std::string, GLuint> TextureMap; 
 };
 

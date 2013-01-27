@@ -28,7 +28,7 @@ public:
 	virtual Terrain* GetTerrain();
 	virtual Controller* GetController();
 
-	void InitSkyBox(){skybox.Initialise();}
+	void InitSkyBox(){skybox.Initialize();}
 
 	void DrawSkyBox();
 

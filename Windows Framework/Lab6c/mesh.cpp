@@ -4,12 +4,17 @@
 #include "tex.h"
 #include "gameobject.h"
 
+int Mesh::IDCOUNTER = 0;
+std::map<int, Mesh*> Mesh::IdToMeshMap;
 
-Mesh::Mesh(const char* mPath, const char* tPath, GameObject* p)
+Mesh::Mesh(const char* mPath, const char* tPath, GameObject* p):
+	uniqueID(IDCOUNTER++)
 {
 	meshPath = mPath;
 	texturePath = tPath;
 	parent = p;
+	IdToMeshMap[uniqueID] = this;
+	transparency = false;
 }
 
 
@@ -17,7 +22,7 @@ Mesh::~Mesh(void)
 {
 }
 
-void Mesh::Initialise()
+void Mesh::Initialize()
 {
 	if (LoadMesh(meshPath.c_str()) && LoadTexture(texturePath.c_str())) {
 		successfullBuild = true;

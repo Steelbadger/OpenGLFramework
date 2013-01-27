@@ -31,9 +31,9 @@ void Controller::CheckInputAndAct()
 		parent->RotateLocalDeltaY(-(float)input.GetMouseDX()/1000.0);
 		parent->RotateLocalDeltaX(-(float)input.GetMouseDY()/1000.0);
 		if (input.ReportKeyState('D'))
-			parent->MoveLocalDeltaX(sensitivity);
+			parent->MoveLocalDeltaX(sensitivity / input.GetTimeForLastFrame());
 		if (input.ReportKeyState('A'))
-			parent->MoveLocalDeltaX(-sensitivity);
+			parent->MoveLocalDeltaX(-sensitivity / input.GetTimeForLastFrame());
 		parent->OrientateAxesToGlobalUp();
 	} else {
 		if (input.ReportKeyState('D'))

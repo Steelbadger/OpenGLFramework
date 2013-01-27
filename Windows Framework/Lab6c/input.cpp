@@ -2,6 +2,7 @@
 #include "mouse.h"
 #include <string.h>
 #include <windows.h>
+#include <time.h>
 
 
 Input ourInputSingleton;
@@ -15,6 +16,9 @@ Input::Input(void)
 		pressed[i] = false;
 		released[i] = false;
 	}
+	timeForLastFrame = 0;
+	lastTime = clock();
+	currentTime = clock();
 }
 
 
@@ -65,6 +69,10 @@ void Input::KeyUp(UINT wParam)
 
 void Input::Update()
 {
+	lastTime = currentTime;
+	currentTime = clock();
+	timeForLastFrame = currentTime - lastTime;
+
 	windowResized = false;
 	windowMoved = false;
 	for (int i = 256; i > 0; i--)

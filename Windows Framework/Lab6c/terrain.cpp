@@ -5,12 +5,9 @@
 #include <iostream>
 
 
-int Terrain::counter=0;
-
 Terrain::Terrain(double s):
 	heightmap(9),
-		squareSize(s),
-		UID(counter++)
+		squareSize(s)
 {
 }
 

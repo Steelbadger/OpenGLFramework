@@ -28,15 +28,15 @@ void Application::Initialize(HINSTANCE hInstance)
 	player.InitSkyBox();
 	cube = new CubeArray(1,1,1, "Crate.tga");
 
-	double myTimer = time(NULL);
+	double myTimer = clock();
 
 	ground.Create();
 
-	myTimer = time(NULL) - myTimer;
+	myTimer = clock() - myTimer;
 
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-	std::cout << "OpenGL 4.2 Initialised: " << 	GLEW_VERSION_4_2 << std::endl;
-	std::cout << std::endl << "Time to Initialise: " << myTimer << "ms";
+	std::cout << "OpenGL 4.2 Initialized: " << 	GLEW_VERSION_4_2 << std::endl;
+	std::cout << std::endl << "Time to Initialize: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
 	lastTime = time(NULL);
 	nbFrames = 0;
@@ -47,7 +47,6 @@ void Application::Initialize(HINSTANCE hInstance)
 
 void Application::MainLoop()
 {
-
 	double currentTime = time(NULL);
 	nbFrames++;
 	if ( currentTime - lastTime >= 1.0 ){
@@ -83,17 +82,23 @@ void Application::MainLoop()
 		framerateLogging = !framerateLogging;
 	}
 
+	if (input.ReportKeyPress('N')) {
+		std::cout << "Last Frame Took: " << input.GetTimeForLastFrame() << "s" << std::endl;
+	}
+
 	if (input.ReportKeyPress('L')) {
-		std::cout << std::endl << "Position: (" << player.GetPosition().x << ", "<< player.GetPosition().y << ", " << player.GetPosition().z << ")\t";
-		std::cout << "Forward Vector: (" << player.GetLocalZ().x << ", " << player.GetLocalZ().y << ", " << player.GetLocalZ().z << ")";
+		std::cout << "Position: (" << player.GetPosition().x << ", "<< player.GetPosition().y << ", " << player.GetPosition().z << ")\t";
+		std::cout << "Forward Vector: (" << player.GetLocalZ().x << ", " << player.GetLocalZ().y << ", " << player.GetLocalZ().z << ")" << std::endl;
 	}
 
 	if (input.ReportKeyPress('I')) {
 		wireframe = !wireframe;
 		if (wireframe) {
 			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+			std::cout << "WireFrame Mode: ON" << std::endl;
 		} else {
 			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+			std::cout << "WireFrame Mode: OFF" << std::endl;
 		}
 	}
 

@@ -40,11 +40,17 @@ public:
 	int ReportMouseLocation(Mouse::axis Axis) {return mouse.Location(Axis);}
 	bool CheckMouseWheel(){return mouse.CheckWheelMoved();}
 	int GetMouseWheelDelta(){return mouse.GetWheelDelta();}
+
+	double GetTimeForLastFrame() {return timeForLastFrame;}
 private:
 	bool keys[256];
 	bool pressed[256];
 	bool released[256];
 	bool oldkey[256];
+
+	double timeForLastFrame;
+	double lastTime;
+	double currentTime;
 
 	bool windowResized;
 	bool windowMoved;

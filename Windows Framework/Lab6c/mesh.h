@@ -7,6 +7,7 @@
 #include "myvector3.h"
 #include "myvector2.h"
 #include <string>
+#include <map>
 
 class GameObject;
 
@@ -17,9 +18,19 @@ public:
 	Mesh(const char* meshPath, const char* texturePath, GameObject* parent);
 	~Mesh(void);
 
-	void Initialise();
+	void Initialize();
 
+	int GetUniqueID(){return uniqueID;}
+	GameObject* GetParentPointer(){return parent;}
+	bool IsTransparent(){return transparency;}
 	void Draw();
+	Vector3* GetVertexArrayBase(){return &verts[0];}
+	Vector3* GetNormalArrayBase(){return &normals[0];}
+	Vector2* GetUVArrayBase(){return &uvs[0];}
+	std::string GetTexturePath(){return texturePath;}
+	int GetTriangleNumber(){return triangles;}
+
+	static Mesh* GetMeshPointer(int uniqueID){return IdToMeshMap[uniqueID];}
 
 private:
 	bool LoadMesh(const char* path);
@@ -36,11 +47,15 @@ private:
 	GLuint texture;
 
 	int triangles;
+	const int uniqueID;
 
 	GameObject* parent;
 	std::string meshPath;
 	std::string texturePath;
 
 	bool successfullBuild;
-};
+	bool transparency;
 
+	static int IDCOUNTER;
+	static std::map<int, Mesh*> IdToMeshMap;
+};

@@ -22,6 +22,8 @@ public:
 	void SetFieldOfView(float fov);
 	void LockCursorToCentre();
 
+	GameObject* GetParent(){return parent;}
+
 	void Update();
 
 	void Zoom(int zoom);
