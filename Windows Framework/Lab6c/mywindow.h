@@ -1,4 +1,9 @@
 #pragma once
+//  Author - Ross Davies
+//  This class creates a window and OpenGL render context
+//  Additional functions to retrieve details on the window
+
+
 #include <Windows.h>
 #include <gl/gl.h>
 #include <gl/glu.h>

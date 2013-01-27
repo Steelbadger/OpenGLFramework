@@ -1,4 +1,10 @@
 #pragma once
+//  Author - Ross Davies
+//  This class turns the GameObject derived class to which
+//  it is attached into an OpenGL camera.  There are no functions
+//  for moving the camera, any movement on the camera is handled 
+//  by the parent GameObject.
+
 #include "mywindow.h"
 #include <windows.h>
 #include <mmsystem.h>
