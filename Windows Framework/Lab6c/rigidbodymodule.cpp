@@ -2,7 +2,7 @@
 #include "gameobject.h"
 
 
-float Rigidbody::GRAVITY = 0.001f;
+float Rigidbody::GRAVITY = 0.006f;
 
 Rigidbody::Rigidbody(GameObject* p):
 	parent(p),

@@ -100,10 +100,12 @@ void RenderManager::RenderAll()
 		Mesh* m = Mesh::GetMeshPointer(*it);
 
 		Vector4 localX = m->GetParentPointer()->GetLocalX();
+		Vector4 localY = m->GetParentPointer()->GetLocalY();
 
+		//  Work out the rotations around each axis for render context rotations
 		thetaY = Vector4(localX.x, 0.0f, localX.z, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, 0.0f, localX.z, 1.0f).Length());
 		thetaZ = Vector4(localX.x, localX.y, 0.0f, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, localX.y, 0.0f, 1.0f).Length());
-		thetaX = Vector4(0.0f, localX.y, localX.z, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(0.0f, localX.y, localX.z, 1.0f).Length());
+		thetaX = Vector4(0.0f, localY.y, localY.z, 1.0f).Dot3(Vector4(0.0f, 1.0f, 0.0f, 1.0f)/Vector4(0.0f, localY.y, localY.z, 1.0f).Length());
 
 		glPushMatrix();
 			glTranslatef(m->GetParentPointer()->GetPosition().x, m->GetParentPointer()->GetPosition().y, m->GetParentPointer()->GetPosition().z);

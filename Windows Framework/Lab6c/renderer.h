@@ -27,7 +27,7 @@ public:
 
 private:
 
-	static 	CameraModule* activeCamera;
+	static CameraModule* activeCamera;
 
 	GLuint CompileToDisplayList(Mesh m, GLuint texture);
 

@@ -83,7 +83,7 @@ void Application::MainLoop()
 	}
 
 	if (input.ReportKeyPress('N')) {
-		std::cout << "Last Frame Took: " << input.GetTimeForLastFrame() << "s" << std::endl;
+		std::cout << "Last Frame Took: " << input.GetTimeForLastFrame() << "ms" << std::endl;
 	}
 
 	if (input.ReportKeyPress('L')) {

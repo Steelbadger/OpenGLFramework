@@ -24,10 +24,10 @@ void Player::InputUpdate()
 	if (input.ReportKeyPress('T')) {
 		flying = !flying;
 		if (flying == false){
-			controller.SetSensitivity(0.1f);
+			controller.SetSensitivity(0.3f);
 			rigidbody.SetActive();
 		} else {
-			controller.SetSensitivity(0.5f);
+			controller.SetSensitivity(2.5f);
 			rigidbody.SetInactive();
 		}
 	}

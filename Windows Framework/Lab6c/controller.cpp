@@ -5,7 +5,7 @@
 
 Controller::Controller(GameObject* p):
 	parent(p),
-	sensitivity(0.5f)
+	sensitivity(2.5f)
 {
 }
 
