@@ -33,20 +33,27 @@ void Application::Initialize(HINSTANCE hInstance)
 	ground.Create();
 
 	myTimer = clock() - myTimer;
+	int numTextureUnits;
+
+	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &numTextureUnits);
 
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "OpenGL 4.2 Initialized: " << 	GLEW_VERSION_4_2 << std::endl;
+	std::cout << "Number of Texture Units: " << numTextureUnits << std::endl;
 	std::cout << std::endl << "Time to Initialize: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
 	lastTime = time(NULL);
 	nbFrames = 0;
 	wireframe = false;
 	framerateLogging = false;
+	culling = false;
+	glCullFace(GL_BACK);
 
 }
 
 void Application::MainLoop()
 {
+
 	double currentTime = time(NULL);
 	nbFrames++;
 	if ( currentTime - lastTime >= 1.0 ){
@@ -81,6 +88,18 @@ void Application::MainLoop()
 	if (input.ReportKeyPress('F')) {
 		framerateLogging = !framerateLogging;
 	}
+	if (input.ReportKeyPress('C')) {
+		culling = !culling;
+		if (culling) {
+			glEnable(GL_CULL_FACE);
+			std::cout << "Backface Culling: ON" << std::endl;
+		} else {
+			glDisable(GL_CULL_FACE);
+			std::cout << "Backface Culling: OFF" << std::endl;
+		}
+
+	}
+
 
 	if (input.ReportKeyPress('N')) {
 		std::cout << "Last Frame Took: " << input.GetTimeForLastFrame() << "ms" << std::endl;
@@ -117,8 +136,10 @@ void Application::MainLoop()
 	glLightfv(GL_LIGHT1, GL_POSITION, Light_Position);
 	glEnable(GL_LIGHT1);
 
+	glDisable(GL_DEPTH_TEST);
 	player.DrawSkyBox();
-	glClear(GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+//	glClear(GL_DEPTH_BUFFER_BIT);
 	ground.Draw();
 	
 	glTranslatef(-25.0f, 0.0f, -25.0f);
@@ -132,4 +153,5 @@ void Application::MainLoop()
 		}	
 
 	window.FlipBuffers();
+
 }

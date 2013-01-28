@@ -83,6 +83,7 @@ void Terrain::Create()
 	displayList = glGenLists(1);
 
 	glNewList(displayList,GL_COMPILE);
+		glFrontFace(GL_CW);
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -94,6 +95,7 @@ void Terrain::Create()
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glFrontFace(GL_CCW);
 	glEndList();
 
 }

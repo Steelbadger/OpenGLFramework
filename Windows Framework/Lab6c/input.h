@@ -42,6 +42,7 @@ public:
 	int GetMouseWheelDelta(){return mouse.GetWheelDelta();}
 
 	double GetTimeForLastFrame() {return timeForLastFrame;}
+	double GetTimeSinceLastFrame();
 private:
 	bool keys[256];
 	bool pressed[256];

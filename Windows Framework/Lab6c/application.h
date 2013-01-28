@@ -26,6 +26,7 @@ private:
 	double currentTime;
 	bool wireframe;
 	bool framerateLogging;
+	bool culling;
 
 	CubeArray *cube;
 	Terrain ground;

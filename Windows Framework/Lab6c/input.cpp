@@ -92,3 +92,8 @@ void Input::Update()
 	memcpy(oldkey, keys, sizeof(keys));
 	mouse.Update();
 }
+
+double Input::GetTimeSinceLastFrame()
+{
+	return clock()-currentTime;
+}
