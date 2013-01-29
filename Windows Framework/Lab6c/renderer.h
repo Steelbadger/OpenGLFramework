@@ -5,6 +5,7 @@
 #include <string>
 #include <queue>
 #include "mesh.h"
+#include "terrain.h"
 #include "cameramodule.h"
 
 class RenderManager
@@ -20,6 +21,7 @@ public:
 	bool AddToRenderer(Mesh m);
 	void RemoveFromRenderer(Mesh m);
 	void AddSkyBox(Mesh m);
+	void AddTerrainToRenderer(Terrain t);
 
 	void RenderAll();
 
@@ -35,6 +37,7 @@ private:
 
 	GLuint skyBox;
 	GLuint terrain;
+	GLuint terrainTexture;
 
 	std::map<int, GLuint> UniqueIDToDListMap;
 	std::map<std::string, GLuint> TextureMap; 

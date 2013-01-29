@@ -2,7 +2,7 @@
 #include "gameobject.h"
 
 
-float Rigidbody::GRAVITY = 0.006f;
+float Rigidbody::GRAVITY = 9.81f;
 
 Rigidbody::Rigidbody(GameObject* p):
 	parent(p),
@@ -31,7 +31,7 @@ bool Rigidbody::CheckGroundCollision(Terrain &ground)
 		}
 
 		if (parent->GetPosition().y > 2.0f+ground.GetHeight(parent->GetPosition().x, parent->GetPosition().z)) {
-			velocity -= GameObject::GLOBALY*GRAVITY;
+			velocity -= GameObject::GLOBALY*GRAVITY*input.GetTimeForLastFrame();
 			return false;
 		}
 	}
@@ -41,5 +41,5 @@ bool Rigidbody::CheckGroundCollision(Terrain &ground)
 
 void Rigidbody::Update()
 {
-	parent->MoveDeltaY(velocity.y);
+	parent->MoveDeltaY(velocity.y*input.GetTimeForLastFrame());
 }

@@ -64,6 +64,12 @@ void RenderManager::AddSkyBox(Mesh m)
 	skyBox = CompileToDisplayList(m, tex);
 }
 
+void RenderManager::AddTerrainToRenderer(Terrain t)
+{
+	terrainTexture = t.GetTexture();
+	terrain = t.GetDisplayList();
+}
+
 void RenderManager::RemoveFromRenderer(Mesh m)
 //  This function removes a specified mesh from the scene
 //  It will not delete the associated texture or display list
@@ -89,31 +95,43 @@ void RenderManager::RenderAll()
 	if (glIsList(skyBox)) {
 		glPushMatrix();
 			glTranslatef(activeCamera->GetParent()->GetPosition().x, activeCamera->GetParent()->GetPosition().y, activeCamera->GetParent()->GetPosition().z);
+			glDisable(GL_DEPTH_TEST);
 			glCallList(skyBox);
+			glEnable(GL_DEPTH_TEST);
 		glPopMatrix();
+	}
+
+	if (glIsList(terrain)) {
+		glCallList(terrain);
 	}
 
 	float thetaY, thetaZ, thetaX;
 
-	for (it = renderList.begin(); it != renderList.end(); it++) {
-		//  Get a pointer to the mesh we're about to draw, need this to find it's base position
-		Mesh* m = Mesh::GetMeshPointer(*it);
+	if (renderList.size() > 0) {
+		for (it = renderList.begin(); it != renderList.end(); it++) {
+			//  Get a pointer to the mesh we're about to draw, need this to find it's base position
+			Mesh* m = Mesh::GetMeshPointer(*it);
 
-		Vector4 localX = m->GetParentPointer()->GetLocalX();
-		Vector4 localY = m->GetParentPointer()->GetLocalY();
+			if (m != NULL) {
+				Vector4 localX = m->GetParentPointer()->GetLocalX();
+				Vector4 localY = m->GetParentPointer()->GetLocalY();
 
-		//  Work out the rotations around each axis for render context rotations
-		thetaY = Vector4(localX.x, 0.0f, localX.z, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, 0.0f, localX.z, 1.0f).Length());
-		thetaZ = Vector4(localX.x, localX.y, 0.0f, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, localX.y, 0.0f, 1.0f).Length());
-		thetaX = Vector4(0.0f, localY.y, localY.z, 1.0f).Dot3(Vector4(0.0f, 1.0f, 0.0f, 1.0f)/Vector4(0.0f, localY.y, localY.z, 1.0f).Length());
+				//  Work out the rotations around each axis for render context rotations
+				thetaY = Vector4(localX.x, 0.0f, localX.z, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, 0.0f, localX.z, 1.0f).Length());
+				thetaZ = Vector4(localX.x, localX.y, 0.0f, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, localX.y, 0.0f, 1.0f).Length());
+				thetaX = Vector4(0.0f, localY.y, localY.z, 1.0f).Dot3(Vector4(0.0f, 1.0f, 0.0f, 1.0f)/Vector4(0.0f, localY.y, localY.z, 1.0f).Length());
 
-		glPushMatrix();
-			glTranslatef(m->GetParentPointer()->GetPosition().x, m->GetParentPointer()->GetPosition().y, m->GetParentPointer()->GetPosition().z);
-			glRotatef(thetaX, 1.0f, 0.0f, 0.0f);
-			glRotatef(thetaY, 0.0f, 1.0f, 0.0f);
-			glRotatef(thetaZ, 0.0f, 0.0f, 1.0f);
-			glCallList(UniqueIDToDListMap[*it]);
-		glPopMatrix();
+				glPushMatrix();
+					glTranslatef(m->GetParentPointer()->GetPosition().x, m->GetParentPointer()->GetPosition().y, m->GetParentPointer()->GetPosition().z);
+					glRotatef(thetaX, 1.0f, 0.0f, 0.0f);
+					glRotatef(thetaY, 0.0f, 1.0f, 0.0f);
+					glRotatef(thetaZ, 0.0f, 0.0f, 1.0f);
+					glCallList(UniqueIDToDListMap[*it]);
+				glPopMatrix();
+			} else {
+				renderList.erase(it);
+			}
+		}
 	}
 }
 

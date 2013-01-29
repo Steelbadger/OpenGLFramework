@@ -25,7 +25,7 @@ public:
 	virtual Collider* GetCollider();
 	virtual CameraModule* GetCamera();
 	virtual Rigidbody* GetRigidbody();
-	virtual Terrain* GetTerrain();
+	virtual Mesh* GetMesh();
 	virtual Controller* GetController();
 
 	void InitSkyBox(){skybox.Initialize();}

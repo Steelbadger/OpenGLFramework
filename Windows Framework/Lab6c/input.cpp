@@ -2,7 +2,6 @@
 #include "mouse.h"
 #include <string.h>
 #include <windows.h>
-#include <time.h>
 
 
 Input ourInputSingleton;

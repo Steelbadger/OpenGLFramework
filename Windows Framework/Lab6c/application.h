@@ -7,6 +7,7 @@
 #include "Terrain.h"
 #include "mywindow.h"
 #include "player.h"
+#include "renderer.h"
 
 class Application
 {
@@ -30,5 +31,6 @@ private:
 
 	CubeArray *cube;
 	Terrain ground;
+	RenderManager renderer;
 };
 

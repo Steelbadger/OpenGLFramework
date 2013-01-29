@@ -24,10 +24,10 @@ void Player::InputUpdate()
 	if (input.ReportKeyPress('T')) {
 		flying = !flying;
 		if (flying == false){
-			controller.SetSensitivity(0.3f);
+			controller.SetSensitivity(8.0f);
 			rigidbody.SetActive();
 		} else {
-			controller.SetSensitivity(2.5f);
+			controller.SetSensitivity(50.0f);
 			rigidbody.SetInactive();
 		}
 	}
@@ -37,8 +37,6 @@ void Player::InputUpdate()
 
 void Player::Update()
 {
-
-
 	camera.Update();
 }
 
@@ -75,9 +73,9 @@ Controller* Player::GetController()
 	return &controller;
 }
 
-Terrain* Player::GetTerrain()
+Mesh* Player::GetMesh()
 {
-	return NULL;
+	return &skybox;
 }
 
 void Player::DrawSkyBox()

@@ -7,6 +7,38 @@
 int Mesh::IDCOUNTER = 0;
 std::map<int, Mesh*> Mesh::IdToMeshMap;
 
+Mesh* Mesh::GetMeshPointer(int uniqueID)
+{
+	if (IdToMeshMap.count(uniqueID)) {
+		return IdToMeshMap[uniqueID];
+	} else {
+		return NULL;
+	}
+}
+
+Mesh::Mesh():
+	uniqueID(IDCOUNTER++)
+{
+	IdToMeshMap[uniqueID] = this;
+}
+
+Mesh::Mesh(const Mesh& m):
+	uniqueID(IDCOUNTER++),
+	meshPath(m.meshPath),
+	texturePath(m.texturePath),
+	parent(m.parent),
+	transparency(m.transparency),
+	verts(m.verts),
+	normals(m.normals),
+	uvs(m.uvs),
+	dList(m.dList),
+	texture(m.texture),
+	triangles(m.triangles),
+	successfullBuild(m.successfullBuild)
+{
+	IdToMeshMap[uniqueID] = this;
+}
+
 Mesh::Mesh(const char* mPath, const char* tPath, GameObject* p):
 	uniqueID(IDCOUNTER++)
 {
@@ -15,6 +47,17 @@ Mesh::Mesh(const char* mPath, const char* tPath, GameObject* p):
 	parent = p;
 	IdToMeshMap[uniqueID] = this;
 	transparency = false;
+}
+
+Mesh::Mesh(const char* mPath, const char* tPath):
+	uniqueID(IDCOUNTER++)
+{
+	meshPath = mPath;
+	texturePath = tPath;
+	parent = NULL;
+	IdToMeshMap[uniqueID] = this;
+	transparency = false;
+	Initialize();
 }
 
 

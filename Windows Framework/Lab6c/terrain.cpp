@@ -32,11 +32,11 @@ void Terrain::Create()
 	for (float i = 0; i < size-1; i++) {
 		for (float j = 0; j < size-1; j++) {
 			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, j), j*step));
-			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, 1+j), step + j*step));
 			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, 1+j), step + j*step));
 			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, 1+j), step + j*step));
-			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, j),j*step));
+			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, 1+j), step + j*step));
 			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, j), j*step));
+			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, j),j*step));
 
 			Vector4 normalA, normalB, normalC, normalD;
 
@@ -56,11 +56,11 @@ void Terrain::Create()
 			normalD.NormaliseSelf();
 
 			normals.push_back(normalA);
-			normals.push_back(normalB);
 			normals.push_back(normalC);
 			normals.push_back(normalB);
-			normals.push_back(normalA);
+			normals.push_back(normalB);
 			normals.push_back(normalD);
+			normals.push_back(normalA);
 		}
 	}
 
@@ -83,7 +83,6 @@ void Terrain::Create()
 	displayList = glGenLists(1);
 
 	glNewList(displayList,GL_COMPILE);
-		glFrontFace(GL_CW);
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -95,7 +94,6 @@ void Terrain::Create()
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glFrontFace(GL_CCW);
 	glEndList();
 
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <windows.h>
+#include <time.h>
 #include "mouse.h"
 #include "singleton.h"
 #define input Input::GetSingleton()
@@ -41,7 +42,7 @@ public:
 	bool CheckMouseWheel(){return mouse.CheckWheelMoved();}
 	int GetMouseWheelDelta(){return mouse.GetWheelDelta();}
 
-	double GetTimeForLastFrame() {return timeForLastFrame;}
+	double GetTimeForLastFrame() {return timeForLastFrame/CLOCKS_PER_SEC;}
 	double GetTimeSinceLastFrame();
 private:
 	bool keys[256];

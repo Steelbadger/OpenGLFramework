@@ -16,11 +16,16 @@ class Mesh
 {
 public:
 	Mesh(const char* meshPath, const char* texturePath, GameObject* parent);
+	Mesh(const char* meshPath, const char* texturePath);
+	Mesh();
+	Mesh(const Mesh& mesh);
 	~Mesh(void);
 
 	void Initialize();
 
 	int GetUniqueID(){return uniqueID;}
+	void GetNewUniqueID();
+	void SetParent(GameObject* p) {parent = p;}
 	GameObject* GetParentPointer(){return parent;}
 	bool IsTransparent(){return transparency;}
 	void Draw();
@@ -30,7 +35,7 @@ public:
 	std::string GetTexturePath(){return texturePath;}
 	int GetTriangleNumber(){return triangles;}
 
-	static Mesh* GetMeshPointer(int uniqueID){return IdToMeshMap[uniqueID];}
+	static Mesh* GetMeshPointer(int uniqueID);
 
 private:
 	bool LoadMesh(const char* path);

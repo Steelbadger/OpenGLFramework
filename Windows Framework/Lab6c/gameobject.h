@@ -6,6 +6,7 @@
 #include "rigidbodymodule.h"
 #include "Terrain.h"
 #include "controller.h"
+#include "mesh.h"
 
 class GameObject
 {
@@ -42,9 +43,8 @@ public:
 	virtual Collider* GetCollider();
 	virtual CameraModule* GetCamera();
 	virtual Rigidbody* GetRigidbody();
-	virtual Terrain* GetTerrain();
+	virtual Mesh* GetMesh();
 	virtual Controller* GetController();
-
 
 	static const Vector4 GLOBALX;
 	static const Vector4 GLOBALY;
