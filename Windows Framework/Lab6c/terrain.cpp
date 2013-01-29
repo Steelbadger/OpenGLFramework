@@ -79,6 +79,7 @@ void Terrain::Create()
 	texture = tex;
 
 	int numVerts = size*size*6;
+	std::cout << "Number of Triangles in Terrain Mesh: " << numVerts/2 << std::endl;
 
 	displayList = glGenLists(1);
 
