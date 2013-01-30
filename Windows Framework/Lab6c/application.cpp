@@ -29,10 +29,10 @@ void Application::Initialize(HINSTANCE hInstance)
 	renderer.SetActiveCamera(*player.GetCamera());
 
 
-	Mesh skyBox("skybox.obj", "skybox.tga");
+	Mesh skyBox("inwardCube.obj", "skyboxseamless.tga");
 	renderer.AddSkyBox(skyBox);
 
-	testObject.CreateAndAttachMesh("skybox.obj", "Crate.tga");
+	testObject.CreateAndAttachMesh("outwardCube.obj", "Crate.tga");
 	renderer.AddToRenderer(*testObject.GetMesh());
 	testObject.SetLocation(0.0f, 10.0f, 0.0f);
 
