@@ -8,8 +8,8 @@ Player::Player(void):
 		camera(this),
 		camController(&camera),
 		flying(true),
-		rigidbody(this),
-		skybox("skybox.obj", "skybox.tga", this)
+		rigidbody(this)
+//		skybox("skybox.obj", "skybox.tga", this)
 {
 }
 
@@ -71,5 +71,5 @@ Controller* Player::GetController()
 
 Mesh* Player::GetMesh()
 {
-	return &skybox;
+	return NULL;
 }
