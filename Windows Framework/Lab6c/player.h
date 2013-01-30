@@ -8,6 +8,8 @@
 #include "Terrain.h"
 #include "mesh.h"
 
+class NoiseObject;
+
 class Player : public GameObject
 {
 public:
@@ -20,7 +22,7 @@ public:
 	void SetCameraTargetWindow(WindowWizard* window);
 	Controller controller;
 
-	void CheckGroundCollision(Terrain &ground);
+	void CheckGroundCollision(NoiseObject n);
 
 	virtual Collider* GetCollider();
 	virtual CameraModule* GetCamera();
@@ -28,7 +30,7 @@ public:
 	virtual Mesh* GetMesh();
 	virtual Controller* GetController();
 
-	void InitSkyBox(){skybox.Initialize();}
+//	void InitSkyBox(){skybox.Initialize();}
 
 	void DrawSkyBox();
 

@@ -3,6 +3,7 @@
 
 class GameObject;
 class Terrain;
+class NoiseObject;
 
 class Rigidbody
 {
@@ -15,7 +16,7 @@ public:
 
 	void Update();
 
-	bool CheckGroundCollision(Terrain &ground);
+	bool CheckGroundCollision(NoiseObject n);
 	
 	Vector4 GetVelocity(){return velocity;}
 	void SetVelocity(Vector4 v){velocity = v;}

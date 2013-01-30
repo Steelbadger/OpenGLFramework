@@ -31,8 +31,6 @@ Mesh::Mesh(const Mesh& m):
 	verts(m.verts),
 	normals(m.normals),
 	uvs(m.uvs),
-	dList(m.dList),
-	texture(m.texture),
 	triangles(m.triangles),
 	successfullBuild(m.successfullBuild)
 {
@@ -47,6 +45,7 @@ Mesh::Mesh(const char* mPath, const char* tPath, GameObject* p):
 	parent = p;
 	IdToMeshMap[uniqueID] = this;
 	transparency = false;
+	LoadMesh(meshPath.c_str());
 }
 
 Mesh::Mesh(const char* mPath, const char* tPath):
@@ -57,22 +56,13 @@ Mesh::Mesh(const char* mPath, const char* tPath):
 	parent = NULL;
 	IdToMeshMap[uniqueID] = this;
 	transparency = false;
-	Initialize();
+	LoadMesh(meshPath.c_str());
 }
 
 
 Mesh::~Mesh(void)
 {
-}
-
-void Mesh::Initialize()
-{
-	if (LoadMesh(meshPath.c_str()) && LoadTexture(texturePath.c_str())) {
-		successfullBuild = true;
-	} else {
-		successfullBuild = false;
-	}
-	BuildDisplayList();
+	IdToMeshMap.erase(uniqueID);
 }
 
 bool Mesh::LoadMesh(const char* path)
@@ -83,48 +73,6 @@ bool Mesh::LoadMesh(const char* path)
 	} else {
 		return false;
 	}
-}
-
-void Mesh::Draw()
-{
-	glPushMatrix();
-		glTranslatef(parent->GetPosition().x, parent->GetPosition().y, parent->GetPosition().z);
-		glCallList(dList);
-	glPopMatrix();
-
-}
-
-bool Mesh::LoadTexture(const char* path)
-{
-	GLuint tex;
-	std::string fn = path;
-
-	if(fn.substr(fn.find_last_of(".") + 1) == "tga") {
-		CreateGLTexture(path, tex);
-	} else {
-		return false;
-	}
-
-	texture = tex;
-}
-
-void Mesh::BuildDisplayList()
-{
-	dList = glGenLists(1);
-
-	glNewList(dList,GL_COMPILE);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_NORMAL_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glVertexPointer(3, GL_FLOAT, 0, &verts[0]);
-		glNormalPointer(GL_FLOAT, 0, &normals[0]);
-		glTexCoordPointer(2,GL_FLOAT,0,&uvs[0]);
-		glDrawArrays(GL_TRIANGLES, 0, triangles);
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_NORMAL_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEndList();
 }
 
 bool Mesh::LoadObj(const char* path)
@@ -154,15 +102,15 @@ bool Mesh::LoadObj(const char* path)
 			Vector3 vertex;
 			fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
 			tempVerts.push_back(vertex);
-		}else if ( strcmp( lineHeader, "vt" ) == 0 ){
+		} else if ( strcmp( lineHeader, "vt" ) == 0 ){
 			Vector2 uv;
 			fscanf(file, "%f %f\n", &uv.u, &uv.v );
 			tempUVs.push_back(uv);
-		}else if ( strcmp( lineHeader, "vn" ) == 0 ){
+		} else if ( strcmp( lineHeader, "vn" ) == 0 ){
 			Vector3 normal;
 			fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z );
 			tempNormals.push_back(normal);
-		}else if ( strcmp( lineHeader, "f" ) == 0 ){
+		} else if ( strcmp( lineHeader, "f" ) == 0 ){
 			std::string vertex1, vertex2, vertex3;
 			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
 			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
@@ -179,10 +127,10 @@ bool Mesh::LoadObj(const char* path)
 			normalIndices.push_back(normalIndex[0]);
 			normalIndices.push_back(normalIndex[1]);
 			normalIndices.push_back(normalIndex[2]);
-		}else{
+		} else {
 			// Probably a comment, eat up the rest of the line
-			char stupidBuffer[1000];
-			fgets(stupidBuffer, 1000, file);
+			char stuff[1000];
+			fgets(stuff, 1000, file);
 		}
 
 	}

@@ -3,12 +3,14 @@
 #include "myvector4.h"
 #include "my4x4matrix.h"
 #include <iostream>
+#include "noisegenerator.h"
 
 
-Terrain::Terrain(double s):
-	heightmap(9),
-		squareSize(s)
+Terrain::Terrain(float s, NoiseObject n, float r):
+		squareSize(s),
+			resolution(r)
 {
+	Create(n);
 }
 
 
@@ -16,44 +18,35 @@ Terrain::~Terrain(void)
 {
 }
 
-void Terrain::Create()
+void Terrain::Create(NoiseObject n)
 {
-	heightmap.Initialise();
 
 	float height = 0;
 
-	int size = heightmap.GetSize();
-
+	NoiseGenerator noise;
+	int size = squareSize/resolution;
 	float step = squareSize/(size-1);
-
 	Matrix4x4 scaleMatrix(Matrix4x4::IDENTITY);
 	scaleMatrix.Scale(1/step, 1.0f, 1/step);
+	int octaves = n.octaves;
+	float zoom = n.zoom;
+	float persistance = n.persistance;
+	float amp = n.amplitude;
 
 	for (float i = 0; i < size-1; i++) {
 		for (float j = 0; j < size-1; j++) {
-			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, j), j*step));
-			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, 1+j), step + j*step));
-			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, 1+j), step + j*step));
-			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, 1+j), step + j*step));
-			verts.push_back(Vector3(step + i*step, heightmap.GetHeight(1+i, j), j*step));
-			verts.push_back(Vector3(i*step, heightmap.GetHeight(i, j),j*step));
+			verts.push_back(Vector3(i*step, noise.Perlin2D(i*step, j*step, octaves, zoom, persistance, amp), j*step));
+			verts.push_back(Vector3(i*step, noise.Perlin2D(i*step, step+j*step, octaves, zoom, persistance, amp), step + j*step));
+			verts.push_back(Vector3(step + i*step, noise.Perlin2D(step+i*step, step+j*step, octaves, zoom, persistance, amp), step + j*step));
+			verts.push_back(Vector3(step + i*step, noise.Perlin2D(step+i*step, step+j*step, octaves, zoom, persistance, amp), step + j*step));
+			verts.push_back(Vector3(step + i*step, noise.Perlin2D(step+i*step, j*step, octaves, zoom, persistance, amp), j*step));
+			verts.push_back(Vector3(i*step, noise.Perlin2D(i*step, j*step, octaves, zoom, persistance, amp),j*step));
 
 			Vector4 normalA, normalB, normalC, normalD;
-
-			normalA = heightmap.GetNormal(i,j);
-			normalB = heightmap.GetNormal(1+i, 1+j);
-			normalC = heightmap.GetNormal(i, 1+j);
-			normalD = heightmap.GetNormal(1+i, j);
-
-			normalA = scaleMatrix * normalA;
-			normalB = scaleMatrix * normalB;
-			normalC = scaleMatrix * normalC;
-			normalD = scaleMatrix * normalD;
-
-			normalA.NormaliseSelf();
-			normalB.NormaliseSelf();
-			normalC.NormaliseSelf();
-			normalD.NormaliseSelf();
+			normalA = noise.NormalToPerlin2D(i*step, j*step, octaves, zoom, persistance, amp);
+			normalB = noise.NormalToPerlin2D(step+i*step, step+j*step, octaves, zoom, persistance, amp);
+			normalC = noise.NormalToPerlin2D(i*step, step+j*step, octaves, zoom, persistance, amp);
+			normalD = noise.NormalToPerlin2D(step+i*step, j*step, octaves, zoom, persistance, amp);
 
 			normals.push_back(normalA);
 			normals.push_back(normalC);
@@ -61,74 +54,38 @@ void Terrain::Create()
 			normals.push_back(normalB);
 			normals.push_back(normalD);
 			normals.push_back(normalA);
+
+			texCoords.push_back(Vector2(i*step, j*step));
+			texCoords.push_back(Vector2(i*step, step + j*step));
+			texCoords.push_back(Vector2(step + i*step, step + j*step));
+			texCoords.push_back(Vector2(step + i*step, step + j*step));
+			texCoords.push_back(Vector2(step + i*step, j*step));
+			texCoords.push_back(Vector2(i*step, j*step));
 		}
 	}
 
-	for (int i = 0; i < size*size; i++) {
-		texCoords.push_back(Vector2(0.0f, 1.0f));
-		texCoords.push_back(Vector2(1.0f, 0.0f));
-		texCoords.push_back(Vector2(0.0f, 0.0f));
-		texCoords.push_back(Vector2(1.0f, 0.0f));
-		texCoords.push_back(Vector2(0.0f, 1.0f));
-		texCoords.push_back(Vector2(1.0f, 1.0f));
-	}
+	//for (int i = 0; i < size*size; i++) {
+	//	texCoords.push_back(Vector2(0.0f, 1.0f));
+	//	texCoords.push_back(Vector2(1.0f, 0.0f));
+	//	texCoords.push_back(Vector2(0.0f, 0.0f));
+	//	texCoords.push_back(Vector2(1.0f, 0.0f));
+	//	texCoords.push_back(Vector2(0.0f, 1.0f));
+	//	texCoords.push_back(Vector2(1.0f, 1.0f));
+	//}
 
-	GLuint tex;
-	CreateGLTexture("grass.tga", tex);
+	textureFile = "grass.tga";
 
-	texture = tex;
 
-	int numVerts = size*size*6;
-	std::cout << "Number of Triangles in Terrain Mesh: " << numVerts/2 << std::endl;
-
-	displayList = glGenLists(1);
-
-	glNewList(displayList,GL_COMPILE);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_NORMAL_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glVertexPointer(3, GL_FLOAT, 0, &verts[0]);
-		glNormalPointer(GL_FLOAT, 0, &normals[0]);
-		glTexCoordPointer(2,GL_FLOAT,0,&texCoords[0]);
-		glDrawArrays(GL_TRIANGLES, 0, numVerts);
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_NORMAL_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEndList();
-
+	std::cout << "Number of Triangles in Terrain Mesh: " << verts.size()/3 << std::endl;
 }
 
 float Terrain::GetHeight(float x, float z)
 {
-	int size = heightmap.GetSize();
-	float step = squareSize/(size-1);
+//	int size = heightmap.GetSize();
+//	float step = squareSize/(size-1);
 
-	return (heightmap.GetFloatHeight(x/step,z/step));
-}
-
-void Terrain::CreateFromSource(std::vector<Vector3> &vertices)
-{
-	verts = vertices;
-	displayList = glGenLists(1);
-
-	glNewList(displayList,GL_COMPILE);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glVertexPointer(3, GL_FLOAT, 0, &verts[0]);
-		glDrawArrays(GL_TRIANGLES, 0, 15000);
-		glDisableClientState(GL_VERTEX_ARRAY);
-	glEndList();
-}
-
-void Terrain::Draw()
-{
-	glCallList(displayList);
-}
-
-void Terrain::SetTexture(GLuint t)
-{
-	texture = t;
+//	return (heightmap.GetFloatHeight(x/step,z/step));
+	return 0.0f;
 }
 
 Vector3 Terrain::CalcNormal(Vector3 pointA, Vector3 pointB, Vector3 pointC)
@@ -145,47 +102,5 @@ Vector3 Terrain::CalcNormal(Vector3 pointA, Vector3 pointB, Vector3 pointC)
 	Vector3 output(Normal);
 
 	return output;
-
-}
-
-void Terrain::SmoothNormals()
-{
-	std::vector<Vector3> smoothedNormals;
-	std::vector<bool> checkedMap;
-	std::vector<Vector3> knownNormals;
-
-	checkedMap.resize(verts.size());
-	knownNormals.resize(verts.size());
-	smoothedNormals.resize(verts.size());
-
-	int counter = 0;
-
-	for (int i = 0; i < checkedMap.size(); i++) {
-		checkedMap[i] = false;
-	}
-
-	for (int i = 0; i < verts.size(); i++) {
-		if (checkedMap[i] == false) {
-			Vector3 searchNode = verts[i];
-			std::vector<int> found;
-			Vector4 averagedNode = Vector3(0.0f, 0.0f, 0.0f);
-			for (int j = 0; j < verts.size(); j++) {
-				if (verts[j] == searchNode) {
-					found.push_back(j);
-					checkedMap[j] = true;
-					averagedNode += Vector4(normals[j]);
-				}
-			}
-			counter++;
-			averagedNode /= found.size();
-			for (int j = 0; j < found.size(); j++) {
-				smoothedNormals[found[j]] = averagedNode;
-			}
-		}
-	}
-
-	normals = smoothedNormals;
-	std::cout << "Unsmoothed " << verts.size() << " normals." << std::endl;
-	std::cout << "Smoothed " << counter << " normals." << std::endl;
 
 }

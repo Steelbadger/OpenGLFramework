@@ -17,7 +17,7 @@ void RenderManager::MaintainRenderList()
 	renderList.sort(RenderManager::MeshComparator);
 }
 
-bool RenderManager::AddToRenderer(Mesh m)
+bool RenderManager::AddToRenderer(Mesh &m)
 //  Adds specified mesh to the render list
 //  If the mesh is brand new it will import the texture and compile the
 //  display list needed to draw the mesh, if the mesh or texture has been
@@ -55,7 +55,18 @@ bool RenderManager::AddToRenderer(Mesh m)
 	return true;
 }
 
-void RenderManager::AddSkyBox(Mesh m)
+void RenderManager::AddToRenderer(std::vector<Mesh> &meshList)
+{
+	std::vector<Mesh>::iterator it;
+
+	if (meshList.size() > 0) {
+		for (it = meshList.begin(); it != meshList.end(); it++) {
+			AddToRenderer(*it);
+		}
+	}
+}
+
+void RenderManager::AddSkyBox(Mesh &m)
 {
 	std::string fn = m.GetTexturePath();
 	GLuint tex;
@@ -64,10 +75,17 @@ void RenderManager::AddSkyBox(Mesh m)
 	skyBox = CompileToDisplayList(m, tex);
 }
 
-void RenderManager::AddTerrainToRenderer(Terrain t)
+void RenderManager::AddTerrainToRenderer(Terrain &t)
 {
-	terrainTexture = t.GetTexture();
-	terrain = t.GetDisplayList();
+	std::string fn = t.GetTexturePath();
+	GLuint tex;
+
+//	terrainTexture = t.GetTexture();
+//	terrain = t.GetDisplayList();
+
+	CreateGLTexture(fn.c_str(), tex);
+	terrainTexture = tex;
+	terrain = CompileToDisplayList(t, tex);
 }
 
 void RenderManager::RemoveFromRenderer(Mesh m)
@@ -91,6 +109,10 @@ void RenderManager::RenderAll()
 //  further away being drawn first
 {
 	std::list<int>::iterator it;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	if (glIsList(skyBox)) {
 		glPushMatrix();
@@ -135,7 +157,7 @@ void RenderManager::RenderAll()
 	}
 }
 
-GLuint RenderManager::CompileToDisplayList(Mesh m, GLuint texture)
+GLuint RenderManager::CompileToDisplayList(Mesh &m, GLuint texture)
 //  Generate the display list for the specified mesh, pass the GLuint back out for use
 {
 	GLuint dList = glGenLists(1);
@@ -149,6 +171,27 @@ GLuint RenderManager::CompileToDisplayList(Mesh m, GLuint texture)
 		glNormalPointer(GL_FLOAT, 0, m.GetNormalArrayBase());
 		glTexCoordPointer(2,GL_FLOAT,0, m.GetUVArrayBase());
 		glDrawArrays(GL_TRIANGLES, 0, m.GetTriangleNumber());
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_NORMAL_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEndList();
+
+	return dList;
+}
+
+GLuint RenderManager::CompileToDisplayList(Terrain &t, GLuint texture)
+{
+	GLuint dList = glGenLists(1);
+
+	glNewList(dList,GL_COMPILE);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glVertexPointer(3, GL_FLOAT, 0, t.GetVertexArrayBase());
+		glNormalPointer(GL_FLOAT, 0, t.GetNormalArrayBase());
+		glTexCoordPointer(2,GL_FLOAT,0, t.GetUVArrayBase());
+		glDrawArrays(GL_TRIANGLES, 0, t.GetNumberOfVerts());
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);

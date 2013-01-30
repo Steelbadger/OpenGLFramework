@@ -7,6 +7,7 @@
 #include "mesh.h"
 #include "terrain.h"
 #include "cameramodule.h"
+#include "staticobject.h"
 
 class RenderManager
 {
@@ -18,10 +19,11 @@ public:
 
 	void SetActiveCamera(CameraModule& cam){activeCamera = &cam;}
 
-	bool AddToRenderer(Mesh m);
+	bool AddToRenderer(Mesh &m);
+	void AddToRenderer(std::vector<Mesh> &meshList);
 	void RemoveFromRenderer(Mesh m);
-	void AddSkyBox(Mesh m);
-	void AddTerrainToRenderer(Terrain t);
+	void AddSkyBox(Mesh &m);
+	void AddTerrainToRenderer(Terrain &t);
 
 	void RenderAll();
 
@@ -31,7 +33,8 @@ private:
 
 	static CameraModule* activeCamera;
 
-	GLuint CompileToDisplayList(Mesh m, GLuint texture);
+	GLuint CompileToDisplayList(Mesh &m, GLuint texture);
+	GLuint CompileToDisplayList(Terrain &t, GLuint texture);
 
 	std::list<int> renderList;
 

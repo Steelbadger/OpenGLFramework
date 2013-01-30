@@ -1,4 +1,5 @@
 #include "player.h"
+#include "noisegenerator.h"
 
 
 Player::Player(void):
@@ -45,10 +46,10 @@ void Player::SetCameraTargetWindow(WindowWizard* window)
 	camera.SetTargetWindow(window);
 }
 
-void Player::CheckGroundCollision(Terrain &ground)
+void Player::CheckGroundCollision(NoiseObject n)
 {
 
-	if (rigidbody.CheckGroundCollision(ground)) {
+	if (rigidbody.CheckGroundCollision(n)) {
 		controller.SetJumping(false);
 	}
 }
@@ -80,5 +81,5 @@ Mesh* Player::GetMesh()
 
 void Player::DrawSkyBox()
 {
-	skybox.Draw();
+//	skybox.Draw();
 }

@@ -2,8 +2,10 @@
 #include <iostream>
 #include <time.h>
 
+
 Application::Application(void):
-	ground(1500.0f)
+	myNoise(9, 100.0f, 0.4f, 20.0f),
+	ground(500.0f, myNoise, 5.0f)
 {
 }
 
@@ -26,17 +28,19 @@ void Application::Initialize(HINSTANCE hInstance)
 	player.SetCameraTargetWindow(&window);
 	renderer.SetActiveCamera(*player.GetCamera());
 
-	player.InitSkyBox();
 
 	Mesh skyBox("skybox.obj", "skybox.tga");
-	skyBox.Initialize();
 	renderer.AddSkyBox(skyBox);
+
+	testObject.CreateAndAttachMesh("skybox.obj", "Crate.tga");
+	renderer.AddToRenderer(*testObject.GetMesh());
+	std::vector<Mesh> derp = testObject.GetMeshes();
+	testObject.SetLocation(0.0f, 10.0f, 0.0f);
 
 	cube = new CubeArray(1,1,1, "Crate.tga");
 
 	double myTimer = clock();
 
-	ground.Create();
 	renderer.AddTerrainToRenderer(ground);
 
 	myTimer = clock() - myTimer;
@@ -79,7 +83,7 @@ void Application::MainLoop()
 		window.PrepareForDrawing();
 		player.InputUpdate();
 
-		player.CheckGroundCollision(ground);
+		player.CheckGroundCollision(myNoise);
 
 		player.Update();
 

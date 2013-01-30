@@ -8,6 +8,9 @@
 #include "mywindow.h"
 #include "player.h"
 #include "renderer.h"
+#include "staticobject.h"
+#include "noisegenerator.h"
+
 
 class Application
 {
@@ -29,8 +32,11 @@ private:
 	bool framerateLogging;
 	bool culling;
 
+	NoiseObject myNoise;
 	CubeArray *cube;
 	Terrain ground;
 	RenderManager renderer;
+
+	StaticObject testObject;
 };
 

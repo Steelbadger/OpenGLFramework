@@ -78,6 +78,8 @@
     <ClCompile Include="input.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="mesh.cpp" />
+    <ClCompile Include="noisegenerator.cpp" />
+    <ClCompile Include="staticobject.cpp" />
     <ClCompile Include="terrain.cpp" />
     <ClCompile Include="mouse.cpp" />
     <ClCompile Include="my4x4matrix.cpp" />
@@ -102,6 +104,8 @@
     <ClInclude Include="heightmap.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="mesh.h" />
+    <ClInclude Include="noisegenerator.h" />
+    <ClInclude Include="staticobject.h" />
     <ClInclude Include="terrain.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="my4x4matrix.h" />
