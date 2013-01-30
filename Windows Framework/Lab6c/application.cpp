@@ -4,8 +4,8 @@
 
 
 Application::Application(void):
-	myNoise(9, 100.0f, 0.4f, 20.0f),
-	ground(500.0f, myNoise, 5.0f)
+	myNoise(7, 100.0f, 0.4f, 10.0f),
+	ground(500.0f, myNoise, 1.0f)
 {
 }
 

@@ -55,23 +55,14 @@ void Terrain::Create(NoiseObject n)
 			normals.push_back(normalD);
 			normals.push_back(normalA);
 
-			texCoords.push_back(Vector2(i*step, j*step));
-			texCoords.push_back(Vector2(i*step, step + j*step));
-			texCoords.push_back(Vector2(step + i*step, step + j*step));
-			texCoords.push_back(Vector2(step + i*step, step + j*step));
-			texCoords.push_back(Vector2(step + i*step, j*step));
-			texCoords.push_back(Vector2(i*step, j*step));
+			texCoords.push_back(Vector2(i*step/4, j*step/4));
+			texCoords.push_back(Vector2(i*step/4, (step + j*step)/4));
+			texCoords.push_back(Vector2((step + i*step)/4, (step + j*step)/4));
+			texCoords.push_back(Vector2((step + i*step)/4, (step + j*step)/4));
+			texCoords.push_back(Vector2((step + i*step)/4, j*step/4));
+			texCoords.push_back(Vector2(i*step/4, j*step/4));
 		}
 	}
-
-	//for (int i = 0; i < size*size; i++) {
-	//	texCoords.push_back(Vector2(0.0f, 1.0f));
-	//	texCoords.push_back(Vector2(1.0f, 0.0f));
-	//	texCoords.push_back(Vector2(0.0f, 0.0f));
-	//	texCoords.push_back(Vector2(1.0f, 0.0f));
-	//	texCoords.push_back(Vector2(0.0f, 1.0f));
-	//	texCoords.push_back(Vector2(1.0f, 1.0f));
-	//}
 
 	textureFile = "grass.tga";
 
