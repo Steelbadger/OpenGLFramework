@@ -7,9 +7,6 @@
 
 #include "mywindow.h"
 #include <windows.h>
-#include <mmsystem.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
 #include "myvector4.h"
 
 class GameObject;
@@ -26,7 +23,12 @@ public:
 	void SetWindowSize();
 	void SetClipPlanes(float near, float far);
 	void SetFieldOfView(float fov);
+	float GetFieldOfView(){return fieldOfView;}
 	void LockCursorToCentre();
+	int GetWindowWidth(){return windowWidth;}
+	int GetWindowHeight(){return windowHeight;}
+	float GetNearClipPlane(){return nearClipPlane;}
+	float GetFarClipPlane(){return farClipPlane;}
 
 	GameObject* GetParent(){return parent;}
 

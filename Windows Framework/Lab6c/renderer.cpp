@@ -66,6 +66,23 @@ void RenderManager::AddToRenderer(std::vector<Mesh> &meshList)
 	}
 }
 
+void RenderManager::UpdateCamera()
+{
+	Vector4 Position = activeCamera->GetParent()->GetPosition();
+	Vector4 upVector = activeCamera->GetParent()->GetLocalY();
+	Vector4 LookAt = Position + activeCamera->GetParent()->GetLocalZ();
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	//calculate aspect ratio
+	gluPerspective(activeCamera->GetFieldOfView(), (GLfloat)activeCamera->GetWindowWidth()/(GLfloat)activeCamera->GetWindowHeight(), activeCamera->GetNearClipPlane(), activeCamera->GetFarClipPlane());
+	glMatrixMode(GL_MODELVIEW);// Select The Modelview Matrix
+	glLoadIdentity();
+	gluLookAt((GLdouble)Position.x, (GLdouble)Position.y, (GLdouble)Position.z,
+				(GLdouble)LookAt.x, (GLdouble)LookAt.y, (GLdouble)LookAt.z,
+				(GLdouble)upVector.x, (GLdouble)upVector.y, (GLdouble)upVector.z);
+}
+
 void RenderManager::AddSkyBox(Mesh &m)
 {
 	std::string fn = m.GetTexturePath();
@@ -114,12 +131,16 @@ void RenderManager::RenderAll()
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
+//	UpdateCamera();
+
 	if (glIsList(skyBox)) {
 		glPushMatrix();
 			glTranslatef(activeCamera->GetParent()->GetPosition().x, activeCamera->GetParent()->GetPosition().y, activeCamera->GetParent()->GetPosition().z);
 			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_LIGHTING);
 			glCallList(skyBox);
 			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_LIGHTING);
 		glPopMatrix();
 	}
 

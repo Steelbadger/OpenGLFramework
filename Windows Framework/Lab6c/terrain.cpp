@@ -4,6 +4,7 @@
 #include "my4x4matrix.h"
 #include <iostream>
 #include "noisegenerator.h"
+#include <time.h>
 
 
 Terrain::Terrain(float s, NoiseObject n, float r):
@@ -26,12 +27,12 @@ void Terrain::Create(NoiseObject n)
 	NoiseGenerator noise;
 	int size = squareSize/resolution;
 	float step = squareSize/(size-1);
-	Matrix4x4 scaleMatrix(Matrix4x4::IDENTITY);
-	scaleMatrix.Scale(1/step, 1.0f, 1/step);
 	int octaves = n.octaves;
 	float zoom = n.zoom;
 	float persistance = n.persistance;
 	float amp = n.amplitude;
+
+	double myTime = clock();
 
 	for (float i = 0; i < size-1; i++) {
 		for (float j = 0; j < size-1; j++) {
@@ -63,11 +64,12 @@ void Terrain::Create(NoiseObject n)
 			texCoords.push_back(Vector2(i*step/4, j*step/4));
 		}
 	}
-
+	myTime = clock()-myTime;
 	textureFile = "grass.tga";
 
 
 	std::cout << "Number of Triangles in Terrain Mesh: " << verts.size()/3 << std::endl;
+	std::cout << "Generation Time: " << myTime/CLOCKS_PER_SEC << "s" << std::endl;
 }
 
 float Terrain::GetHeight(float x, float z)

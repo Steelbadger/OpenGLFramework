@@ -26,6 +26,7 @@ public:
 	void AddTerrainToRenderer(Terrain &t);
 
 	void RenderAll();
+	void UpdateCamera();
 
 	static bool MeshComparator(int rhs, int lhs);
 

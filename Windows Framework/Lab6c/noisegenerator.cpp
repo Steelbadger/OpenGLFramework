@@ -3,6 +3,7 @@
 #include "myvector4.h"
 #include "my4x4matrix.h"
 
+
 NoiseObject::NoiseObject(int o, float z, float p, float a):
 	octaves(o),
 	zoom(z),
@@ -96,4 +97,3 @@ float NoiseGenerator::NonCoherentNoise2D(float x, float y)
 	int nn = (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
 	return 1.0-((float)nn/1073741824.0);
 }
-

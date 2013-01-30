@@ -18,7 +18,6 @@ public:
 
 
 	void InputUpdate();
-	void Update();
 	void SetCameraTargetWindow(WindowWizard* window);
 	Controller controller;
 
@@ -29,10 +28,6 @@ public:
 	virtual Rigidbody* GetRigidbody();
 	virtual Mesh* GetMesh();
 	virtual Controller* GetController();
-
-//	void InitSkyBox(){skybox.Initialize();}
-
-	void DrawSkyBox();
 
 private:
 	bool flying;

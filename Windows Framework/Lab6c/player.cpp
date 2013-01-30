@@ -36,11 +36,6 @@ void Player::InputUpdate()
 }
 
 
-void Player::Update()
-{
-	camera.Update();
-}
-
 void Player::SetCameraTargetWindow(WindowWizard* window)
 {
 	camera.SetTargetWindow(window);
@@ -48,7 +43,7 @@ void Player::SetCameraTargetWindow(WindowWizard* window)
 
 void Player::CheckGroundCollision(NoiseObject n)
 {
-
+	n.octaves = 9;
 	if (rigidbody.CheckGroundCollision(n)) {
 		controller.SetJumping(false);
 	}
@@ -77,9 +72,4 @@ Controller* Player::GetController()
 Mesh* Player::GetMesh()
 {
 	return &skybox;
-}
-
-void Player::DrawSkyBox()
-{
-//	skybox.Draw();
 }

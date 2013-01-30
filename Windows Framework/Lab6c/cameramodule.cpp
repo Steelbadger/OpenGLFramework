@@ -15,24 +15,6 @@ CameraModule::~CameraModule(void)
 {
 }
 
-void CameraModule::Update()
-{
-	Vector4 Position = parent->GetPosition();
-	Vector4 upVector = parent->GetLocalY();
-	LookAt = Position + parent->GetLocalZ();
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	//calculate aspect ratio
-	gluPerspective(fieldOfView, (GLfloat)windowWidth/(GLfloat)windowHeight, nearClipPlane, farClipPlane);
-	glMatrixMode(GL_MODELVIEW);// Select The Modelview Matrix
-	glLoadIdentity();
-	gluLookAt((GLdouble)Position.x, (GLdouble)Position.y, (GLdouble)Position.z,
-				(GLdouble)LookAt.x, (GLdouble)LookAt.y, (GLdouble)LookAt.z,
-				(GLdouble)upVector.x, (GLdouble)upVector.y, (GLdouble)upVector.z);
-
-}
-
 void CameraModule::Zoom(int zoom)
 {
 	fieldOfView -= zoom/120;

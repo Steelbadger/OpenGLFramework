@@ -4,8 +4,8 @@
 
 
 Application::Application(void):
-	myNoise(7, 100.0f, 0.4f, 10.0f),
-	ground(500.0f, myNoise, 1.0f)
+	myNoise(12, 100.0f, 0.47f, 20.0f),
+	ground(20.0f, myNoise, 0.1f)
 {
 }
 
@@ -34,7 +34,6 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	testObject.CreateAndAttachMesh("skybox.obj", "Crate.tga");
 	renderer.AddToRenderer(*testObject.GetMesh());
-	std::vector<Mesh> derp = testObject.GetMeshes();
 	testObject.SetLocation(0.0f, 10.0f, 0.0f);
 
 	cube = new CubeArray(1,1,1, "Crate.tga");
@@ -51,7 +50,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "OpenGL 4.2 Initialized: " << 	GLEW_VERSION_4_2 << std::endl;
 	std::cout << "Number of Texture Units: " << numTextureUnits << std::endl;
-	std::cout << std::endl << "Time to Initialize: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	std::cout << std::endl << "Time to Add Terrain To Renderer: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
 	lastTime = time(NULL);
 	nbFrames = 0;
@@ -75,9 +74,9 @@ void Application::MainLoop()
 			lastTime += 1.0;
 		}
 
-		GLfloat Light_Ambient[] = {0.0f, 0.0f, 0.0f, 1.0f};
-		GLfloat Light_Diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
-		GLfloat Light_Position[]= {3.0f, 3.0f, 0.0f, 1.0f};
+		GLfloat Light_Ambient[] = {0.1f, 0.1f, 0.1f, 1.0f};
+		GLfloat Light_Diffuse[] = {0.8f, 0.8f, 0.8f, 1.0f};
+		GLfloat Light_Position[]= {500.0f, 1000.0f, 500.0f, 1.0f};
 
 		glLoadIdentity();
 		window.PrepareForDrawing();
@@ -85,7 +84,7 @@ void Application::MainLoop()
 
 		player.CheckGroundCollision(myNoise);
 
-		player.Update();
+		renderer.UpdateCamera();
 
 		input.Update();
 
@@ -133,9 +132,9 @@ void Application::MainLoop()
 		if (input.ReportKeyPress(VK_ESCAPE))
 			exit(0);
 
-		Light_Position[0] = player.GetPosition().x;
-		Light_Position[1] = player.GetPosition().y;
-		Light_Position[2] = player.GetPosition().z;
+		//Light_Position[0] = player.GetPosition().x;
+		//Light_Position[1] = player.GetPosition().y;
+		//Light_Position[2] = player.GetPosition().z;
 
 
 		glEnable(GL_LIGHTING);
@@ -143,11 +142,6 @@ void Application::MainLoop()
 		glLightfv(GL_LIGHT1, GL_DIFFUSE,  Light_Diffuse);
 		glLightfv(GL_LIGHT1, GL_POSITION, Light_Position);
 		glEnable(GL_LIGHT1);
-
-		//glDisable(GL_DEPTH_TEST);
-		//player.DrawSkyBox();
-		//glEnable(GL_DEPTH_TEST);
-		//ground.Draw();
 
 		renderer.RenderAll();
 	
