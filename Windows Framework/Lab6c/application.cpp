@@ -32,7 +32,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	Mesh skyBox("inwardCube.obj", "skyboxseamless.tga");
 	renderer.AddSkyBox(skyBox);
 
-	testObject.CreateAndAttachMesh("outwardCube.obj", "Crate.tga");
+	testObject.CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
 	renderer.AddToRenderer(*testObject.GetMesh());
 	testObject.SetLocation(0.0f, 10.0f, 0.0f);
 
