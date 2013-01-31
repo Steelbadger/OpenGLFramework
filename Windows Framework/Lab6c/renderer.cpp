@@ -89,6 +89,7 @@ void RenderManager::AddSkyBox(Mesh &m)
 	GLuint tex;
 
 	CreateGLTexture(fn.c_str(), tex);
+	skyBoxTexture = tex;
 	skyBox = CompileToDisplayList(m, tex);
 }
 
@@ -138,6 +139,7 @@ void RenderManager::RenderAll()
 			glTranslatef(activeCamera->GetParent()->GetPosition().x, activeCamera->GetParent()->GetPosition().y, activeCamera->GetParent()->GetPosition().z);
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_LIGHTING);
+			glBindTexture(GL_TEXTURE_2D, skyBoxTexture);
 			glCallList(skyBox);
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_LIGHTING);
@@ -145,6 +147,7 @@ void RenderManager::RenderAll()
 	}
 
 	if (glIsList(terrain)) {
+		glBindTexture(GL_TEXTURE_2D, terrainTexture);
 		glCallList(terrain);
 	}
 
@@ -160,15 +163,16 @@ void RenderManager::RenderAll()
 				Vector4 localY = m->GetParentPointer()->GetLocalY();
 
 				//  Work out the rotations around each axis for render context rotations
-				thetaY = Vector4(localX.x, 0.0f, localX.z, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, 0.0f, localX.z, 1.0f).Length());
-				thetaZ = Vector4(localX.x, localX.y, 0.0f, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, localX.y, 0.0f, 1.0f).Length());
-				thetaX = Vector4(0.0f, localY.y, localY.z, 1.0f).Dot3(Vector4(0.0f, 1.0f, 0.0f, 1.0f)/Vector4(0.0f, localY.y, localY.z, 1.0f).Length());
+				thetaY = acos(Vector4(localX.x, 0.0f, localX.z, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, 0.0f, localX.z, 1.0f).Length()))*180.0/Matrix4x4::PI;
+				thetaZ = acos(Vector4(localX.x, localX.y, 0.0f, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, localX.y, 0.0f, 1.0f).Length()))*180.0/Matrix4x4::PI;
+				thetaX = acos(Vector4(0.0f, localY.y, localY.z, 1.0f).Dot3(Vector4(0.0f, 1.0f, 0.0f, 1.0f)/Vector4(0.0f, localY.y, localY.z, 1.0f).Length()))*180.0/Matrix4x4::PI;
 
 				glPushMatrix();
 					glTranslatef(m->GetParentPointer()->GetPosition().x, m->GetParentPointer()->GetPosition().y, m->GetParentPointer()->GetPosition().z);
+					glRotatef(thetaY, 0.0f, 1.0f, 0.0f);					
 					glRotatef(thetaX, 1.0f, 0.0f, 0.0f);
-					glRotatef(thetaY, 0.0f, 1.0f, 0.0f);
 					glRotatef(thetaZ, 0.0f, 0.0f, 1.0f);
+					glBindTexture(GL_TEXTURE_2D, TextureMap[Mesh::GetMeshPointer(*it)->GetTexturePath()]);
 					glCallList(UniqueIDToDListMap[*it]);
 				glPopMatrix();
 			} else {
@@ -187,7 +191,6 @@ GLuint RenderManager::CompileToDisplayList(Mesh &m, GLuint texture)
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glBindTexture(GL_TEXTURE_2D, texture);
 		glVertexPointer(3, GL_FLOAT, 0, m.GetVertexArrayBase());
 		glNormalPointer(GL_FLOAT, 0, m.GetNormalArrayBase());
 		glTexCoordPointer(2,GL_FLOAT,0, m.GetUVArrayBase());
@@ -208,7 +211,6 @@ GLuint RenderManager::CompileToDisplayList(Terrain &t, GLuint texture)
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glBindTexture(GL_TEXTURE_2D, texture);
 		glVertexPointer(3, GL_FLOAT, 0, t.GetVertexArrayBase());
 		glNormalPointer(GL_FLOAT, 0, t.GetNormalArrayBase());
 		glTexCoordPointer(2,GL_FLOAT,0, t.GetUVArrayBase());

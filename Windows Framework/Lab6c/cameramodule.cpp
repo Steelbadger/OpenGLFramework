@@ -68,3 +68,8 @@ void CameraModule::LockCursorToCentre()
 		targetWindow->SetCursorToCentre();
 	}
 }
+
+void CameraModule::CalculateModelMatrix()
+{
+	
+}

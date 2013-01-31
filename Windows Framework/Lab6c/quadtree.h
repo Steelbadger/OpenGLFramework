@@ -9,18 +9,16 @@ class QuadTree
 public:
 	enum quadrant{NE, NW, SE, SW};
 
-	QuadTree(NoiseObject noiseSeed);
-	QuadTree(int depthOfParent, NoiseObject noiseSeed, float xMin, float yMin);
-	~QuadTree(void);
+	QuadTree();
+	~QuadTree();
 
-	void Update(float x, float y);
+	float SampleValue(float x, float y);
 	std::vector<Vector3> GetNodes();
 
 private:
-	float nw, ne, se, sw, centre;
-	float xMin;
-	float yMin;
 
+	Vector3 bounds[4];
+	
 	bool BoxCheck(float boxX, float boxY, float boxR, float pointX, float pointY);
 
 	QuadTree* northEast;
@@ -35,8 +33,6 @@ private:
 	static const int HIGHDETAILRADIUS = 10;
 	static const int MEDIUMDETAILRADIUS = 200;
 	static const int LOWDETAILRADIUS = 2000;
-
-	NoiseObject noiseSeed;
 };
 //
 //class QuadTreeTerrain

@@ -27,27 +27,23 @@ void Terrain::Create(NoiseObject n)
 	NoiseGenerator noise;
 	int size = squareSize/resolution;
 	float step = squareSize/(size-1);
-	int octaves = n.octaves;
-	float zoom = n.zoom;
-	float persistance = n.persistance;
-	float amp = n.amplitude;
 
 	double myTime = clock();
 
 	for (float i = 0; i < size-1; i++) {
 		for (float j = 0; j < size-1; j++) {
-			verts.push_back(Vector3(i*step, noise.Perlin2D(i*step, j*step, octaves, zoom, persistance, amp), j*step));
-			verts.push_back(Vector3(i*step, noise.Perlin2D(i*step, step+j*step, octaves, zoom, persistance, amp), step + j*step));
-			verts.push_back(Vector3(step + i*step, noise.Perlin2D(step+i*step, step+j*step, octaves, zoom, persistance, amp), step + j*step));
-			verts.push_back(Vector3(step + i*step, noise.Perlin2D(step+i*step, step+j*step, octaves, zoom, persistance, amp), step + j*step));
-			verts.push_back(Vector3(step + i*step, noise.Perlin2D(step+i*step, j*step, octaves, zoom, persistance, amp), j*step));
-			verts.push_back(Vector3(i*step, noise.Perlin2D(i*step, j*step, octaves, zoom, persistance, amp),j*step));
+			verts.push_back(Vector3(i*step, noise.TurbulentPerlin2D(i*step, j*step, n), j*step));
+			verts.push_back(Vector3(i*step, noise.TurbulentPerlin2D(i*step, step+j*step, n), step + j*step));
+			verts.push_back(Vector3(step + i*step, noise.TurbulentPerlin2D(step+i*step, step+j*step, n), step + j*step));
+			verts.push_back(Vector3(step + i*step, noise.TurbulentPerlin2D(step+i*step, step+j*step, n), step + j*step));
+			verts.push_back(Vector3(step + i*step, noise.TurbulentPerlin2D(step+i*step, j*step, n), j*step));
+			verts.push_back(Vector3(i*step, noise.TurbulentPerlin2D(i*step, j*step, n),j*step));
 
 			Vector4 normalA, normalB, normalC, normalD;
-			normalA = noise.NormalToPerlin2D(i*step, j*step, octaves, zoom, persistance, amp);
-			normalB = noise.NormalToPerlin2D(step+i*step, step+j*step, octaves, zoom, persistance, amp);
-			normalC = noise.NormalToPerlin2D(i*step, step+j*step, octaves, zoom, persistance, amp);
-			normalD = noise.NormalToPerlin2D(step+i*step, j*step, octaves, zoom, persistance, amp);
+			normalA = noise.NormalToTurbulentPerlin2D(i*step, j*step, n);
+			normalB = noise.NormalToTurbulentPerlin2D(step+i*step, step+j*step, n);
+			normalC = noise.NormalToTurbulentPerlin2D(i*step, step+j*step, n);
+			normalD = noise.NormalToTurbulentPerlin2D(step+i*step, j*step, n);
 
 			normals.push_back(normalA);
 			normals.push_back(normalC);

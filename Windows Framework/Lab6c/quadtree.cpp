@@ -1,19 +1,8 @@
 #include "quadtree.h"
 
-QuadTree::QuadTree(NoiseObject n):
-	noiseSeed(n)
+QuadTree::QuadTree()
 {
 }
-
-QuadTree::QuadTree(int depthOfParent, NoiseObject n, float xMin, float yMin):
-	noiseSeed(n)
-{
-	depth = depthOfParent+1;
-	if(depth%3 != 0) {
-		noiseSeed.octaves++;
-	}
-}
-
 
 QuadTree::~QuadTree(void)
 {
@@ -27,11 +16,6 @@ QuadTree::~QuadTree(void)
 		delete southWest;
 }
 
-
-void QuadTree::Update(float x, float y)
-{
-
-}
 
 bool QuadTree::BoxCheck(float xb, float yb, float rb, float xp, float yp)
 {

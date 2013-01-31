@@ -8,6 +8,7 @@
 #include "mywindow.h"
 #include <windows.h>
 #include "myvector4.h"
+#include "my4x4matrix.h"
 
 class GameObject;
 
@@ -29,6 +30,7 @@ public:
 	int GetWindowHeight(){return windowHeight;}
 	float GetNearClipPlane(){return nearClipPlane;}
 	float GetFarClipPlane(){return farClipPlane;}
+	void CalculateModelMatrix();
 
 	GameObject* GetParent(){return parent;}
 
@@ -45,6 +47,9 @@ private:
 	float fieldOfView;
 	float nearClipPlane;
 	float farClipPlane;
+
+	Matrix4x4 model;
+	Matrix4x4 projection;
 
 	Vector4 LookAt;
 };

@@ -40,6 +40,7 @@ private:
 	std::list<int> renderList;
 
 	GLuint skyBox;
+	GLuint skyBoxTexture;
 	GLuint terrain;
 	GLuint terrainTexture;
 

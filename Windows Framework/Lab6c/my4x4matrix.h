@@ -20,6 +20,7 @@ public:
 	void RotationY(float fAngle);
 	void RotationZ(float fAngle);
 	void RotationAroundVectorThroughZero(Vector4 Vector, float angle);
+	void Projection(float fov, float aspect, float near, float far);
 
 	void Scale(float xScale, float yScale, float zScale);
 
@@ -38,6 +39,7 @@ public:
 
 	static const Matrix4x4 IDENTITY;
 	static const Matrix4x4 NULLMATRIX;
+	static const double PI;
 };
 
 Matrix4x4 operator * ( const Matrix4x4 & M1,

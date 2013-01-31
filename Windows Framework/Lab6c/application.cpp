@@ -4,8 +4,8 @@
 
 
 Application::Application(void):
-	myNoise(12, 100.0f, 0.47f, 20.0f),
-	ground(20.0f, myNoise, 0.1f)
+	myNoise(10, 200.0f, 0.47f, 30.0f),
+	ground(500.0f, myNoise, 3.0f)
 {
 }
 
@@ -82,6 +82,8 @@ void Application::MainLoop()
 		window.PrepareForDrawing();
 		player.InputUpdate();
 
+		testObject.RotateDeltaZ(0.05f);
+
 		player.CheckGroundCollision(myNoise);
 
 		renderer.UpdateCamera();
@@ -132,9 +134,9 @@ void Application::MainLoop()
 		if (input.ReportKeyPress(VK_ESCAPE))
 			exit(0);
 
-		//Light_Position[0] = player.GetPosition().x;
-		//Light_Position[1] = player.GetPosition().y;
-		//Light_Position[2] = player.GetPosition().z;
+		Light_Position[0] = player.GetPosition().x;
+		Light_Position[1] = player.GetPosition().y;
+		Light_Position[2] = player.GetPosition().z;
 
 
 		glEnable(GL_LIGHTING);

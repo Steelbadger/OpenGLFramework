@@ -35,7 +35,6 @@ void GameObject::SetRotate(float xRotNew, float yRotNew, float zRotNew)
 	rotation = rotation * temp;
 	temp.RotationZ(zRotNew);
 	rotation = rotation * temp;
-
 }
 
 void GameObject::OrientateAxesToGlobalUp()

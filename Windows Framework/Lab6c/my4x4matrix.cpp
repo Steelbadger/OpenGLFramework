@@ -13,6 +13,8 @@ const Matrix4x4 Matrix4x4::NULLMATRIX(0.0f,0.0f,0.0f,0.0f,
 									  0.0f,0.0f,0.0f,0.0f,
 									  0.0f,0.0f,0.0f,0.0f);
 
+const double Matrix4x4::PI = 3.1415926535897932384626433832795;
+
 Matrix4x4::Matrix4x4(void)
 {
 }
@@ -168,6 +170,19 @@ void Matrix4x4::LookAt(const Vector4 & vFrom, const Vector4 & vTo, const Vector4
 	elem[3][1] = -vY.Dot3(vFrom);
 	elem[3][2] = -vZ.Dot3(vFrom);
 	elem[3][3] = 1;
+}
+
+void Matrix4x4::Projection(float fov, float aspect, float near, float far)
+{
+	float h = tan(fov/360*PI)*near/2;
+	float w = h * aspect;
+	memcpy(elem, NULLMATRIX.elem, sizeof(float) * 16);
+
+	elem[0][0] = near/w;
+	elem[1][1] = near/h;
+	elem[2][2] = -(far+near)/(far-near);
+	elem[2][3] = -2*far*near/(far-near);
+	elem[3][2] = -1;
 }
 
 
