@@ -16,6 +16,7 @@ public:
 
 	void Rotation(float angle, float xComp, float yComp, float zComp);
 	void Rotation(float angle, Vector3 axis);
+	void Align(Vector3 v1, Vector3 v2);
 
 
 	float Modulus();
@@ -26,6 +27,8 @@ public:
 	Quaternion Normalize();
 	void NormalizeSelf();
 	void NormalizeVector();
+	float GetAngle();
+	Vector3 GetAxis();
 
 	float s, x, y, z;
 };

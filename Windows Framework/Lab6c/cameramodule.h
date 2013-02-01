@@ -31,6 +31,9 @@ public:
 	float GetNearClipPlane(){return nearClipPlane;}
 	float GetFarClipPlane(){return farClipPlane;}
 	void CalculateModelMatrix();
+	Vector4 GetForward();
+	Vector4 GetUp();
+	Vector4 GetPosition();
 
 	GameObject* GetParent(){return parent;}
 

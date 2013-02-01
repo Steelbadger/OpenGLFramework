@@ -1,6 +1,7 @@
 #pragma once
 
 #include "myvector4.h"
+#include "quaternion.h"
 
 class Matrix4x4
 {
@@ -12,6 +13,7 @@ public:
 				float _21, float _22, float _23, float _24,
 				float _31, float _32, float _33, float _34,
 				float _41, float _42, float _43, float _44);
+	Matrix4x4(const Quaternion &rhs);
 
 	~Matrix4x4(void);
 

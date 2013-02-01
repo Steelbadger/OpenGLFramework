@@ -49,8 +49,6 @@ void GameObject::SetRotate(float xRotNew, float yRotNew, float zRotNew)
 
 void GameObject::OrientateAxesToGlobalUp()
 {
-
-
 	//localX = localZ.Cross(GLOBALY);
 	//localY = localX.Cross(localZ);
 }
@@ -159,10 +157,10 @@ void GameObject::RotateLocalDeltaX(float dx)
 	//localZ = RotationMatrix * localZ;
 	//localY = RotationMatrix * localY;
 
-	Vector4 rotationAxis = rotation * Quaternion(GLOBALX) * rotation.Inverse();
+//	Vector4 rotationAxis = rotation * Quaternion(GLOBALX) * rotation.Inverse();
 
 	Quaternion rot;
-	rot.Rotation(dx, rotationAxis);
+	rot.Rotation(dx, localX);
 	rotation = rot * rotation;
 	rotation.NormalizeSelf();
 
@@ -177,10 +175,10 @@ void GameObject::RotateLocalDeltaY(float dy)
 	//localZ = RotationMatrix * localZ;
 	//localX = RotationMatrix * localX;
 
-	Vector4 rotationAxis = rotation * Quaternion(GLOBALY) * rotation.Inverse();
+//	Vector4 rotationAxis = rotation * Quaternion(GLOBALY) * rotation.Inverse();
 
 	Quaternion rot;
-	rot.Rotation(dy, rotationAxis);
+	rot.Rotation(dy, localY);
 	rotation = rot * rotation;
 	rotation.NormalizeSelf();
 
@@ -195,7 +193,7 @@ void GameObject::RotateLocalDeltaZ(float dz)
 	//localY = RotationMatrix * localY;
 	//localX = RotationMatrix * localX;
 
-	localZ = rotation * Quaternion(GLOBALZ) * rotation.Inverse();
+	//localZ = rotation * Quaternion(GLOBALZ) * rotation.Inverse();
 
 	Quaternion rot;
 	rot.Rotation(dz, localZ);

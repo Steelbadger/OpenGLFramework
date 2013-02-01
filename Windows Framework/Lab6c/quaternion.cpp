@@ -108,3 +108,31 @@ void Quaternion::NormalizeVector()
 	y = I.y;
 	z = I.z;
 }
+
+float Quaternion::GetAngle()
+{
+	return acos(s)*2;
+}
+
+Vector3 Quaternion::GetAxis()
+{
+	return Vector3(Vector4(x,y,z,1.0f)/asin(s)*2);
+}
+
+void Quaternion::Align(Vector3 v1, Vector3 v2)
+{
+	if (v1 == v2) {
+		s = 1.0f;
+		x = 0.0f;
+		y = 0.0f;
+		z = 0.0f;
+	} else {
+		Vector4 A = Vector4(v1).Normalise();
+		Vector4 B = Vector4(v2).Normalise();
+		Quaternion res(acos(A.Dot3(B)),A.Cross(B));
+		s = res.s;
+		x = res.x;
+		y = res.y;
+		z = res.z;
+	}
+}

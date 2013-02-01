@@ -19,6 +19,30 @@ Matrix4x4::Matrix4x4(void)
 {
 }
 
+Matrix4x4::Matrix4x4(const Quaternion &rhs)
+{
+	float angle = acos(rhs.s)*2;
+	float m = sin(angle/2);
+	Vector4 RotationVector = Vector4(rhs.x, rhs.y, rhs.z, 1.0f)/m;
+	memcpy(elem, IDENTITY.elem, sizeof(float) * 16);
+	float c = cos(angle);
+	float c1 = 1-c;
+	float s = sin(angle);
+	float a = RotationVector.x;
+	float b = RotationVector.y;
+	float g = RotationVector.z;
+	
+	elem[0][0] = a*a*c1+c;
+	elem[1][0] = a*b*c1-g*s;
+	elem[2][0] = a*g*c1+b*s;
+	elem[0][1] = a*b*c1+g*s;
+	elem[1][1] = b*b*c1+c;
+	elem[2][1] = b*g*c1-a*s;
+	elem[0][2] = a*g*c1-b*s;
+	elem[1][2] = b*g*c1+a*s;
+	elem[2][2] = g*g*c1+c;	
+}
+
 Matrix4x4::~Matrix4x4(void)
 {
 }

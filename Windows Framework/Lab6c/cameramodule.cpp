@@ -73,3 +73,20 @@ void CameraModule::CalculateModelMatrix()
 {
 	
 }
+
+Vector4 CameraModule::GetForward()
+{
+	return parent->GetLocalZ();
+}
+
+Vector4 CameraModule::GetUp()
+{
+	Vector4 up = (GetForward().Cross(GameObject::GLOBALY)).Cross(GetForward());
+
+	return up;
+}
+
+Vector4 CameraModule::GetPosition()
+{
+	return parent->GetPosition();
+}
