@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "myvector3.h"
 
+class Quaternion;
+
 class Vector4
 {
 public:
@@ -11,6 +13,7 @@ public:
 	Vector4(const float _x, const float _y, const float _z, const float _w);
 	Vector4(const Vector4 & rhs);
 	Vector4(const Vector3 & rhs);
+	Vector4(const Quaternion &rhs);
 
 	~Vector4(void);
 

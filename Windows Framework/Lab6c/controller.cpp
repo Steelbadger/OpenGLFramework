@@ -29,7 +29,7 @@ void Controller::CheckInputAndAct()
 
 	if (input.GetMouseR()) {
 		parent->RotateLocalDeltaY(-(float)input.GetMouseDX()/1000.0);
-		parent->RotateLocalDeltaX(-(float)input.GetMouseDY()/1000.0);
+		parent->RotateLocalDeltaX((float)input.GetMouseDY()/1000.0);
 		if (input.ReportKeyState('D'))
 			parent->MoveLocalDeltaX(sensitivity*input.GetTimeForLastFrame());
 		if (input.ReportKeyState('A'))

@@ -1,12 +1,12 @@
 #pragma once
 #include "myvector4.h"
-#include "my4x4matrix.h"
 #include "collider.h"
 #include "cameramodule.h"
 #include "rigidbodymodule.h"
 #include "Terrain.h"
 #include "controller.h"
 #include "mesh.h"
+#include "quaternion.h"
 
 class GameObject
 {
@@ -38,7 +38,7 @@ public:
 	Vector4 GetLocalY();
 	Vector4 GetLocalZ();
 
-	Matrix4x4& GetRotation();
+	Quaternion GetRotation();
 
 	virtual Collider* GetCollider();
 	virtual CameraModule* GetCamera();
@@ -51,7 +51,7 @@ public:
 	static const Vector4 GLOBALZ;
 private:
 	Vector4 position;
-	Matrix4x4 rotation;
+	Quaternion rotation;
 	Vector4 localX;
 	Vector4 localY;
 	Vector4 localZ;
