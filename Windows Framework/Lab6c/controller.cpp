@@ -28,7 +28,7 @@ void Controller::CheckInputAndAct()
 
 
 	if (input.GetMouseR()) {
-		parent->RotateLocalDeltaY(-(float)input.GetMouseDX()/1000.0);
+		parent->RotateDeltaY(-(float)input.GetMouseDX()/1000.0);
 		parent->RotateLocalDeltaX((float)input.GetMouseDY()/1000.0);
 		if (input.ReportKeyState('D'))
 			parent->MoveLocalDeltaX(-sensitivity*input.GetTimeForLastFrame());
@@ -36,10 +36,13 @@ void Controller::CheckInputAndAct()
 			parent->MoveLocalDeltaX(sensitivity*input.GetTimeForLastFrame());
 		parent->OrientateAxesToGlobalUp();
 	} else {
-		if (input.ReportKeyState('D'))
-			parent->RotateLocalDeltaY(-sensitivity*input.GetTimeForLastFrame()/5);
-		if (input.ReportKeyState('A'))
-			parent->RotateLocalDeltaY(sensitivity*input.GetTimeForLastFrame()/5);
-		parent->OrientateAxesToGlobalUp();
+		if (input.ReportKeyState('D')) {
+			parent->RotateDeltaY(-sensitivity*input.GetTimeForLastFrame()/5);
+			parent->OrientateAxesToGlobalUp();
+		}
+		if (input.ReportKeyState('A')) {
+			parent->RotateDeltaY(sensitivity*input.GetTimeForLastFrame()/5);
+			parent->OrientateAxesToGlobalUp();
+		}
 	}
 }

@@ -25,6 +25,7 @@ void Rigidbody::SetGravity(float g)
 bool Rigidbody::CheckGroundCollision(NoiseObject n)
 {
 	NoiseGenerator ground;
+	ground.Seed(n.seed);
 	n.octaves = 9;
 	if(active) {
 		if (parent->GetPosition().y < 2.0f+ground.TurbulentPerlin2D(parent->GetPosition().x, parent->GetPosition().z, n)) {

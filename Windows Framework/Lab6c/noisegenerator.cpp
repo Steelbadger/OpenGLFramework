@@ -36,16 +36,18 @@ void NoiseGenerator::GeneratePermutationTable()
 }
 
 
-NoiseObject::NoiseObject(int o, float z, float p, float a):
+NoiseObject::NoiseObject(int o, float z, float p, float a, float s):
 	octaves(o),
 	zoom(z),
 	persistance(p),
-	amplitude(a)
+	amplitude(a),
+	seed(s)
 {}
 
 NoiseGenerator::NoiseGenerator(void)
 {
 	if (!pTableBuilt) {
+		seed = 0.0f;
 		GeneratePermutationTable();
 	}
 }
@@ -119,20 +121,57 @@ float NoiseGenerator::TurbulentPerlin2D(float x, float y, NoiseObject n)
 	return abs(Perlin2D(x, y, n.octaves, n.zoom, n.persistance, n.amplitude));
 }
 
-Vector3 NoiseGenerator::NormalToTurbulentPerlin2D(float x, float y, NoiseObject n)
+Vector3 NoiseGenerator::NormalToTurbulentPerlin2D(float x, float y, NoiseObject n, float step)
 {
-	float offs = 0.01f;
-	Vector4 A(x, TurbulentPerlin2D(x,y,n), y-offs, 1.0f);
-	Vector4 B(x-offs, TurbulentPerlin2D(x-offs,y+offs,n), y+offs, 1.0f);
-	Vector4 C(x+offs, TurbulentPerlin2D(x+offs,y+offs,n), y+offs, 1.0f);
+	//float offs = 0.01f;
+	//Vector4 A(x, TurbulentPerlin2D(x,y,n), y-offs, 1.0f);
+	//Vector4 B(x-offs, TurbulentPerlin2D(x-offs,y+offs,n), y+offs, 1.0f);
+	//Vector4 C(x+offs, TurbulentPerlin2D(x+offs,y+offs,n), y+offs, 1.0f);
 
-	Vector4 AB = B - A;
-	Vector4 AC = C - A;
+	//Vector4 AB = B - A;
+	//Vector4 AC = C - A;
 
-	Vector4 Normal = AB.Cross(AC);
+	//Vector4 Normal = AB.Cross(AC);
+	//Normal.NormaliseSelf();
+	//Vector3 output(Normal);
+	//return output;
+
+	float x1 = x-step;
+	float x2 = x;
+	float x3 = x+step;
+	float y1 = y-step;
+	float y2 = y;
+	float y3 = y+step;
+
+	Vector4 A(x1, TurbulentPerlin2D(x1,y1,n), y1, 1.0f);
+	Vector4 B(x2, TurbulentPerlin2D(x2,y1,n), y1, 1.0f);
+
+	Vector4 C(x1, TurbulentPerlin2D(x1,y2,n), y2, 1.0f);
+	Vector4 D(x2, TurbulentPerlin2D(x2,y2,n), y2, 1.0f);
+	Vector4 E(x3, TurbulentPerlin2D(x3,y2,n), y2, 1.0f);
+
+	Vector4 F(x2, TurbulentPerlin2D(x2,y3,n), y3, 1.0f);
+	Vector4 G(x3, TurbulentPerlin2D(x2,y3,n), y3, 1.0f);
+
+	Vector4 DC = C - D;
+	Vector4 DA = A - D;
+	Vector4 DB = A - D;
+	Vector4 DE = E - D;
+	Vector4 DG = G - D;
+	Vector4 DF = F - D;
+
+	Vector4 Normal1 = DA.Cross(DC);
+	Vector4 Normal2 = DB.Cross(DA);
+	Vector4 Normal3 = DA.Cross(DB);
+	Vector4 Normal4 = DG.Cross(DE);
+	Vector4 Normal5 = DF.Cross(DG);
+	Vector4 Normal6 = DC.Cross(DF);
+
+	Vector4 Normal = Normal1 + Normal2 + Normal3 + Normal4 + Normal5 + Normal6;
+
 	Normal.NormaliseSelf();
-	Vector3 output(Normal);
-	return output;
+
+	return Normal;
 }
 
 float NoiseGenerator::FastPerlin2D(float x, float y, int octaves, float zoom, float persistance, float amp)
@@ -153,20 +192,55 @@ float NoiseGenerator::FastPerlin2D(float x, float y, NoiseObject n)
 	return FastPerlin2D(x, y, n.octaves, n.zoom, n.persistance, n.amplitude);
 }
 
-Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, int octaves, float zoom, float persistance, float amp)
+Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, int octaves, float zoom, float persistance, float amp, float step)
 {
-	float offs = 0.01f;
-	Vector4 A(x, Perlin2D(x,y,octaves,zoom,persistance,amp), y-offs, 1.0f);
-	Vector4 B(x-offs, Perlin2D(x-offs,y+offs,octaves,zoom,persistance,amp), y+offs, 1.0f);
-	Vector4 C(x+offs, Perlin2D(x+offs,y+offs,octaves,zoom,persistance,amp), y+offs, 1.0f);
+	//float offs = 0.01f;
 
-	Vector4 AB = B - A;
-	Vector4 AC = C - A;
+	float x1 = x-step;
+	float x2 = x;
+	float x3 = x+step;
+	float y1 = y-step;
+	float y2 = y;
+	float y3 = y+step;
 
-	Vector4 Normal = AB.Cross(AC);
+	//Vector4 A(x, Perlin2D(x,y,octaves,zoom,persistance,amp), y-offs, 1.0f);
+	//Vector4 B(x-offs, Perlin2D(x-offs,y+offs,octaves,zoom,persistance,amp), y+offs, 1.0f);
+	//Vector4 C(x+offs, Perlin2D(x+offs,y+offs,octaves,zoom,persistance,amp), y+offs, 1.0f);
+
+	Vector4 A(x1, Perlin2D(x1,y1,octaves,zoom,persistance,amp), y1, 1.0f);
+	Vector4 B(x2, Perlin2D(x2,y1,octaves,zoom,persistance,amp), y1, 1.0f);
+
+	Vector4 C(x1, Perlin2D(x1,y2,octaves,zoom,persistance,amp), y2, 1.0f);
+	Vector4 D(x2, Perlin2D(x2,y2,octaves,zoom,persistance,amp), y2, 1.0f);
+	Vector4 E(x3, Perlin2D(x3,y2,octaves,zoom,persistance,amp), y2, 1.0f);
+
+	Vector4 F(x2, Perlin2D(x2,y3,octaves,zoom,persistance,amp), y3, 1.0f);
+	Vector4 G(x3, Perlin2D(x2,y3,octaves,zoom,persistance,amp), y3, 1.0f);
+
+	Vector4 DC = C - D;
+	Vector4 DA = A - D;
+	Vector4 DB = A - D;
+	Vector4 DE = E - D;
+	Vector4 DG = G - D;
+	Vector4 DF = F - D;
+
+	Vector4 Normal1 = DC.Cross(DA);
+	Vector4 Normal2 = DA.Cross(DB);
+	Vector4 Normal3 = DB.Cross(DE);
+	Vector4 Normal4 = DE.Cross(DG);
+	Vector4 Normal5 = DG.Cross(DF);
+	Vector4 Normal6 = DF.Cross(DC);
+
+	Vector4 Normal = Normal1 + Normal2 + Normal3 + Normal4 + Normal5 + Normal6;
+
+	//Vector4 AB = B - A;
+	//Vector4 AC = C - A;
+	
+	//Vector4 Normal = AB.Cross(AC);
+
 	Normal.NormaliseSelf();
-	Vector3 output(Normal);
-	return output;
+
+	return Normal;
 }
 
 Vector3 NoiseGenerator::FastNormalToPerlin2D(float x, float y, int octaves, float zoom, float persistance, float amp)
@@ -190,9 +264,9 @@ float NoiseGenerator::Perlin2D(float x, float y, NoiseObject n)
 	return Perlin2D(x, y, n.octaves, n.zoom, n.persistance, n.amplitude);
 }
 
-Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, NoiseObject n)
+Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, NoiseObject n, float step)
 {
-	return NormalToPerlin2D(x, y, n.octaves, n.zoom, n.persistance, n.amplitude);
+	return NormalToPerlin2D(x, y, n.octaves, n.zoom, n.persistance, n.amplitude, step);
 }
 
 Vector3 NoiseGenerator::FastNormalToPerlin2D(float x, float y, NoiseObject n)
@@ -220,6 +294,8 @@ float NoiseGenerator::NonCoherentNoise1D(float x)
 
 float NoiseGenerator::NonCoherentNoise2D(float x, float y)
 {
+	x *= seed;
+	y *= seed;
 	int n = int(x)+int(y*57);
 	n = (n<<13)^n;
 	int nn = (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;

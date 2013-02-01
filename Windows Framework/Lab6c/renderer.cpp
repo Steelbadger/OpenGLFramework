@@ -72,6 +72,11 @@ void RenderManager::UpdateCamera()
 	Vector4 upVector = activeCamera->GetParent()->GetLocalY();
 	Vector4 LookAt = Position + activeCamera->GetParent()->GetLocalZ();
 
+	//Vector4 Position = activeCamera->GetPosition();
+	//Vector4 upVector = activeCamera->GetUp();
+	//Vector4 LookAt = Position + activeCamera->GetForward();
+
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//calculate aspect ratio

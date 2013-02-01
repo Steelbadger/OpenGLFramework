@@ -25,6 +25,7 @@ void Terrain::Create(NoiseObject n)
 	float height = 0;
 
 	NoiseGenerator noise;
+	noise.Seed(n.seed);
 	int size = squareSize/resolution;
 	float step = squareSize/(size-1);
 
@@ -40,10 +41,10 @@ void Terrain::Create(NoiseObject n)
 			verts.push_back(Vector3(i*step, noise.TurbulentPerlin2D(i*step, j*step, n),j*step));
 
 			Vector4 normalA, normalB, normalC, normalD;
-			normalA = noise.NormalToTurbulentPerlin2D(i*step, j*step, n);
-			normalB = noise.NormalToTurbulentPerlin2D(step+i*step, step+j*step, n);
-			normalC = noise.NormalToTurbulentPerlin2D(i*step, step+j*step, n);
-			normalD = noise.NormalToTurbulentPerlin2D(step+i*step, j*step, n);
+			normalA = noise.NormalToTurbulentPerlin2D(i*step, j*step, n, step);
+			normalB = noise.NormalToTurbulentPerlin2D(step+i*step, step+j*step, n, step);
+			normalC = noise.NormalToTurbulentPerlin2D(i*step, step+j*step, n, step);
+			normalD = noise.NormalToTurbulentPerlin2D(step+i*step, j*step, n, step);
 
 			normals.push_back(normalA);
 			normals.push_back(normalC);
