@@ -10,7 +10,8 @@ GameObject::GameObject(void):
 		rotation(),
 		localX(GLOBALX),
 		localY(GLOBALY),
-		localZ(GLOBALZ)
+		localZ(GLOBALZ),
+		scale(1.0f, 1.0f, 1.0f)
 {
 }
 
@@ -265,4 +266,23 @@ Mesh* GameObject::GetMesh()
 Controller* GameObject::GetController()
 {
 	return NULL;
+}
+
+void GameObject::UniformScale(float scaleFactor)
+{
+	scale = Vector4(scale) * scaleFactor;
+}
+
+void GameObject::SetScale(float scaleFactor)
+{
+	scale.x = scaleFactor;
+	scale.y = scaleFactor;
+	scale.z = scaleFactor;
+}
+
+void GameObject::NonUniformScale(float xScale, float yScale, float zScale)
+{
+	scale.x *= xScale;
+	scale.y *= yScale;
+	scale.z *= zScale;
 }

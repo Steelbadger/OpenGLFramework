@@ -39,7 +39,7 @@ bool Rigidbody::CheckGroundCollision(NoiseObject n)
 			return false;
 		}
 	}
-
+	velocity = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 	return false;
 }
 

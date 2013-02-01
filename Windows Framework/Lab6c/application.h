@@ -37,6 +37,8 @@ private:
 	Terrain ground;
 	RenderManager renderer;
 
+//	std::vector<StaticObject> objectList;
+
 	StaticObject testObject;
 };
 

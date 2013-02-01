@@ -20,6 +20,13 @@ void CameraController::CheckInputAndUpdate()
 	if (input.GetMouseR()) {
 		camera->LockCursorToCentre();
 	}
+
+	if (input.ReportKeyState(VK_UP)) {
+		camera->SetClipPlanes(camera->GetNearClipPlane(), camera->GetFarClipPlane()+10.0f);
+	}
+	if (input.ReportKeyState(VK_DOWN)) {
+		camera->SetClipPlanes(camera->GetNearClipPlane(), camera->GetFarClipPlane()-10.0f);
+	}
 	if (input.WindowResized()) {
 		camera->SetWindowSize();
 	}

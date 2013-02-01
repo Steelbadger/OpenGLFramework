@@ -1,6 +1,7 @@
 #pragma once
 class Vector4;
 class Vector3;
+class Matrix4x4;
 
 
 class Quaternion
@@ -29,6 +30,7 @@ public:
 	void NormalizeVector();
 	float GetAngle();
 	Vector3 GetAxis();
+	Matrix4x4 GetRotationMatrix();
 
 	float s, x, y, z;
 };

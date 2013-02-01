@@ -2,6 +2,7 @@
 #include "myvector3.h";
 #include "myvector4.h"
 #include <math.h>
+#include "my4x4matrix.h"
 
 
 Quaternion::Quaternion(void):
@@ -111,7 +112,7 @@ void Quaternion::NormalizeVector()
 
 float Quaternion::GetAngle()
 {
-	return acos(s)*2;
+	return acos(s)*2*180/Matrix4x4::PI;
 }
 
 Vector3 Quaternion::GetAxis()
@@ -135,4 +136,46 @@ void Quaternion::Align(Vector3 v1, Vector3 v2)
 		y = res.y;
 		z = res.z;
 	}
+}
+
+Matrix4x4 Quaternion::GetRotationMatrix()
+{
+
+	float xx = x * x;
+	float xy = x * y;
+	float xz = x * z;
+	float xs = x * s;
+
+	float yy = y * y;
+	float yz = y * z;
+	float ys = y * s;
+
+	float zz = z * z;
+	float zs = z * s;
+
+	float ss = s * s;
+
+	//Matrix4x4 out(Matrix4x4::IDENTITY);
+	//out.elem[0][0] = 1-2*(yy+zz);
+	//out.elem[0][1] = 2*(xy-zs);
+	//out.elem[0][2] = 2*(xz + ys);
+	//out.elem[1][0] = 2*(xy+zs);
+	//out.elem[1][1] = 1 - 2*(xx-zz);
+	//out.elem[1][2] = 2*(yz-xs);
+	//out.elem[2][0] = 2*(xz-ys);
+	//out.elem[2][1] = 2*(yz+xs);
+	//out.elem[2][2] = 1-2*(xx-yy);
+
+
+	Matrix4x4 out(Matrix4x4::IDENTITY);
+	out.elem[0][0] = ss+xx-yy-zz;
+	out.elem[1][0] = 2*xy+2*zs;
+	out.elem[2][0] = 2*(xz-ys);
+	out.elem[0][1] = 2*(xy-zs);
+	out.elem[1][1] = ss-xx+yy-zz;
+	out.elem[2][1] = 2*(yz+xs);
+	out.elem[0][2] = 2*(xz+ys);
+	out.elem[1][2] = 2*(yz-xs);
+	out.elem[2][2] = ss-xx-yy+zz;
+	return out;
 }

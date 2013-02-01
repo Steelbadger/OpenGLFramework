@@ -113,6 +113,16 @@ void Matrix4x4::Translation(float X, float Y, float Z)
 	elem[3][2] = Z;
 }
 
+void Matrix4x4::Translation(Vector3 vec)
+{
+	Translation(vec.x, vec.y, vec.z);
+}
+
+void Matrix4x4::Translation(Vector4 vec)
+{
+	Translation(vec.x, vec.y, vec.z);
+}
+
 void Matrix4x4::RotationX(float fAngle)
 {
 	memcpy(elem, IDENTITY.elem, sizeof(float) * 16);
@@ -177,6 +187,16 @@ void Matrix4x4::Scale(float xf, float yf, float zf)
 	elem[2][2] = zf;
 }
 
+void Matrix4x4::Scale(Vector3 vec)
+{
+	Scale(vec.x, vec.y, vec.z);
+}
+
+void Matrix4x4::Scale(Vector4 vec)
+{
+	Scale(vec.x, vec.y, vec.z);
+}
+
 void Matrix4x4::LookAt(const Vector4 & vFrom, const Vector4 & vTo, const Vector4 & vUp)
 {
 	Vector4 vZ = Normalise(vFrom - vTo);
@@ -196,6 +216,30 @@ void Matrix4x4::LookAt(const Vector4 & vFrom, const Vector4 & vTo, const Vector4
 	elem[3][3] = 1;
 }
 
+void Matrix4x4::Transpose()
+{
+	Matrix4x4 temp;
+
+	temp.elem[0][0] = elem[0][0];
+	temp.elem[1][0] = elem[0][1];
+	temp.elem[2][0] = elem[0][2];
+	temp.elem[3][0] = elem[0][3];
+	temp.elem[0][1] = elem[1][0];
+	temp.elem[1][1] = elem[1][1];
+	temp.elem[2][1] = elem[2][1];
+	temp.elem[3][1] = elem[3][1];
+	temp.elem[0][2] = elem[2][0];
+	temp.elem[1][2] = elem[2][1];
+	temp.elem[2][2] = elem[2][2];
+	temp.elem[3][2] = elem[2][3];
+	temp.elem[0][3] = elem[3][0];
+	temp.elem[1][3] = elem[3][1];
+	temp.elem[2][3] = elem[3][2];
+	temp.elem[3][3] = elem[3][3];
+
+	memcpy(elem, temp.elem, sizeof(float) * 16);
+}
+
 void Matrix4x4::Projection(float fov, float aspect, float near, float far)
 {
 	float h = tan(fov/360*PI)*near/2;
@@ -205,8 +249,8 @@ void Matrix4x4::Projection(float fov, float aspect, float near, float far)
 	elem[0][0] = near/w;
 	elem[1][1] = near/h;
 	elem[2][2] = -(far+near)/(far-near);
-	elem[2][3] = -2*far*near/(far-near);
-	elem[3][2] = -1;
+	elem[3][2] = -2*far*near/(far-near);
+	elem[2][3] = -1;
 }
 
 

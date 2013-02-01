@@ -18,13 +18,18 @@ public:
 	~Matrix4x4(void);
 
 	void Translation(float X, float Y, float Z);
+	void Translation(Vector3 vec);
+	void Translation(Vector4 vec);
 	void RotationX(float fAngle);
 	void RotationY(float fAngle);
 	void RotationZ(float fAngle);
 	void RotationAroundVectorThroughZero(Vector4 Vector, float angle);
 	void Projection(float fov, float aspect, float near, float far);
+	void Transpose();
 
 	void Scale(float xScale, float yScale, float zScale);
+	void Scale(Vector3 scale);
+	void Scale(Vector4 scale);
 
 	void DumpMatrix4x4(char * s = NULL);
 

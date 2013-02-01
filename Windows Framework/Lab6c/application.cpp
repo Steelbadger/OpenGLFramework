@@ -32,9 +32,21 @@ void Application::Initialize(HINSTANCE hInstance)
 	Mesh skyBox("inwardCube.obj", "skyboxseamless.tga");
 	renderer.AddSkyBox(skyBox);
 
+	int num = 7;
+	for (int i = 0; i < num; i++) {
+		for (int j = 0; j < num; j++) {
+			for (int k = 0; k < num; k++) {
+				StaticObject* curr = new StaticObject();
+				curr->CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
+				curr->SetLocation(i*3.0f, 20.0f+j*3.0f, k*3.0f);
+				renderer.AddToRenderer(*curr->GetMesh());
+			}
+		}
+	}
+
 	testObject.CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
+	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
-	testObject.SetLocation(0.0f, 10.0f, 0.0f);
 
 	cube = new CubeArray(1,1,1, "Crate.tga");
 
@@ -82,7 +94,8 @@ void Application::MainLoop()
 		window.PrepareForDrawing();
 		player.InputUpdate();
 
-		testObject.RotateDeltaZ(0.05f);
+		testObject.RotateLocalDeltaZ(0.05f);
+		testObject.UniformScale(1.0001f);
 
 		player.CheckGroundCollision(myNoise);
 
@@ -120,6 +133,7 @@ void Application::MainLoop()
 			std::cout << "Forward Vector: (" << player.GetLocalZ().x << ", " << player.GetLocalZ().y << ", " << player.GetLocalZ().z << ")\t(Length: " << player.GetLocalZ().Length() << ")" << std::endl;
 			std::cout << "Up Vector: (" << player.GetLocalY().x << ", " << player.GetLocalY().y << ", " << player.GetLocalY().z << ")\t(Length: " << player.GetLocalY().Length() << ")" << std::endl;
 			std::cout << "Rotation Quaternion: (" << player.GetRotation().s << ", (" << player.GetRotation().x << ", " << player.GetRotation().y << ", " << player.GetRotation().z << "))" << std::endl;
+			std::cout << "Rotation Angle: " << player.GetRotation().GetAngle() << "\tRotation Axis: (" << player.GetRotation().GetAxis().x << ", " << player.GetRotation().GetAxis().y << ", " << player.GetRotation().GetAxis().z << ")" << std::endl;
 		}
 
 		if (input.ReportKeyPress('I')) {

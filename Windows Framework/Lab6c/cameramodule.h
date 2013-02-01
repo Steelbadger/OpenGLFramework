@@ -25,6 +25,7 @@ public:
 	void SetClipPlanes(float near, float far);
 	void SetFieldOfView(float fov);
 	float GetFieldOfView(){return fieldOfView;}
+	float GetAspectRatio(){return float(windowWidth/windowHeight);}
 	void LockCursorToCentre();
 	int GetWindowWidth(){return windowWidth;}
 	int GetWindowHeight(){return windowHeight;}

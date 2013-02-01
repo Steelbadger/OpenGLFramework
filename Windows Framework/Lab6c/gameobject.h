@@ -33,6 +33,11 @@ public:
 	void RotateLocalDeltaY(float dy);
 	void RotateLocalDeltaZ(float dz);
 
+	void UniformScale(float scaleFactor);
+	void SetScale(float scaleFactor);
+	void NonUniformScale(float xScale, float yScale, float zScale);
+	Vector3 GetScale(){return scale;}
+
 	Vector4& GetPosition();
 	Vector4 GetLocalX();
 	Vector4 GetLocalY();
@@ -52,6 +57,7 @@ public:
 private:
 	Vector4 position;
 	Quaternion rotation;
+	Vector3 scale;
 	Vector4 localX;
 	Vector4 localY;
 	Vector4 localZ;
