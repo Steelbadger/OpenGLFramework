@@ -277,6 +277,8 @@ GLuint RenderManager::CompileToDisplayList(Mesh &m, GLuint texture)
 
 	//glBindVertexArray(0);
 
+	//return vao;
+
 	return dList;
 }
 
