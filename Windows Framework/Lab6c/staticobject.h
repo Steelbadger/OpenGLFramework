@@ -13,6 +13,5 @@ public:
 
 private:
 	std::vector<Mesh> meshes;
-
 };
 

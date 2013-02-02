@@ -169,13 +169,13 @@ Matrix4x4 Quaternion::GetRotationMatrix()
 
 	Matrix4x4 out(Matrix4x4::IDENTITY);
 	out.elem[0][0] = ss+xx-yy-zz;
-	out.elem[1][0] = 2*xy+2*zs;
-	out.elem[2][0] = 2*(xz-ys);
-	out.elem[0][1] = 2*(xy-zs);
+	out.elem[1][0] = 2*xy-2*zs;
+	out.elem[2][0] = 2*(xz+ys);
+	out.elem[0][1] = 2*(xy+zs);
 	out.elem[1][1] = ss-xx+yy-zz;
-	out.elem[2][1] = 2*(yz+xs);
-	out.elem[0][2] = 2*(xz+ys);
-	out.elem[1][2] = 2*(yz-xs);
+	out.elem[2][1] = 2*(yz-xs);
+	out.elem[0][2] = 2*(xz-ys);
+	out.elem[1][2] = 2*(yz+xs);
 	out.elem[2][2] = ss-xx-yy+zz;
 	return out;
 }

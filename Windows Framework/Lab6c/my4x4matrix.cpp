@@ -226,8 +226,8 @@ void Matrix4x4::Transpose()
 	temp.elem[3][0] = elem[0][3];
 	temp.elem[0][1] = elem[1][0];
 	temp.elem[1][1] = elem[1][1];
-	temp.elem[2][1] = elem[2][1];
-	temp.elem[3][1] = elem[3][1];
+	temp.elem[2][1] = elem[1][2];
+	temp.elem[3][1] = elem[1][3];
 	temp.elem[0][2] = elem[2][0];
 	temp.elem[1][2] = elem[2][1];
 	temp.elem[2][2] = elem[2][2];
@@ -242,16 +242,19 @@ void Matrix4x4::Transpose()
 
 void Matrix4x4::Projection(float fov, float aspect, float near, float far)
 {
-	float h = tan(fov/360*PI)*near/2;
-	float w = h * aspect;
+
 	memcpy(elem, NULLMATRIX.elem, sizeof(float) * 16);
 
-	elem[0][0] = near/w;
-	elem[1][1] = near/h;
-	elem[2][2] = -(far+near)/(far-near);
-	elem[3][2] = -2*far*near/(far-near);
+	float h = 1.0f/tan(fov*PI/360);
+	float neg_depth = near-far;
+
+	elem[0][0] = h / aspect;
+	elem[1][1] = h;
+	elem[2][2] = (far + near)/neg_depth;
 	elem[2][3] = -1;
-}
+	elem[3][2] = 2.0f*(near*far)/neg_depth;
+
+	}
 
 
 void Matrix4x4::DumpMatrix4x4(char * s)

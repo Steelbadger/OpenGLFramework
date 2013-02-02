@@ -40,12 +40,26 @@ void GameObject::SetRotate(float xRotNew, float yRotNew, float zRotNew)
 	Quaternion yRotation;
 	Quaternion zRotation;
 
-	xRotation.Rotation(xRotNew, 1.0f, 0.0f, 0.0f);
-	yRotation.Rotation(yRotNew, 0.0f, 1.0f, 0.0f);
-	zRotation.Rotation(zRotNew, 0.0f, 0.0f, 1.0f);
+	if (xRotNew == 0.0f) {
+		xRotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+	} else {
+		xRotation.Rotation(xRotNew, 1.0f, 0.0f, 0.0f);
+	}
+
+	if (yRotNew == 0.0f) {
+		yRotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+	} else {
+		yRotation.Rotation(yRotNew, 0.0f, 1.0f, 0.0f);
+	}
+
+	if (zRotNew == 0.0f) {
+		zRotation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+	} else {
+		zRotation.Rotation(zRotNew, 0.0f, 0.0f, 1.0f);
+	}
 
 	rotation = xRotation * yRotation * zRotation;
-	rotation.NormalizeVector();
+	rotation.NormalizeSelf();
 }
 
 void GameObject::OrientateAxesToGlobalUp()

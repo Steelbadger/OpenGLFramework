@@ -31,11 +31,12 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	Mesh skyBox("inwardCube.obj", "skyboxseamless.tga");
 	renderer.AddSkyBox(skyBox);
-
-	int num = 7;
+	int count = 0;
+	int num = 10;
 	for (int i = 0; i < num; i++) {
 		for (int j = 0; j < num; j++) {
 			for (int k = 0; k < num; k++) {
+				count++;
 				StaticObject* curr = new StaticObject();
 				curr->CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
 				curr->SetLocation(i*3.0f, 20.0f+j*3.0f, k*3.0f);
@@ -43,7 +44,6 @@ void Application::Initialize(HINSTANCE hInstance)
 			}
 		}
 	}
-
 	testObject.CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
 	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
@@ -95,7 +95,14 @@ void Application::MainLoop()
 		player.InputUpdate();
 
 		testObject.RotateLocalDeltaZ(0.05f);
-		testObject.UniformScale(1.0001f);
+
+		if (input.ReportKeyState(VK_ADD)) {
+			testObject.UniformScale(1.01f);
+		}
+
+		if (input.ReportKeyState(VK_SUBTRACT)) {
+			testObject.UniformScale(0.99f);
+		}
 
 		player.CheckGroundCollision(myNoise);
 

@@ -6,6 +6,7 @@ CameraModule* RenderManager::activeCamera;
 
 RenderManager::RenderManager()
 {
+	opaqueRenderList.reserve(2048);
 }
 
 RenderManager::~RenderManager(void)
@@ -85,7 +86,7 @@ void RenderManager::UpdateCamera()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//calculate aspect ratio
-//	gluPerspective(activeCamera->GetFieldOfView(), (GLfloat)activeCamera->GetWindowWidth()/(GLfloat)activeCamera->GetWindowHeight(), activeCamera->GetNearClipPlane(), activeCamera->GetFarClipPlane());
+	gluPerspective(activeCamera->GetFieldOfView(), (GLfloat)activeCamera->GetWindowWidth()/(GLfloat)activeCamera->GetWindowHeight(), activeCamera->GetNearClipPlane(), activeCamera->GetFarClipPlane());
 	glMatrixMode(GL_MODELVIEW);// Select The Modelview Matrix
 	glLoadIdentity();
 //	gluLookAt((GLdouble)Position.x, (GLdouble)Position.y, (GLdouble)Position.z,
@@ -153,12 +154,11 @@ void RenderManager::RenderAll()
 	glLoadMatrixf(projectionMatrix);
 	glMatrixMode(GL_MODELVIEW);
 
-
 	if (glIsList(skyBox)) {
 		glPushMatrix();
 			//glTranslatef(activeCamera->GetParent()->GetPosition().x, activeCamera->GetParent()->GetPosition().y, activeCamera->GetParent()->GetPosition().z);
-			BuildModelViewMatrix(*activeCamera->GetParent());
-			//BuildSkyBoxViewMatrix(*activeCamera->GetParent());
+			//BuildModelViewMatrix(*activeCamera->GetParent());
+			BuildSkyBoxViewMatrix(*activeCamera->GetParent());
 			glLoadMatrixf(modelViewMatrix);
 
 			glDisable(GL_DEPTH_TEST);
@@ -321,10 +321,9 @@ Matrix4x4 RenderManager::BuildModelMatrix(GameObject g)
 	Matrix4x4 scale(Matrix4x4::IDENTITY);
 
 	translation.Translation(g.GetPosition());
-//	rotation = g.GetRotation().GetRotationMatrix();
-//	scale.Scale(g.GetScale());
-//	rotation.Transpose();
-	Matrix4x4 result = translation * rotation * scale;
+	rotation = g.GetRotation().GetRotationMatrix();
+	scale.Scale(g.GetScale());
+	Matrix4x4 result = scale * rotation * translation;
 
 //	ConvertToOpenGLMatrix(result, modelMatrix);
 	return result;
@@ -353,9 +352,9 @@ void RenderManager::BuildModelViewMatrix(GameObject g)
 
 void RenderManager::BuildSkyBoxViewMatrix(GameObject g)
 {
-	g.SetLocation(-g.GetPosition().x, -g.GetPosition().y, -g.GetPosition().z);
+	g.SetRotate(0.0f, 0.0f, 0.0f);
 	Matrix4x4 mat;
-	mat = BuildViewMatrix() * BuildModelMatrix(g);
+	mat = BuildModelMatrix(g) * BuildViewMatrix();
 	ConvertToOpenGLMatrix(mat, modelViewMatrix);
 }
 

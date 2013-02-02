@@ -154,7 +154,7 @@ bool Mesh::LoadObj(const char* path)
 		normals.push_back(normal);
 	
 	}
-
+	fclose(file);
 	triangles = vertIndices.size();
 
 	return true;
