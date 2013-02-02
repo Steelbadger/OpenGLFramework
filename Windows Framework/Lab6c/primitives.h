@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <mmsystem.h>
+#include "glew.h"
 #include <gl/gl.h>
 #include "tex.h"
 

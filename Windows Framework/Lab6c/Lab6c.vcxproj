@@ -125,6 +125,10 @@
     <ClInclude Include="tex.h" />
     <ClInclude Include="wglew.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="basic.fragmentshader" />
+    <None Include="basic.vertexshader" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

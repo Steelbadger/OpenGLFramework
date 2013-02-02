@@ -5,6 +5,7 @@
 
 
 #include <Windows.h>
+#include "glew.h"
 #include <gl/gl.h>
 #include <gl/glu.h>
 #include <mmsystem.h>
@@ -23,7 +24,7 @@ public:
 	~WindowWizard(void);
 
 	void InitializeGraphics(GLdouble fov);
-	void OnResize(int width, int height);
+	void OnResize();
 	void OnMove();
 	void FlipBuffers();
 	void PrepareForDrawing();
@@ -42,11 +43,11 @@ public:
 	HDC GetHandleToDeviceContext(){return hdc;};
 	HWND GetHandleToWindow(){return handleToWindow;}
 	HGLRC GetRenderingContext(){return hrc;}
+	bool SetWindowPixelFormat(HDC hdc);
 
 private:
 	void InitializeOpenGL(GLdouble fov);
 	void ResizeGLWindow(int width, int height);
-	bool SetWindowPixelFormat(HDC hdc);
 
 	HWND handleToWindow;
 	HDC hdc;

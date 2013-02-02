@@ -93,11 +93,11 @@ void WindowWizard::PrepareForDrawing()
 }
 
 
-void WindowWizard::OnResize(int width, int height)
+void WindowWizard::OnResize()
 {
-	ResizeGLWindow(width, height);
 	GetClientRect(handleToWindow, &graphicsRect);
 	GetWindowRect(handleToWindow, &windowRect);
+	ResizeGLWindow(graphicsRect.right, graphicsRect.bottom);
 }
 
 void WindowWizard::OnMove()
@@ -240,7 +240,7 @@ LRESULT CALLBACK WindowWizard::WndProc (HWND hwnd, UINT message, WPARAM wParam, 
             case WM_COMMAND:
 				break;
 			case WM_SIZE:
-				pWindow->OnResize(LOWORD(lParam),HIWORD(lParam));
+				pWindow->OnResize();
 			case WM_MOVE:
 				GetWindowRect(hwnd,&pWindow->windowRect);
             case WM_LBUTTONUP:

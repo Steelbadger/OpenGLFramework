@@ -1,6 +1,7 @@
 #include "renderer.h"
 #include "gameobject.h"
 #include <iostream>
+#include <fstream>
 
 CameraModule* RenderManager::activeCamera;
 
@@ -86,7 +87,7 @@ void RenderManager::UpdateCamera()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//calculate aspect ratio
-	gluPerspective(activeCamera->GetFieldOfView(), (GLfloat)activeCamera->GetWindowWidth()/(GLfloat)activeCamera->GetWindowHeight(), activeCamera->GetNearClipPlane(), activeCamera->GetFarClipPlane());
+//	gluPerspective(activeCamera->GetFieldOfView(), (GLfloat)activeCamera->GetWindowWidth()/(GLfloat)activeCamera->GetWindowHeight(), activeCamera->GetNearClipPlane(), activeCamera->GetFarClipPlane());
 	glMatrixMode(GL_MODELVIEW);// Select The Modelview Matrix
 	glLoadIdentity();
 //	gluLookAt((GLdouble)Position.x, (GLdouble)Position.y, (GLdouble)Position.z,
@@ -153,14 +154,13 @@ void RenderManager::RenderAll()
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(projectionMatrix);
 	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf(viewMatrix);
 
 	if (glIsList(skyBox)) {
 		glPushMatrix();
-			//glTranslatef(activeCamera->GetParent()->GetPosition().x, activeCamera->GetParent()->GetPosition().y, activeCamera->GetParent()->GetPosition().z);
-			//BuildModelViewMatrix(*activeCamera->GetParent());
 			BuildSkyBoxViewMatrix(*activeCamera->GetParent());
 			glLoadMatrixf(modelViewMatrix);
-
+			//glMultMatrixf(modelMatrix);
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_LIGHTING);
 			glBindTexture(GL_TEXTURE_2D, skyBoxTexture);
@@ -174,7 +174,7 @@ void RenderManager::RenderAll()
 		glPushMatrix();
 			BuildModelViewMatrix(base);
 			glLoadMatrixf(modelViewMatrix);
-			//glMultMatrixf(modelViewMatrix);
+		//	glMultMatrixf(modelMatrix);
 			glBindTexture(GL_TEXTURE_2D, terrainTexture);
 			glCallList(terrain);
 		glPopMatrix();
@@ -187,23 +187,11 @@ void RenderManager::RenderAll()
 				Mesh* m = Mesh::GetMeshPointer(*it);
 
 				if (m != NULL) {
-					//Vector4 localX = m->GetParentPointer()->GetLocalX();
-					//Vector4 localY = m->GetParentPointer()->GetLocalY();
-
-					////  Work out the rotations around each axis for render context rotations
-					//thetaY = acos(Vector4(localX.x, 0.0f, localX.z, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, 0.0f, localX.z, 1.0f).Length()))*180.0/Matrix4x4::PI;
-					//thetaZ = acos(Vector4(localX.x, localX.y, 0.0f, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, localX.y, 0.0f, 1.0f).Length()))*180.0/Matrix4x4::PI;
-					//thetaX = acos(Vector4(0.0f, localY.y, localY.z, 1.0f).Dot3(Vector4(0.0f, 1.0f, 0.0f, 1.0f)/Vector4(0.0f, localY.y, localY.z, 1.0f).Length()))*180.0/Matrix4x4::PI;
-
 					glPushMatrix();
-						glTranslatef(m->GetParentPointer()->GetPosition().x, m->GetParentPointer()->GetPosition().y, m->GetParentPointer()->GetPosition().z);
-
 						BuildModelViewMatrix(*m->GetParentPointer());
 						glLoadMatrixf(modelViewMatrix);
+						//glMultMatrixf(modelMatrix);
 
-						//glRotatef(thetaY, 0.0f, 1.0f, 0.0f);					
-						//glRotatef(thetaX, 1.0f, 0.0f, 0.0f);
-						//glRotatef(thetaZ, 0.0f, 0.0f, 1.0f);
 						glBindTexture(GL_TEXTURE_2D, TextureMap[Mesh::GetMeshPointer(*it)->GetTexturePath()]);
 						glCallList(UniqueIDToDListMap[*it]);
 					glPopMatrix();
@@ -221,23 +209,12 @@ void RenderManager::RenderAll()
 				Mesh* m = Mesh::GetMeshPointer(*it);
 
 				if (m != NULL) {
-					//Vector4 localX = m->GetParentPointer()->GetLocalX();
-					//Vector4 localY = m->GetParentPointer()->GetLocalY();
-
-					////  Work out the rotations around each axis for render context rotations
-					//thetaY = acos(Vector4(localX.x, 0.0f, localX.z, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, 0.0f, localX.z, 1.0f).Length()))*180.0/Matrix4x4::PI;
-					//thetaZ = acos(Vector4(localX.x, localX.y, 0.0f, 1.0f).Dot3(Vector4(1.0f, 0.0f, 0.0f, 1.0f)/Vector4(localX.x, localX.y, 0.0f, 1.0f).Length()))*180.0/Matrix4x4::PI;
-					//thetaX = acos(Vector4(0.0f, localY.y, localY.z, 1.0f).Dot3(Vector4(0.0f, 1.0f, 0.0f, 1.0f)/Vector4(0.0f, localY.y, localY.z, 1.0f).Length()))*180.0/Matrix4x4::PI;
-
 					glPushMatrix();
 						glTranslatef(m->GetParentPointer()->GetPosition().x, m->GetParentPointer()->GetPosition().y, m->GetParentPointer()->GetPosition().z);
 
 						BuildModelViewMatrix(*m->GetParentPointer());
-						glLoadMatrixf(modelViewMatrix);
-
-						//glRotatef(thetaY, 0.0f, 1.0f, 0.0f);					
-						//glRotatef(thetaX, 1.0f, 0.0f, 0.0f);
-						//glRotatef(thetaZ, 0.0f, 0.0f, 1.0f);
+						//glLoadMatrixf(modelViewMatrix);
+						glMultMatrixf(modelMatrix);
 						glBindTexture(GL_TEXTURE_2D, TextureMap[Mesh::GetMeshPointer(*it)->GetTexturePath()]);
 						glCallList(UniqueIDToDListMap[*it]);
 					glPopMatrix();
@@ -266,6 +243,39 @@ GLuint RenderManager::CompileToDisplayList(Mesh &m, GLuint texture)
 		glDisableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEndList();
+
+	//GLuint vao;
+	//glGenVertexArrays(1, &vao);
+	//glBindVertexArray(vao);
+
+	//GLuint vertBuffer;
+	//glGenBuffers(1, &vertBuffer);
+	//glBindBuffer(GL_ARRAY_BUFFER, vertBuffer);
+	//glBufferData(GL_ARRAY_BUFFER, m.GetSizeOfVerts(), m.GetVertexArrayBase(), GL_STATIC_DRAW);
+
+	//GLuint normalBuffer;
+	//glGenBuffers(1, &normalBuffer);
+	//glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+	//glBufferData(GL_ARRAY_BUFFER, m.GetSizeOfNormals(), m.GetNormalArrayBase(), GL_STATIC_DRAW);
+
+	//GLuint uvBuffer;
+	//glGenBuffers(1, &uvBuffer);
+	//glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
+	//glBufferData(GL_ARRAY_BUFFER, m.GetSizeOfUVs(), m.GetUVArrayBase(), GL_STATIC_DRAW);
+
+	//glEnableVertexAttribArray(0);
+	//glBindBuffer(GL_ARRAY_BUFFER, vertBuffer);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	//glEnableVertexAttribArray(1);
+	//glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	//glEnableVertexAttribArray(2);
+	//glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	//glBindVertexArray(0);
 
 	return dList;
 }
@@ -325,7 +335,7 @@ Matrix4x4 RenderManager::BuildModelMatrix(GameObject g)
 	scale.Scale(g.GetScale());
 	Matrix4x4 result = scale * rotation * translation;
 
-//	ConvertToOpenGLMatrix(result, modelMatrix);
+	ConvertToOpenGLMatrix(result, modelMatrix);
 	return result;
 }
 
@@ -338,14 +348,13 @@ Matrix4x4 RenderManager::BuildViewMatrix()
 	Matrix4x4 view;
 
 	view.LookAt(position, lookAt, upVector);
-//	ConvertToOpenGLMatrix(view, viewMatrix);
+	ConvertToOpenGLMatrix(view, viewMatrix);
 	return view;
 }
 
 void RenderManager::BuildModelViewMatrix(GameObject g)
 {
 	Matrix4x4 mvMatrix;
-	//mvMatrix = BuildViewMatrix() * BuildModelMatrix(g);
 	mvMatrix = BuildModelMatrix(g) * BuildViewMatrix();
 	ConvertToOpenGLMatrix(mvMatrix, modelViewMatrix);
 }
@@ -367,23 +376,6 @@ void RenderManager::BuildProjectionMatrix()
 
 void RenderManager::ConvertToOpenGLMatrix(Matrix4x4 m, GLfloat* target)
 {
-	//target[0] = m.elem[0][0];
-	//target[1] = m.elem[1][0];
-	//target[2] = m.elem[2][0];
-	//target[3] = m.elem[3][0];
-	//target[4] = m.elem[0][1];
-	//target[5] = m.elem[1][1];
-	//target[6] = m.elem[2][1];
-	//target[7] = m.elem[3][1];
-	//target[8] = m.elem[0][2];
-	//target[9] = m.elem[1][2];
-	//target[10] = m.elem[2][2];
-	//target[11] = m.elem[3][2];
-	//target[12] = m.elem[0][3];
-	//target[13] = m.elem[1][3];
-	//target[14] = m.elem[2][3];
-	//target[15] = m.elem[3][3];
-
 	target[0] = m.elem[0][0];
 	target[1] = m.elem[0][1];
 	target[2] = m.elem[0][2];
@@ -400,4 +392,89 @@ void RenderManager::ConvertToOpenGLMatrix(Matrix4x4 m, GLfloat* target)
 	target[13] = m.elem[3][1];
 	target[14] = m.elem[3][2];
 	target[15] = m.elem[3][3];
+}
+
+void RenderManager::LoadShader(std::string fileName)
+{
+	std::string fn = fileName;
+
+	if (!ShaderMap.count(fn)) {
+		GLuint shader;
+		std::string type = fn.substr(fn.find_last_of(".") + 1);
+
+
+		if (type == "vertexshader") {
+			shader = glCreateShader(GL_VERTEX_SHADER);
+		} else if (type == "fragmentshader") {
+			shader = glCreateShader(GL_FRAGMENT_SHADER);
+		} else {
+			std::cout << "Unrecognised Shader File Extension: " << type << std::endl;
+			return;
+		}
+
+		std::string code;
+		std::ifstream fileStream(fn, std::ios::in);
+		if (!fileStream.is_open()) {
+			std::cout << "Could not open shader file : " << fileName << std::endl;
+			return;
+		}
+
+		std::string line = "";
+		while(getline(fileStream, line)) {
+			code += "\n" + line;
+		}
+		fileStream.close();
+
+		std::cout << "Compiling " << fn << std::endl;
+		char const * codePointer = code.c_str();
+		glShaderSource(shader, 1, &codePointer, NULL);
+		glCompileShader(shader);
+
+
+		GLint result = GL_FALSE;
+		int logLength;
+
+		// Check Vertex Shader
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
+		std::vector<char> ShaderErrorMessage(logLength);
+		glGetShaderInfoLog(shader, logLength, NULL, &ShaderErrorMessage[0]);
+		std::string output(ShaderErrorMessage.begin(), ShaderErrorMessage.end());
+		std::cout << output << std::endl;
+
+		if (result == GL_FALSE) {
+			return;
+		}
+
+		ShaderMap[fn] = shader;
+	}
+}
+
+void RenderManager::SetShaders(std::string vertex, std::string fragment)
+{
+	LoadShader(vertex);
+	LoadShader(fragment);
+
+	GLuint program = glCreateProgram();
+
+	glAttachShader(program, ShaderMap[vertex]);
+	glAttachShader(program, ShaderMap[fragment]);
+	glLinkProgram(program);
+
+	GLint result = GL_FALSE;
+	int logLength;
+
+	glGetProgramiv(program, GL_COMPILE_STATUS, &result);
+	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+	std::vector<char> ProgramErrorMessage(logLength);
+	glGetProgramInfoLog(program, logLength, NULL, &ProgramErrorMessage[0]);
+	std::string output(ProgramErrorMessage.begin(), ProgramErrorMessage.end());
+	std::cout << output << std::endl;
+
+	if (result == GL_FALSE) {
+		return;
+	}
+
+	defaultShaderProgram = program;
+
 }

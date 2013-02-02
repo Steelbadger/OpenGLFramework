@@ -116,6 +116,7 @@ bool Mesh::LoadObj(const char* path)
 			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
 			if (matches != 9){
 				std::cout << "Cannot Read File: " << path << std::endl;
+				fclose(file);
 				return false;
 			}
 			vertIndices.push_back(vertexIndex[0]);

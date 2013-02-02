@@ -1,4 +1,5 @@
 #pragma once
+#include "glew.h"
 #include <vector>
 #include <list>
 #include <map>
@@ -8,6 +9,7 @@
 #include "terrain.h"
 #include "cameramodule.h"
 #include "staticobject.h"
+#include "mywindow.h"
 
 class RenderManager
 {
@@ -27,7 +29,7 @@ public:
 
 	void RenderAll();
 	void UpdateCamera();
-
+	void SetShaders(std::string vertex, std::string fragment);
 	static bool MeshComparator(int rhs, int lhs);
 
 private:
@@ -36,6 +38,9 @@ private:
 
 	GLuint CompileToDisplayList(Mesh &m, GLuint texture);
 	GLuint CompileToDisplayList(Terrain &t, GLuint texture);
+	void InitializeOpenGL();
+	void LoadShader(std::string fileName);
+
 
 	Matrix4x4 BuildModelMatrix(GameObject g);
 	Matrix4x4 BuildViewMatrix();
@@ -48,8 +53,8 @@ private:
 	std::list<int> renderList;
 	std::vector<int> opaqueRenderList;
 
-//	GLfloat modelMatrix[16];
-//	GLfloat viewMatrix[16];
+	GLfloat modelMatrix[16];
+	GLfloat viewMatrix[16];
 	GLfloat modelViewMatrix[16];
 	GLfloat projectionMatrix[16];
 
@@ -61,6 +66,10 @@ private:
 	GameObject base;
 
 	std::map<int, GLuint> UniqueIDToDListMap;
-	std::map<std::string, GLuint> TextureMap; 
+	std::map<int, GLuint> UniqueIDToShaderMap;
+	std::map<std::string, GLuint> TextureMap;
+	std::map<std::string, GLuint> ShaderMap;
+
+	GLuint defaultShaderProgram;
 };
 

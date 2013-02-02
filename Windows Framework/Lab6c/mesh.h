@@ -29,7 +29,9 @@ public:
 	Vector2* GetUVArrayBase(){return &uvs[0];}
 	std::string GetTexturePath(){return texturePath;}
 	int GetTriangleNumber(){return triangles;}
-
+	int GetSizeOfVerts() {return sizeof(verts);}
+	int GetSizeOfNormals() {return sizeof(normals);}
+	int GetSizeOfUVs() {return sizeof(uvs);}
 	static Mesh* GetMeshPointer(int uniqueID);
 
 private:

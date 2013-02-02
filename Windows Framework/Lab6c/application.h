@@ -33,7 +33,6 @@ private:
 	bool culling;
 
 	NoiseObject myNoise;
-	CubeArray *cube;
 	Terrain ground;
 	RenderManager renderer;
 

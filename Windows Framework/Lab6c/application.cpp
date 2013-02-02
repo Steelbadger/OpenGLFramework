@@ -32,7 +32,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	Mesh skyBox("inwardCube.obj", "skyboxseamless.tga");
 	renderer.AddSkyBox(skyBox);
 	int count = 0;
-	int num = 10;
+	int num = 5;
 	for (int i = 0; i < num; i++) {
 		for (int j = 0; j < num; j++) {
 			for (int k = 0; k < num; k++) {
@@ -47,8 +47,6 @@ void Application::Initialize(HINSTANCE hInstance)
 	testObject.CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
 	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
-
-	cube = new CubeArray(1,1,1, "Crate.tga");
 
 	double myTimer = clock();
 
@@ -70,6 +68,8 @@ void Application::Initialize(HINSTANCE hInstance)
 	framerateLogging = false;
 	culling = false;
 	glCullFace(GL_BACK);
+
+	renderer.SetShaders("basic.vertexshader", "basic.fragmentshader");
 
 }
 
@@ -169,16 +169,6 @@ void Application::MainLoop()
 		glEnable(GL_LIGHT1);
 
 		renderer.RenderAll();
-	
-		glTranslatef(-25.0f, 0.0f, -25.0f);
-	
-			for (int i = 0; i < 24; i++) {
-				for (int j = 0; j < 24; j++) {
-					glTranslatef(2.0f, 0.0f, 0.0f);
-					//cube->Draw();
-				}
-				glTranslatef(-48.0f, 0.0f, 2.0f);
-			}	
 
 		window.FlipBuffers();
 	}
