@@ -21,6 +21,10 @@ public:
 	Vector2* GetUVArrayBase(){return &texCoords[0];}
 	int GetNumberOfVerts(){return verts.size();}
 	std::string GetTexturePath() {return textureFile;}
+	void AttachShader(std::string shader);
+
+	std::string GetVertexShader() {return vertexShader;}
+	std::string GetFragmentShader() {return fragmentShader;}
 
 private:
 	std::vector<Vector3> verts;
@@ -28,6 +32,9 @@ private:
 	std::vector<Vector2> texCoords;
 
 	std::string textureFile;
+
+	std::string vertexShader;
+	std::string fragmentShader;
 
 	float squareSize;
 	float resolution;

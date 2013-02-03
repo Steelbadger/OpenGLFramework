@@ -19,6 +19,8 @@ public:
 	Mesh(const Mesh& mesh);
 	~Mesh(void);
 
+	void AttachShader(std::string shader);
+
 	int GetUniqueID(){return uniqueID;}
 	void GetNewUniqueID();
 	void SetParent(GameObject* p) {parent = p;}
@@ -29,11 +31,14 @@ public:
 	Vector2* GetUVArrayBase(){return &uvs[0];}
 	std::string GetTexturePath(){return texturePath;}
 	std::string GetMeshSourceFilePath(){return meshPath;}
-	int GetTriangleNumber(){return triangles;}
+	int GetNumberOfVerts(){return numVerts;}
 	int GetSizeOfVerts() {return verts.size()*sizeof(float)*3;}
 	int GetSizeOfNormals() {return normals.size()*sizeof(float)*3;}
 	int GetSizeOfUVs() {return uvs.size()*sizeof(float)*3;}
 	static Mesh* GetMeshPointer(int uniqueID);
+
+	std::string GetVertexShader(){return vertexShader;}
+	std::string GetFragmentShader(){return fragmentShader;}
 
 private:
 	bool LoadMesh(const char* path);
@@ -43,12 +48,15 @@ private:
 	std::vector<Vector3> normals;
 	std::vector<Vector2> uvs;
 
-	int triangles;
+	int numVerts;
 	const int uniqueID;
 
 	GameObject* parent;
 	std::string meshPath;
 	std::string texturePath;
+
+	std::string vertexShader;
+	std::string fragmentShader;
 
 	bool successfullBuild;
 	bool transparency;

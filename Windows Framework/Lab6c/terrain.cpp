@@ -4,6 +4,7 @@
 #include <iostream>
 #include "noisegenerator.h"
 #include <time.h>
+#include <string>
 
 
 Terrain::Terrain(float s, NoiseObject n, float r):
@@ -66,4 +67,19 @@ void Terrain::Create(NoiseObject n)
 
 	std::cout << "Number of Triangles in Terrain Mesh: " << verts.size()/3 << std::endl;
 	std::cout << "Generation Time: " << myTime/CLOCKS_PER_SEC << "s" << std::endl;
+}
+
+void Terrain::AttachShader(std::string shader)
+{
+	std::string type = shader.substr(shader.find_last_of(".") + 1);
+
+	if (type == "vertexshader") {
+		vertexShader = shader;
+	} else if (type == "fragmentshader") {
+		fragmentShader = shader;
+	} else {
+		//  If the file extension is not correct then return an error and stop
+		std::cout << "Cannot Attach Shader, Unrecognised Shader File Extension: " << type << std::endl;
+		return;
+	}
 }

@@ -29,33 +29,38 @@ bool RenderManager::AddToRenderer(Mesh &m)
 {
 	std::string fn = m.GetTexturePath();
 	std::string meshModel = m.GetMeshSourceFilePath();
+	std::string vertexShader = m.GetVertexShader();
+	std::string fragmentShader = m.GetFragmentShader();
 	GLuint tex;
 
 	//  Only bother compiling a new Display List if one doesn't already exist for this object
-	if (!UniqueIDToDListMap.count(m.GetUniqueID())) {
+	if (!VAOMap.count(m.GetUniqueID())) {
 		if (!MeshFileMap.count(meshModel)) {
-			//  Only bother importing the texture if this texture has not already been imported
-			if (!TextureMap.count(fn)) {
-				//  Check file extension, included for possible extension to other formats
-				if(fn.substr(fn.find_last_of(".") + 1) == "tga") {
-					//  Load the texture and put it in our temporary holder 'tex'
-					CreateGLTexture(fn.c_str(), tex);
-				} else {
-					//  If the file type is not recognised then stop
-					return false;
-				}
-				//  Keep a note that this file has been imported to save repetitions
-				TextureMap[fn] = tex;
-			} else {
-				//  If the texture has been imported before then use that old version to save importing again
-				tex = TextureMap[fn];
-			}
 			//  Compile the object's Display List and remember that this object has been compiled to save repetition
 			MeshFileMap[meshModel] = SetupVAO(m);
 		} else {
-			UniqueIDToDListMap[m.GetUniqueID()] = MeshFileMap[meshModel];
+			VAOMap[m.GetUniqueID()] = MeshFileMap[meshModel];
+		}
+
+		//  Only bother importing the texture if this texture has not already been imported
+		if (!TextureMap.count(fn)) {
+			//  Check file extension, included for possible extension to other formats
+			if(fn.substr(fn.find_last_of(".") + 1) == "tga") {
+				//  Load the texture and put it in our temporary holder 'tex'
+				CreateGLTexture(fn.c_str(), tex);
+			} else {
+				//  If the file type is not recognised then stop
+				return false;
+			}
+			//  Keep a note that this file has been imported to save repetitions
+			TextureMap[fn] = tex;
+		} else {
+			//  If the texture has been imported before then use that old version to save importing again
+			tex = TextureMap[fn];
 		}
 	}
+
+	SetShaders(vertexShader, fragmentShader);
 
 	//  Add our new (or repeated) item to the render list
 	if(m.IsTransparent()) {
@@ -67,6 +72,43 @@ bool RenderManager::AddToRenderer(Mesh &m)
 	return true;
 }
 
+void RenderManager::BuildDefaultShaderProgram()
+{
+	if (glIsProgram(defaultShaderProgram) == GL_FALSE) {
+		std::string vertex = "default.vertexshader";
+		std::string fragment = "default.fragmentshader";
+
+		//  load the two shaders
+		LoadShader(vertex);
+		LoadShader(fragment);
+
+		//  Create a new program reference and attach our shaders
+		GLuint program = glCreateProgram();
+
+		glAttachShader(program, ShaderMap[vertex]);
+		glAttachShader(program, ShaderMap[fragment]);
+		glLinkProgram(program);
+
+
+		//  Check the infolog for errors
+		GLint result = GL_FALSE;
+		int logLength;
+
+		glGetProgramiv(program, GL_LINK_STATUS, &result);
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+		std::vector<char> ProgramErrorMessage(logLength);
+		glGetProgramInfoLog(program, logLength, NULL, &ProgramErrorMessage[0]);
+		std::string output(ProgramErrorMessage.begin(), ProgramErrorMessage.end());
+		std::cout << output << std::endl;
+
+		//  If we failed to link then quit before adding the program
+		if (result == GL_FALSE) {
+			return;
+		}
+		defaultShaderProgram = program;
+	}
+}
+
 void RenderManager::AddSkyBox(Mesh &m)
 {
 	std::string fn = m.GetTexturePath();
@@ -75,6 +117,7 @@ void RenderManager::AddSkyBox(Mesh &m)
 	CreateGLTexture(fn.c_str(), tex);
 	skyBoxTexture = tex;
 	skyBox = SetupVAO(m);
+	skyboxShaderProgram = CreateShaderProgram("skybox.vertexshader", "skybox.fragmentshader");
 }
 
 void RenderManager::AddTerrainToRenderer(Terrain &t)
@@ -86,6 +129,7 @@ void RenderManager::AddTerrainToRenderer(Terrain &t)
 	terrainTexture = tex;
 	terrain = SetupVAO(t);
 	terrainVerts = t.GetNumberOfVerts();
+	terrainShaderProgram = CreateShaderProgram(t.GetVertexShader(), t.GetFragmentShader());
 }
 
 void RenderManager::RemoveFromRenderer(Mesh m)
@@ -297,6 +341,40 @@ void RenderManager::BuildModelViewMatrix(GameObject g)
 	Matrix4x4 mvMatrix;
 	mvMatrix = BuildModelMatrix(g) * BuildViewMatrix();
 	ConvertToOpenGLMatrix(mvMatrix, modelViewMatrix);
+
+
+	float mv[3][3];
+	mv[0][0] = mvMatrix(0,0);
+	mv[1][1] = mvMatrix(1,1);
+	mv[2][2] = mvMatrix(2,2);
+	mv[1][0] = mvMatrix(0,1);
+	mv[2][0] = mvMatrix(0,2);
+	mv[2][1] = mvMatrix(1,2);
+	mv[0][1] = mvMatrix(1,0);
+	mv[0][2] = mvMatrix(2,0);
+	mv[1][2] = mvMatrix(2,1);
+
+	float det = mv[0][0] * (mv[1][1]*mv[2][2] - mv[1][2]*mv[2][1]) - mv[0][1] * (mv[1][0] * mv[2][2] - mv[1][2] * mv[2][0]) + mv[0][2] * (mv[1][0] * mv[2][1] - mv[1][1] * mv[2][0]);
+
+	mv[0][0] = (mv[1][1]*mv[2][2] - mv[1][2]*mv[2][1])/det;
+	mv[0][1] = (mv[0][2]*mv[2][1] - mv[0][1]*mv[2][2])/det;
+	mv[0][2] = (mv[0][1]*mv[1][2] - mv[0][2]*mv[1][1])/det;
+	mv[1][0] = (mv[1][2]*mv[2][0] - mv[1][0]*mv[2][2])/det;
+	mv[1][1] = (mv[0][0]*mv[2][2] - mv[0][2]*mv[2][0])/det;
+	mv[1][2] = (mv[0][2]*mv[1][0] - mv[0][0]*mv[1][2])/det;
+	mv[2][0] = (mv[1][0]*mv[2][1] - mv[1][1]*mv[2][0])/det;
+	mv[2][1] = (mv[0][1]*mv[2][0] - mv[0][0]*mv[2][1])/det;
+	mv[2][2] = (mv[0][0]*mv[1][1] - mv[0][1]*mv[1][0])/det;
+
+	Matrix4x4 normMatrix(Matrix4x4::IDENTITY);
+
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			normMatrix.elem[i][j] = mv[i][j];
+		}
+	}
+
+	ConvertToOpenGLMatrix(normMatrix, normalMatrix);
 }
 
 void RenderManager::BuildSkyBoxViewMatrix(GameObject g)
@@ -334,9 +412,12 @@ void RenderManager::ConvertToOpenGLMatrix(Matrix4x4 m, GLfloat* target)
 	target[15] = m.elem[3][3];
 }
 
-void RenderManager::LoadShader(std::string fileName)
+bool RenderManager::LoadShader(std::string fileName)
 {
 	std::string fn = fileName;
+	if (fn.empty()) {
+		return false;
+	}
 
 	//  Check we haven't already done this file
 	if (!ShaderMap.count(fn)) {
@@ -353,14 +434,14 @@ void RenderManager::LoadShader(std::string fileName)
 		} else {
 			//  If the file extension is not correct then return an error and stop
 			std::cout << "Unrecognised Shader File Extension: " << type << std::endl;
-			return;
+			return false;
 		}
 
 		std::string code;
 		std::ifstream fileStream(fn, std::ios::in);
 		if (!fileStream.is_open()) {
 			std::cout << "Could not open shader file : " << fileName << std::endl;
-			return;
+			return false;
 		}
 		//  Load in the code to a stream
 		std::string line = "";
@@ -391,18 +472,21 @@ void RenderManager::LoadShader(std::string fileName)
 
 		//  If we failed to compile the shader quit without adding the the shadermap
 		if (result == GL_FALSE) {
-			return;
+			return false;
 		}
 
 		ShaderMap[fn] = shader;
 	}
+	return true;
 }
 
-void RenderManager::SetShaders(std::string vertex, std::string fragment)
+GLuint RenderManager::CreateShaderProgram(std::string vertex, std::string fragment)
 {
 	//  load the two shaders
-	LoadShader(vertex);
-	LoadShader(fragment);
+	if (!LoadShader(vertex) || !LoadShader(fragment)) {
+		BuildDefaultShaderProgram();
+		return defaultShaderProgram;
+	}
 
 	//  Create a new program reference and attach our shaders
 	GLuint program = glCreateProgram();
@@ -423,29 +507,97 @@ void RenderManager::SetShaders(std::string vertex, std::string fragment)
 	std::string output(ProgramErrorMessage.begin(), ProgramErrorMessage.end());
 	std::cout << output << std::endl;
 
-	//  If we failed to link then quit before adding the program
+	//  If we failed to link then quit and return the default shader
 	if (result == GL_FALSE) {
+		BuildDefaultShaderProgram();
+		return defaultShaderProgram;
+	}
+	return program;
+}
+
+void RenderManager::SetShaders(std::string vertex, std::string fragment)
+{
+	if (vertex.empty() || fragment.empty()) {
+		BuildDefaultShaderProgram();
+		currentShaderProgram = defaultShaderProgram;
+		return;		
+	}
+	std::string type1 = vertex.substr(vertex.find_last_of(".") + 1);
+	std::string type2 = fragment.substr(vertex.find_last_of(".") + 1);
+
+	std::string name1 = vertex.substr(0, vertex.find_last_of("."));
+	std::string name2 = fragment.substr(0, fragment.find_last_of("."));
+
+	std::string fn;
+
+	if (type1 == "vertexshader" && type2 == "fragmentshader") {
+		fn = name1 + name2;
+	} else if (type1 == "fragmentshader" && type2 == "vertexshader") {
+		fn = name2 + name1;
+		std::string swap = fragment;
+		fragment = vertex;
+		vertex = swap;
+	} else {
+		std::cout  << "Cannot create program from " << vertex << " and " << fragment << " check file names" << std::endl;
+		BuildDefaultShaderProgram();
+		currentShaderProgram = defaultShaderProgram;
 		return;
+	}	
+
+
+	if (!ShaderProgramMap.count(fn)) {
+		//  load the two shaders
+		if (!LoadShader(vertex) || !LoadShader(fragment)) {
+			BuildDefaultShaderProgram();
+			currentShaderProgram = defaultShaderProgram;
+			return;
+		}
+
+		//  Create a new program reference and attach our shaders
+		GLuint program = glCreateProgram();
+
+		glAttachShader(program, ShaderMap[vertex]);
+		glAttachShader(program, ShaderMap[fragment]);
+		glLinkProgram(program);
+
+
+		//  Check the infolog for errors
+		GLint result = GL_FALSE;
+		int logLength;
+
+		glGetProgramiv(program, GL_LINK_STATUS, &result);
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+		std::vector<char> ProgramErrorMessage(logLength);
+		glGetProgramInfoLog(program, logLength, NULL, &ProgramErrorMessage[0]);
+		std::string output(ProgramErrorMessage.begin(), ProgramErrorMessage.end());
+		std::cout << output << std::endl;
+
+		//  If we failed to link then quit before adding the program
+		if (result == GL_FALSE) {
+			BuildDefaultShaderProgram();
+			currentShaderProgram = defaultShaderProgram;
+			return;
+		}
+		ShaderProgramMap[fn] = program;
 	}
 
-	defaultShaderProgram = program;
-
+	currentShaderProgram = ShaderProgramMap[fn];
 }
 
 void RenderManager::DrawSkyBox()
 {
 
 	//  Use the default Shader (no lighting)
-	glUseProgram(defaultShaderProgram);
+	glUseProgram(skyboxShaderProgram);
 
 	//  Find the location in gfx card memory of the matrix variables we wish to pass in
-	GLuint ProjectMatrixID = glGetUniformLocation(defaultShaderProgram, "projectionMatrix");
-	GLuint ViewMatrixID = glGetUniformLocation(defaultShaderProgram, "viewMatrix");
-	GLuint ModelMatrixID = glGetUniformLocation(defaultShaderProgram, "modelMatrix");
-	GLuint ModelViewMatrixID = glGetUniformLocation(defaultShaderProgram, "modelViewMatrix");
+	GLuint ProjectMatrixID = glGetUniformLocation(skyboxShaderProgram, "projectionMatrix");
+	GLuint ViewMatrixID = glGetUniformLocation(skyboxShaderProgram, "viewMatrix");
+	GLuint ModelMatrixID = glGetUniformLocation(skyboxShaderProgram, "modelMatrix");
+	GLuint ModelViewMatrixID = glGetUniformLocation(skyboxShaderProgram, "modelViewMatrix");
 
 	//  find the location in gfx card memory of the texture we wish to pass in
-	GLuint TextureID  = glGetUniformLocation(defaultShaderProgram, "texture");
+	GLuint TextureID  = glGetUniformLocation(skyboxShaderProgram, "texture");
 
 	//  Make our MVP matrices
 	BuildProjectionMatrix();
@@ -457,6 +609,7 @@ void RenderManager::DrawSkyBox()
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, viewMatrix);
 	glUniformMatrix4fv(ModelViewMatrixID, 1, GL_FALSE, modelViewMatrix);
 
+	
 	//  We're using Texture unit Zero
 	glActiveTexture(GL_TEXTURE0);
 	//  Put our texture into unit zero
@@ -477,27 +630,33 @@ void RenderManager::DrawSkyBox()
 
 void RenderManager::DrawTerrain()
 {
-	//  Use the default Shader (no lighting)
-	glUseProgram(defaultShaderProgram);
+	glUseProgram(terrainShaderProgram);
 
 	//  Find the location in gfx card memory of the matrix variables we wish to pass in
-	GLuint ProjectMatrixID = glGetUniformLocation(defaultShaderProgram, "projectionMatrix");
-	GLuint ViewMatrixID = glGetUniformLocation(defaultShaderProgram, "viewMatrix");
-	GLuint ModelMatrixID = glGetUniformLocation(defaultShaderProgram, "modelMatrix");
-	GLuint ModelViewMatrixID = glGetUniformLocation(defaultShaderProgram, "modelViewMatrix");
+	GLuint ProjectMatrixID = glGetUniformLocation(terrainShaderProgram, "projectionMatrix");
+	GLuint ViewMatrixID = glGetUniformLocation(terrainShaderProgram, "viewMatrix");
+	GLuint ModelMatrixID = glGetUniformLocation(terrainShaderProgram, "modelMatrix");
+	GLuint ModelViewMatrixID = glGetUniformLocation(terrainShaderProgram, "modelViewMatrix");
+	GLuint NormalMatrixID = glGetUniformLocation(terrainShaderProgram, "normalMatrix");
+	GLuint LightPositionID = glGetUniformLocation(terrainShaderProgram, "lightpos");
 
 	//  find the location in gfx card memory of the texture we wish to pass in
-	GLuint TextureID  = glGetUniformLocation(defaultShaderProgram, "texture");
+	GLuint TextureID  = glGetUniformLocation(terrainShaderProgram, "texture");
 
 	//  Make our MVP matrices
 	BuildProjectionMatrix();
 	BuildModelViewMatrix(base);
+
+	Vector3 lightPos = activeCamera->GetParent()->GetPosition();
+	float light[3] = {lightPos.x, lightPos.y, lightPos.z};
 
 	//  Pass them into the locations we found earlier
 	glUniformMatrix4fv(ProjectMatrixID, 1, GL_FALSE, projectionMatrix);
 	glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, modelMatrix);
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, viewMatrix);
 	glUniformMatrix4fv(ModelViewMatrixID, 1, GL_FALSE, modelViewMatrix);
+	glUniformMatrix4fv(NormalMatrixID, 1, GL_FALSE, normalMatrix);
+	glUniform3fv(LightPositionID, 1, light);
 
 	//  We're using Texture unit Zero
 	glActiveTexture(GL_TEXTURE0);
@@ -519,29 +678,37 @@ void RenderManager::DrawTerrain()
 bool RenderManager::DrawMesh(int meshID)
 {
 	Mesh* m = Mesh::GetMeshPointer(meshID);
+	SetShaders(m->GetVertexShader(), m->GetFragmentShader());
 
 	if (m != NULL) {
 		//  Use the default Shader (no lighting)
-		glUseProgram(defaultShaderProgram);
+		glUseProgram(currentShaderProgram);
 
 		//  Find the location in gfx card memory of the matrix variables we wish to pass in
-		GLuint ProjectMatrixID = glGetUniformLocation(defaultShaderProgram, "projectionMatrix");
-		GLuint ViewMatrixID = glGetUniformLocation(defaultShaderProgram, "viewMatrix");
-		GLuint ModelMatrixID = glGetUniformLocation(defaultShaderProgram, "modelMatrix");
-		GLuint ModelViewMatrixID = glGetUniformLocation(defaultShaderProgram, "modelViewMatrix");
+		GLuint ProjectMatrixID = glGetUniformLocation(currentShaderProgram, "projectionMatrix");
+		GLuint ViewMatrixID = glGetUniformLocation(currentShaderProgram, "viewMatrix");
+		GLuint ModelMatrixID = glGetUniformLocation(currentShaderProgram, "modelMatrix");
+		GLuint ModelViewMatrixID = glGetUniformLocation(currentShaderProgram, "modelViewMatrix");
+		GLuint NormalMatrixID = glGetUniformLocation(currentShaderProgram, "normalMatrix");
+		GLuint LightPositionID = glGetUniformLocation(currentShaderProgram, "lightpos");
 
 		//  find the location in gfx card memory of the texture we wish to pass in
-		GLuint TextureID  = glGetUniformLocation(defaultShaderProgram, "texture");
+		GLuint TextureID  = glGetUniformLocation(currentShaderProgram, "texture");
 
 		//  Make our MVP matrices
 		BuildProjectionMatrix();
 		BuildModelViewMatrix(*m->GetParentPointer());
+
+		Vector3 lightPos = activeCamera->GetParent()->GetPosition();
+		float light[3] = {lightPos.x, lightPos.y, lightPos.z};
 
 		//  Pass them into the locations we found earlier
 		glUniformMatrix4fv(ProjectMatrixID, 1, GL_FALSE, projectionMatrix);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, modelMatrix);
 		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, viewMatrix);
 		glUniformMatrix4fv(ModelViewMatrixID, 1, GL_FALSE, modelViewMatrix);
+		glUniformMatrix4fv(NormalMatrixID, 1, GL_FALSE, normalMatrix);
+		glUniform3fv(LightPositionID, 1, light);
 
 		//  We're using Texture unit Zero
 		glActiveTexture(GL_TEXTURE0);
@@ -551,8 +718,8 @@ bool RenderManager::DrawMesh(int meshID)
 		glUniform1i(TextureID, 0);
 
 		//  draw the skybox
-		glBindVertexArray(UniqueIDToDListMap[meshID]);
-		glDrawArrays(GL_TRIANGLES, 0, m->GetTriangleNumber());
+		glBindVertexArray(VAOMap[meshID]);
+		glDrawArrays(GL_TRIANGLES, 0, m->GetNumberOfVerts());
 
 		//  unbind our shaders and arrays
 		glBindVertexArray(0);

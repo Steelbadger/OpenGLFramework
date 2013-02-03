@@ -31,7 +31,7 @@ Mesh::Mesh(const Mesh& m):
 	verts(m.verts),
 	normals(m.normals),
 	uvs(m.uvs),
-	triangles(m.triangles),
+	numVerts(m.numVerts),
 	successfullBuild(m.successfullBuild)
 {
 	IdToMeshMap[uniqueID] = this;
@@ -156,7 +156,22 @@ bool Mesh::LoadObj(const char* path)
 	
 	}
 	fclose(file);
-	triangles = vertIndices.size();
+	numVerts = vertIndices.size();
 
 	return true;
+}
+
+void Mesh::AttachShader(std::string shader)
+{
+	std::string type = shader.substr(shader.find_last_of(".") + 1);
+
+	if (type == "vertexshader") {
+		vertexShader = shader;
+	} else if (type == "fragmentshader") {
+		fragmentShader = shader;
+	} else {
+		//  If the file extension is not correct then return an error and stop
+		std::cout << "Cannot Attach Shader, Unrecognised Shader File Extension: " << type << std::endl;
+		return;
+	}
 }

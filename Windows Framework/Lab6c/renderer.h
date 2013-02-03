@@ -25,6 +25,7 @@ public:
 	void RemoveFromRenderer(Mesh m);
 	void AddSkyBox(Mesh &m);
 	void AddTerrainToRenderer(Terrain &t);
+	void BuildDefaultShaderProgram();
 
 	void RenderAll();
 	void SetShaders(std::string vertex, std::string fragment);
@@ -38,14 +39,15 @@ private:
 	GLuint SetupVAO(Terrain &t);
 
 	void InitializeOpenGL();
-	void LoadShader(std::string fileName);
+	bool LoadShader(std::string fileName);
+	GLuint CreateShaderProgram(std::string vertex, std::string fragment);
 
 	Matrix4x4 BuildModelMatrix(GameObject g);
 	Matrix4x4 BuildViewMatrix();
 	void BuildProjectionMatrix();
 	void BuildModelViewMatrix(GameObject g);
 	void BuildSkyBoxViewMatrix(GameObject g);
-
+	
 	void DrawSkyBox();
 	void DrawTerrain();
 	bool DrawMesh(int meshID);
@@ -59,10 +61,11 @@ private:
 	GLfloat viewMatrix[16];
 	GLfloat modelViewMatrix[16];
 	GLfloat projectionMatrix[16];
+	GLfloat normalMatrix[16];
 
 	GLuint skyBox;
-	GLuint skyBoxVAO;
 	GLuint skyBoxTexture;
+
 	GLuint terrain;
 	GLuint terrainTexture;
 
@@ -70,12 +73,17 @@ private:
 
 	GameObject base;
 
-	std::map<int, GLuint> UniqueIDToDListMap;
+	std::map<int, GLuint> VAOMap;
 	std::map<int, GLuint> UniqueIDToShaderMap;
 	std::map<std::string, GLuint> TextureMap;
 	std::map<std::string, GLuint> ShaderMap;
 	std::map<std::string, GLuint> MeshFileMap;
+	std::map<std::string, GLuint> ShaderProgramMap;
 
 	GLuint defaultShaderProgram;
+	GLuint currentShaderProgram;
+
+	GLuint skyboxShaderProgram;
+	GLuint terrainShaderProgram;
 };
 

@@ -1,0 +1,37 @@
+#version 330 core
+
+
+in vec2 UV;
+in vec3 worldPosition;
+in vec3 normal;
+
+// Ouput data
+out vec3 color;
+
+uniform sampler2D texture;
+uniform vec3 lightpos;
+
+void main()
+{
+	float shininess = 10;
+	vec3 lightcolor = vec3(1.0, 1.0, 1.0);
+	color = texture2D( texture, UV ).rgb;
+
+	vec3 ambient = color * lightcolor * 0.1;
+
+	vec3 fragToLight = normalize(-worldPosition);
+	vec3 norm = normalize(normal);
+
+	float diffuseContribution = max(0.0, dot(norm, fragToLight));
+	vec3 diffuse = color * lightcolor * diffuseContribution;
+
+	vec3 reflection = reflect(fragToLight, norm);
+
+	float specContribution = max(0.0, dot(fragToLight, reflection));
+	specContribution = pow(specContribution, shininess);
+	
+	vec3 specular = specContribution * lightcolor * color;
+
+	color = ambient + diffuse + specular;
+
+}

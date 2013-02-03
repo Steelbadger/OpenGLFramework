@@ -87,6 +87,9 @@
     <ClCompile Include="quaternion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lights.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tex.h">
@@ -164,12 +167,21 @@
     <ClInclude Include="quaternion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="lights.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="basic.vertexshader">
+    <None Include="default.fragmentshader">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="basic.fragmentshader">
+    <None Include="default.vertexshader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="skybox.vertexshader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="skybox.fragmentshader">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

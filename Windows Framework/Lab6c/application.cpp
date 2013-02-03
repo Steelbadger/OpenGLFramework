@@ -31,12 +31,10 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	Mesh skyBox("inwardCube.obj", "skyboxseamless.tga");
 	renderer.AddSkyBox(skyBox);
-	int count = 0;
-	int num = 10;
+	int num = 5;
 	for (int i = 0; i < num; i++) {
 		for (int j = 0; j < num; j++) {
 			for (int k = 0; k < num; k++) {
-				count++;
 				StaticObject* curr = new StaticObject();
 				curr->CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
 				curr->SetLocation(i*3.0f, 20.0f+j*3.0f, k*3.0f);
@@ -69,8 +67,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	culling = false;
 	glCullFace(GL_BACK);
 
-	renderer.SetShaders("basic.vertexshader", "basic.fragmentshader");
-
+	renderer.BuildDefaultShaderProgram();
 }
 
 void Application::MainLoop()

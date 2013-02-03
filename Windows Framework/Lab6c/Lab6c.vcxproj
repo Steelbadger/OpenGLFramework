@@ -75,6 +75,7 @@
     <ClCompile Include="gameobject.cpp" />
     <ClCompile Include="glew.c" />
     <ClCompile Include="input.cpp" />
+    <ClCompile Include="lights.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="noisegenerator.cpp" />
@@ -101,6 +102,7 @@
     <ClInclude Include="gameobject.h" />
     <ClInclude Include="glew.h" />
     <ClInclude Include="input.h" />
+    <ClInclude Include="lights.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="noisegenerator.h" />
     <ClInclude Include="quaternion.h" />
@@ -120,8 +122,10 @@
     <ClInclude Include="wglew.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="basic.fragmentshader" />
-    <None Include="basic.vertexshader" />
+    <None Include="default.fragmentshader" />
+    <None Include="default.vertexshader" />
+    <None Include="skybox.fragmentshader" />
+    <None Include="skybox.vertexshader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
