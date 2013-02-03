@@ -13,7 +13,7 @@ uniform vec3 lightpos;
 
 void main()
 {
-	float shininess = 10;
+	float shininess = 20;
 	vec3 lightcolor = vec3(1.0, 1.0, 1.0);
 	color = texture2D( texture, UV ).rgb;
 
