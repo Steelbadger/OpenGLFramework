@@ -28,10 +28,11 @@ public:
 	Vector3* GetNormalArrayBase(){return &normals[0];}
 	Vector2* GetUVArrayBase(){return &uvs[0];}
 	std::string GetTexturePath(){return texturePath;}
+	std::string GetMeshSourceFilePath(){return meshPath;}
 	int GetTriangleNumber(){return triangles;}
-	int GetSizeOfVerts() {return sizeof(verts);}
-	int GetSizeOfNormals() {return sizeof(normals);}
-	int GetSizeOfUVs() {return sizeof(uvs);}
+	int GetSizeOfVerts() {return verts.size()*sizeof(float)*3;}
+	int GetSizeOfNormals() {return normals.size()*sizeof(float)*3;}
+	int GetSizeOfUVs() {return uvs.size()*sizeof(float)*3;}
 	static Mesh* GetMeshPointer(int uniqueID);
 
 private:

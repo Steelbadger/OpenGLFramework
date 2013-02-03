@@ -18,9 +18,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Primitives.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -52,9 +49,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="collider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="heightmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="controller.cpp">
@@ -90,17 +84,11 @@
     <ClCompile Include="noisegenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="quadtree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="quaternion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Primitives.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="tex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -137,9 +125,6 @@
     <ClInclude Include="collider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="heightmap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -174,9 +159,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="noisegenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="quadtree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="quaternion.h">

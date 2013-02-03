@@ -32,7 +32,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	Mesh skyBox("inwardCube.obj", "skyboxseamless.tga");
 	renderer.AddSkyBox(skyBox);
 	int count = 0;
-	int num = 5;
+	int num = 10;
 	for (int i = 0; i < num; i++) {
 		for (int j = 0; j < num; j++) {
 			for (int k = 0; k < num; k++) {
@@ -76,21 +76,7 @@ void Application::Initialize(HINSTANCE hInstance)
 void Application::MainLoop()
 {
 	if (input.GetTimeSinceLastFrame() >= 10) {
-		double currentTime = time(NULL);
-		nbFrames++;
-		if ( currentTime - lastTime >= 1.0 ){
-			if (framerateLogging) {
-				std::cout << 1000.0/double(nbFrames) << " ms/frame\t" << "(" << nbFrames << "FPS)" << std::endl;
-			}
-			nbFrames = 0;
-			lastTime += 1.0;
-		}
-
-		GLfloat Light_Ambient[] = {0.1f, 0.1f, 0.1f, 1.0f};
-		GLfloat Light_Diffuse[] = {0.8f, 0.8f, 0.8f, 1.0f};
-		GLfloat Light_Position[]= {500.0f, 1000.0f, 500.0f, 1.0f};
-
-		glLoadIdentity();
+		Debug();
 		window.PrepareForDrawing();
 		player.InputUpdate();
 
@@ -106,8 +92,6 @@ void Application::MainLoop()
 
 		player.CheckGroundCollision(myNoise);
 
-		renderer.UpdateCamera();
-
 		input.Update();
 
 		if(input.ReportRMousePress()) {
@@ -115,61 +99,65 @@ void Application::MainLoop()
 			window.SetMouseLockedCentre();
 		}
 
-		if (input.ReportKeyPress('F')) {
-			framerateLogging = !framerateLogging;
-		}
-		if (input.ReportKeyPress('C')) {
-			culling = !culling;
-			if (culling) {
-				glEnable(GL_CULL_FACE);
-				std::cout << "Backface Culling: ON" << std::endl;
-			} else {
-				glDisable(GL_CULL_FACE);
-				std::cout << "Backface Culling: OFF" << std::endl;
-			}
 
-		}
-
-
-		if (input.ReportKeyPress('N')) {
-			std::cout << "Last Frame Took: " << input.GetTimeForLastFrame() << "ms" << std::endl;
-		}
-
-		if (input.ReportKeyPress('L')) {
-			std::cout << "Position: (" << player.GetPosition().x << ", "<< player.GetPosition().y << ", " << player.GetPosition().z << std::endl;
-			std::cout << "Forward Vector: (" << player.GetLocalZ().x << ", " << player.GetLocalZ().y << ", " << player.GetLocalZ().z << ")\t(Length: " << player.GetLocalZ().Length() << ")" << std::endl;
-			std::cout << "Up Vector: (" << player.GetLocalY().x << ", " << player.GetLocalY().y << ", " << player.GetLocalY().z << ")\t(Length: " << player.GetLocalY().Length() << ")" << std::endl;
-			std::cout << "Rotation Quaternion: (" << player.GetRotation().s << ", (" << player.GetRotation().x << ", " << player.GetRotation().y << ", " << player.GetRotation().z << "))" << std::endl;
-			std::cout << "Rotation Angle: " << player.GetRotation().GetAngle() << "\tRotation Axis: (" << player.GetRotation().GetAxis().x << ", " << player.GetRotation().GetAxis().y << ", " << player.GetRotation().GetAxis().z << ")" << std::endl;
-		}
-
-		if (input.ReportKeyPress('I')) {
-			wireframe = !wireframe;
-			if (wireframe) {
-				glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-				std::cout << "WireFrame Mode: ON" << std::endl;
-			} else {
-				glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-				std::cout << "WireFrame Mode: OFF" << std::endl;
-			}
-		}
 
 		if (input.ReportKeyPress(VK_ESCAPE))
 			exit(0);
 
-		Light_Position[0] = player.GetPosition().x;
-		Light_Position[1] = player.GetPosition().y;
-		Light_Position[2] = player.GetPosition().z;
-
-
-		glEnable(GL_LIGHTING);
-		glLightfv(GL_LIGHT1, GL_AMBIENT,  Light_Ambient);
-		glLightfv(GL_LIGHT1, GL_DIFFUSE,  Light_Diffuse);
-		glLightfv(GL_LIGHT1, GL_POSITION, Light_Position);
-		glEnable(GL_LIGHT1);
-
 		renderer.RenderAll();
 
 		window.FlipBuffers();
+	}
+}
+
+void Application::Debug()
+{
+	double currentTime = time(NULL);
+	nbFrames++;
+	if ( currentTime - lastTime >= 1.0 ){
+		if (framerateLogging) {
+			std::cout << 1000.0/double(nbFrames) << " ms/frame\t" << "(" << nbFrames << "FPS)" << std::endl;
+		}
+		nbFrames = 0;
+		lastTime += 1.0;
+	}
+
+	if (input.ReportKeyPress('F')) {
+		framerateLogging = !framerateLogging;
+	}
+	if (input.ReportKeyPress('C')) {
+		culling = !culling;
+		if (culling) {
+			glEnable(GL_CULL_FACE);
+			std::cout << "Backface Culling: ON" << std::endl;
+		} else {
+			glDisable(GL_CULL_FACE);
+			std::cout << "Backface Culling: OFF" << std::endl;
+		}
+
+	}
+
+
+	if (input.ReportKeyPress('N')) {
+		std::cout << "Last Frame Took: " << input.GetTimeForLastFrame() << "ms" << std::endl;
+	}
+
+	if (input.ReportKeyPress('L')) {
+		std::cout << "Position: (" << player.GetPosition().x << ", "<< player.GetPosition().y << ", " << player.GetPosition().z << std::endl;
+		std::cout << "Forward Vector: (" << player.GetLocalZ().x << ", " << player.GetLocalZ().y << ", " << player.GetLocalZ().z << ")\t(Length: " << player.GetLocalZ().Length() << ")" << std::endl;
+		std::cout << "Up Vector: (" << player.GetLocalY().x << ", " << player.GetLocalY().y << ", " << player.GetLocalY().z << ")\t(Length: " << player.GetLocalY().Length() << ")" << std::endl;
+		std::cout << "Rotation Quaternion: (" << player.GetRotation().s << ", (" << player.GetRotation().x << ", " << player.GetRotation().y << ", " << player.GetRotation().z << "))" << std::endl;
+		std::cout << "Rotation Angle: " << player.GetRotation().GetAngle() << "\tRotation Axis: (" << player.GetRotation().GetAxis().x << ", " << player.GetRotation().GetAxis().y << ", " << player.GetRotation().GetAxis().z << ")" << std::endl;
+	}
+
+	if (input.ReportKeyPress('I')) {
+		wireframe = !wireframe;
+		if (wireframe) {
+			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+			std::cout << "WireFrame Mode: ON" << std::endl;
+		} else {
+			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+			std::cout << "WireFrame Mode: OFF" << std::endl;
+		}
 	}
 }

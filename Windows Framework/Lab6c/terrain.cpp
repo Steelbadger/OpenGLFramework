@@ -1,5 +1,4 @@
 #include "Terrain.h"
-#include "heightmap.h"
 #include "myvector4.h"
 #include "my4x4matrix.h"
 #include <iostream>

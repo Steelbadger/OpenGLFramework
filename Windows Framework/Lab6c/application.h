@@ -3,14 +3,12 @@
 #include <stdio.h>
 #include <mmsystem.h>
 #include "glew.h"
-#include "Primitives.h"
 #include "Terrain.h"
 #include "mywindow.h"
 #include "player.h"
 #include "renderer.h"
 #include "staticobject.h"
 #include "noisegenerator.h"
-
 
 class Application
 {
@@ -20,6 +18,8 @@ public:
 
 	void Initialize(HINSTANCE hInstance);
 	void MainLoop();
+
+	void Debug();
 
 private:
 	WindowWizard window;
