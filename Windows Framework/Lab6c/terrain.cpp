@@ -67,29 +67,3 @@ void Terrain::Create(NoiseObject n)
 	std::cout << "Number of Triangles in Terrain Mesh: " << verts.size()/3 << std::endl;
 	std::cout << "Generation Time: " << myTime/CLOCKS_PER_SEC << "s" << std::endl;
 }
-
-float Terrain::GetHeight(float x, float z)
-{
-//	int size = heightmap.GetSize();
-//	float step = squareSize/(size-1);
-
-//	return (heightmap.GetFloatHeight(x/step,z/step));
-	return 0.0f;
-}
-
-Vector3 Terrain::CalcNormal(Vector3 pointA, Vector3 pointB, Vector3 pointC)
-{
-	Vector4 A(pointA);
-	Vector4 B(pointB);
-	Vector4 C(pointC);
-
-	Vector4 AB = B - A;
-	Vector4 AC = C - A;
-
-	Vector4 Normal = AC.Cross(AB);
-	Normal.NormaliseSelf();
-	Vector3 output(Normal);
-
-	return output;
-
-}

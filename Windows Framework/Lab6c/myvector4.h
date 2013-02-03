@@ -25,6 +25,7 @@ public:
 	float Dot3(const Vector4 & rhs) const;
 	float Dot4(const Vector4 & rhs) const;
 	Vector4 Cross(const Vector4 & rhs) const;
+	void CalcNormal(Vector4 A, Vector4 B, Vector4 C);
 
 	Vector4 & operator*=(const float s);
 	Vector4 & operator/=(const float s);

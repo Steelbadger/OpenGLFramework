@@ -16,7 +16,6 @@ public:
 
 	void Create(NoiseObject n);
 
-	float GetHeight(float x, float z);
 	Vector3* GetVertexArrayBase(){return &verts[0];}
 	Vector3* GetNormalArrayBase(){return &normals[0];}
 	Vector2* GetUVArrayBase(){return &texCoords[0];}
@@ -29,8 +28,6 @@ private:
 	std::vector<Vector2> texCoords;
 
 	std::string textureFile;
-
-	Vector3 CalcNormal(Vector3 A, Vector3 B, Vector3 C);
 
 	float squareSize;
 	float resolution;

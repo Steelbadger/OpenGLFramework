@@ -116,3 +116,20 @@ void Vector4::DumpVector4(char * s)
 	if(s != NULL)printf("\n%f %f %f %f %s\n\n", x, y, z, w, s);
 	else printf("\n%f %f %f %f\n\n", x, y, z, w);
 }
+
+void Vector4::CalcNormal(Vector4 pointA, Vector4 pointB, Vector4 pointC)
+{
+	Vector4 A(pointA);
+	Vector4 B(pointB);
+	Vector4 C(pointC);
+
+	Vector4 AB = B - A;
+	Vector4 AC = C - A;
+
+	Vector4 Normal = AC.Cross(AB);
+	Normal.NormaliseSelf();
+	x = Normal.x;
+	y = Normal.y;
+	z = Normal.z;
+	w = 1.0f;
+}
