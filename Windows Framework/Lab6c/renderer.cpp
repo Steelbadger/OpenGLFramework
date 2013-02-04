@@ -68,7 +68,7 @@ bool RenderManager::AddToRenderer(Mesh &m)
 	} else {
 		opaqueRenderList.push_back(m.GetUniqueID());
 	}
-
+	m.DeleteVertexData();
 	return true;
 }
 
@@ -357,20 +357,20 @@ void RenderManager::BuildModelViewMatrix(GameObject g)
 	float det = mv[0][0] * (mv[1][1]*mv[2][2] - mv[1][2]*mv[2][1]) - mv[0][1] * (mv[1][0] * mv[2][2] - mv[1][2] * mv[2][0]) + mv[0][2] * (mv[1][0] * mv[2][1] - mv[1][1] * mv[2][0]);
 
 	mv[0][0] = (mv[1][1]*mv[2][2] - mv[1][2]*mv[2][1])/det;
-	mv[0][1] = -(mv[0][2]*mv[2][1] - mv[0][1]*mv[2][2])/det;
-	mv[0][2] = (mv[0][1]*mv[1][2] - mv[0][2]*mv[1][1])/det;
-	mv[1][0] = -(mv[1][2]*mv[2][0] - mv[1][0]*mv[2][2])/det;
+	mv[0][1] = -(mv[1][0]*mv[2][2] - mv[1][2]*mv[2][0])/det;
+	mv[0][2] = (mv[1][0]*mv[2][1] - mv[1][1]*mv[2][0])/det;
+	mv[1][0] = -(mv[0][1]*mv[2][2] - mv[0][2]*mv[2][1])/det;
 	mv[1][1] = (mv[0][0]*mv[2][2] - mv[0][2]*mv[2][0])/det;
-	mv[1][2] = -(mv[0][2]*mv[1][0] - mv[0][0]*mv[1][2])/det;
-	mv[2][0] = (mv[1][0]*mv[2][1] - mv[1][1]*mv[2][0])/det;
-	mv[2][1] = -(mv[0][1]*mv[2][0] - mv[0][0]*mv[2][1])/det;
+	mv[1][2] = -(mv[0][0]*mv[2][1] - mv[0][1]*mv[2][0])/det;
+	mv[2][0] = (mv[0][1]*mv[1][2] - mv[0][2]*mv[1][1])/det;
+	mv[2][1] = -(mv[0][0]*mv[1][2] - mv[0][2]*mv[1][0])/det;
 	mv[2][2] = (mv[0][0]*mv[1][1] - mv[0][1]*mv[1][0])/det;
 
 	Matrix4x4 normMatrix(Matrix4x4::IDENTITY);
 
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			normMatrix.elem[i][j] = mv[i][j];
+			normMatrix.elem[i][j] = mv[j][i];
 		}
 	}
 

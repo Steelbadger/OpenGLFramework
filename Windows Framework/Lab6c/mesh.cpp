@@ -175,3 +175,10 @@ void Mesh::AttachShader(std::string shader)
 		return;
 	}
 }
+
+void Mesh::DeleteVertexData()
+{
+	verts.clear();
+	normals.clear();
+	uvs.clear();
+}

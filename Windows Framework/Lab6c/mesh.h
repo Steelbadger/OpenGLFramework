@@ -40,6 +40,8 @@ public:
 	std::string GetVertexShader(){return vertexShader;}
 	std::string GetFragmentShader(){return fragmentShader;}
 
+	void DeleteVertexData();
+
 private:
 	bool LoadMesh(const char* path);
 	bool LoadObj(const char* path);
