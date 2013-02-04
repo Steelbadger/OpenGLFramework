@@ -357,14 +357,19 @@ void RenderManager::BuildModelViewMatrix(GameObject g)
 	float det = mv[0][0] * (mv[1][1]*mv[2][2] - mv[1][2]*mv[2][1]) - mv[0][1] * (mv[1][0] * mv[2][2] - mv[1][2] * mv[2][0]) + mv[0][2] * (mv[1][0] * mv[2][1] - mv[1][1] * mv[2][0]);
 
 	mv[0][0] = (mv[1][1]*mv[2][2] - mv[1][2]*mv[2][1])/det;
-	mv[0][1] = (mv[0][2]*mv[2][1] - mv[0][1]*mv[2][2])/det;
+	mv[0][1] = -(mv[0][2]*mv[2][1] - mv[0][1]*mv[2][2])/det;
 	mv[0][2] = (mv[0][1]*mv[1][2] - mv[0][2]*mv[1][1])/det;
-	mv[1][0] = (mv[1][2]*mv[2][0] - mv[1][0]*mv[2][2])/det;
+	mv[1][0] = -(mv[1][2]*mv[2][0] - mv[1][0]*mv[2][2])/det;
 	mv[1][1] = (mv[0][0]*mv[2][2] - mv[0][2]*mv[2][0])/det;
-	mv[1][2] = (mv[0][2]*mv[1][0] - mv[0][0]*mv[1][2])/det;
+	mv[1][2] = -(mv[0][2]*mv[1][0] - mv[0][0]*mv[1][2])/det;
 	mv[2][0] = (mv[1][0]*mv[2][1] - mv[1][1]*mv[2][0])/det;
-	mv[2][1] = (mv[0][1]*mv[2][0] - mv[0][0]*mv[2][1])/det;
+	mv[2][1] = -(mv[0][1]*mv[2][0] - mv[0][0]*mv[2][1])/det;
 	mv[2][2] = (mv[0][0]*mv[1][1] - mv[0][1]*mv[1][0])/det;
+
+	float test = mv[0][0] * (mv[1][1]*mv[2][2] - mv[1][2]*mv[2][1]) - mv[0][1] * (mv[1][0] * mv[2][2] - mv[1][2] * mv[2][0]) + mv[0][2] * (mv[1][0] * mv[2][1] - mv[1][1] * mv[2][0]);
+
+
+	//  WRONG!
 
 	Matrix4x4 normMatrix(Matrix4x4::IDENTITY);
 
