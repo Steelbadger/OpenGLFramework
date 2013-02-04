@@ -68,7 +68,7 @@ bool RenderManager::AddToRenderer(Mesh &m)
 	} else {
 		opaqueRenderList.push_back(m.GetUniqueID());
 	}
-
+	m.DeleteVertexData();
 	return true;
 }
 
@@ -375,7 +375,7 @@ void RenderManager::BuildModelViewMatrix(GameObject g)
 
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			normMatrix.elem[i][j] = mv[i][j];
+			normMatrix.elem[i][j] = mv[j][i];
 		}
 	}
 
