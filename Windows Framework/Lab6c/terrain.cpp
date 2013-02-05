@@ -63,6 +63,7 @@ void Terrain::Create(NoiseObject n)
 	}
 	myTime = clock()-myTime;
 	textureFile = "grass.tga";
+	rockFile = "rockTexture.tga";
 
 
 	std::cout << "Number of Triangles in Terrain Mesh: " << verts.size()/3 << std::endl;

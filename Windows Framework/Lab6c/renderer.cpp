@@ -127,6 +127,11 @@ void RenderManager::AddTerrainToRenderer(Terrain &t)
 
 	CreateGLTexture(fn.c_str(), tex);
 	terrainTexture = tex;
+
+	fn = t.GetRockTexturePath();
+	CreateGLTexture(fn.c_str(), tex);
+	terrainRock = tex;
+
 	terrain = SetupVAO(t);
 	terrainVerts = t.GetNumberOfVerts();
 	terrainShaderProgram = CreateShaderProgram(t.GetVertexShader(), t.GetFragmentShader());
@@ -642,6 +647,7 @@ void RenderManager::DrawTerrain()
 
 	//  find the location in gfx card memory of the texture we wish to pass in
 	GLuint TextureID  = glGetUniformLocation(terrainShaderProgram, "texture");
+	GLuint RockTextureID = glGetUniformLocation(terrainShaderProgram, "rock");
 
 	//  Make our MVP matrices
 	BuildProjectionMatrix();
@@ -664,6 +670,10 @@ void RenderManager::DrawTerrain()
 	glBindTexture(GL_TEXTURE_2D, terrainTexture);
 	// Set our texture variable in the shader to use unit zero
 	glUniform1i(TextureID, 0);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, terrainRock);
+	glUniform1i(RockTextureID, 1);
 
 	//  draw the skybox
 	glBindVertexArray(terrain);

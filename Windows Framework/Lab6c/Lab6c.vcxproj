@@ -126,6 +126,8 @@
     <None Include="default.vertexshader" />
     <None Include="skybox.fragmentshader" />
     <None Include="skybox.vertexshader" />
+    <None Include="terrain.fragmentshader" />
+    <None Include="terrain.vertexshader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

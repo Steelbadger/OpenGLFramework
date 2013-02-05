@@ -1,0 +1,31 @@
+#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in vec2 vertexUV;
+
+out vec2 UV;
+out vec3 worldPosition;
+out vec3 normal;
+out vec3 vertNorm;
+out vec3 globalPos;
+
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
+uniform mat4 modelViewMatrix;
+uniform mat4 normalMatrix;
+uniform vec3 position;
+
+void main(){
+
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vertexPosition_modelspace, 1.0);
+
+	worldPosition = vec3(viewMatrix * modelMatrix * vec4(vertexPosition_modelspace, 1.0));
+	normal = vec3(normalMatrix * vec4(vertexNormal, 1.0));
+	UV = vertexUV;
+	vertNorm = vertexNormal;
+	globalPos = vertexPosition_modelspace;
+}
+

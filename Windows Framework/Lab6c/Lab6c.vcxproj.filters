@@ -184,5 +184,11 @@
     <None Include="skybox.fragmentshader">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="terrain.vertexshader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="terrain.fragmentshader">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

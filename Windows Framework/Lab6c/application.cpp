@@ -45,7 +45,8 @@ void Application::Initialize(HINSTANCE hInstance)
 	testObject.CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
 	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
-
+	ground.AttachShader("terrain.vertexshader");
+	ground.AttachShader("terrain.fragmentshader");
 	double myTimer = clock();
 
 	renderer.AddTerrainToRenderer(ground);
@@ -78,6 +79,8 @@ void Application::MainLoop()
 		player.InputUpdate();
 
 		testObject.RotateLocalDeltaZ(0.05f);
+		testObject.RotateLocalDeltaY(0.025f);
+		testObject.RotateLocalDeltaX(0.03f);
 
 		if (input.ReportKeyState(VK_ADD)) {
 			testObject.UniformScale(1.01f);

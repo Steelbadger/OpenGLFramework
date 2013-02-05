@@ -68,6 +68,7 @@ private:
 
 	GLuint terrain;
 	GLuint terrainTexture;
+	GLuint terrainRock;
 
 	int terrainVerts;
 
