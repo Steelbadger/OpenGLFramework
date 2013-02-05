@@ -19,7 +19,9 @@ public:
 	Vector3* GetVertexArrayBase(){return &verts[0];}
 	Vector3* GetNormalArrayBase(){return &normals[0];}
 	Vector2* GetUVArrayBase(){return &texCoords[0];}
+	unsigned int* GetIndexArrayBase(){return &index[0];}
 	int GetNumberOfVerts(){return verts.size();}
+	int GetIndexLength(){return index.size();}
 	std::string GetTexturePath() {return textureFile;}
 	std::string GetRockTexturePath() {return rockFile;}
 	void AttachShader(std::string shader);
@@ -31,6 +33,7 @@ private:
 	std::vector<Vector3> verts;
 	std::vector<Vector3> normals;
 	std::vector<Vector2> texCoords;
+	std::vector<unsigned int> index;
 
 	std::string textureFile;
 	std::string rockFile;

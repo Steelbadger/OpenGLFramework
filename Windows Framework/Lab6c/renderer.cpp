@@ -133,7 +133,8 @@ void RenderManager::AddTerrainToRenderer(Terrain &t)
 	terrainRock = tex;
 
 	terrain = SetupVAO(t);
-	terrainVerts = t.GetNumberOfVerts();
+	//terrainVerts = t.GetNumberOfVerts();
+	terrainVerts = t.GetIndexLength();
 	terrainShaderProgram = CreateShaderProgram(t.GetVertexShader(), t.GetFragmentShader());
 }
 
@@ -281,6 +282,12 @@ GLuint RenderManager::SetupVAO(Terrain &t)
 	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	//  Bind our index array to it's own buffer.
+	GLuint elementBuffer;
+	glGenBuffers(1, &elementBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, t.GetIndexLength()*sizeof(unsigned int), t.GetIndexArrayBase(), GL_STATIC_DRAW);
 
 	//  Unbind our VAO so we don't mess with it
 	glBindVertexArray(0);
@@ -677,7 +684,9 @@ void RenderManager::DrawTerrain()
 
 	//  draw the skybox
 	glBindVertexArray(terrain);
-	glDrawArrays(GL_TRIANGLES, 0, terrainVerts);
+//	glDrawArrays(GL_TRIANGLES, 0, terrainVerts);
+
+	glDrawElements(GL_TRIANGLES, terrainVerts, GL_UNSIGNED_INT, (void*)0);
 
 	//  unbind our shaders and arrays
 	glBindVertexArray(0);
