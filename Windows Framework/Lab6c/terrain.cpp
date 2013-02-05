@@ -31,36 +31,6 @@ void Terrain::Create(NoiseObject n)
 
 	double myTime = clock();
 
-	//for (float i = 0; i < size-1; i++) {
-	//	for (float j = 0; j < size-1; j++) {
-	//		verts.push_back(Vector3(i*step, noise.TurbulentPerlin2D(i*step, j*step, n), j*step));
-	//		verts.push_back(Vector3(i*step, noise.TurbulentPerlin2D(i*step, step+j*step, n), step + j*step));
-	//		verts.push_back(Vector3(step + i*step, noise.TurbulentPerlin2D(step+i*step, step+j*step, n), step + j*step));
-	//		verts.push_back(Vector3(step + i*step, noise.TurbulentPerlin2D(step+i*step, step+j*step, n), step + j*step));
-	//		verts.push_back(Vector3(step + i*step, noise.TurbulentPerlin2D(step+i*step, j*step, n), j*step));
-	//		verts.push_back(Vector3(i*step, noise.TurbulentPerlin2D(i*step, j*step, n),j*step));
-
-	//		Vector4 normalA, normalB, normalC, normalD;
-	//		normalA = noise.NormalToTurbulentPerlin2D(i*step, j*step, n, step);
-	//		normalB = noise.NormalToTurbulentPerlin2D(step+i*step, step+j*step, n, step);
-	//		normalC = noise.NormalToTurbulentPerlin2D(i*step, step+j*step, n, step);
-	//		normalD = noise.NormalToTurbulentPerlin2D(step+i*step, j*step, n, step);
-
-	//		normals.push_back(normalA);
-	//		normals.push_back(normalC);
-	//		normals.push_back(normalB);
-	//		normals.push_back(normalB);
-	//		normals.push_back(normalD);
-	//		normals.push_back(normalA);
-
-	//		texCoords.push_back(Vector2(i*step/4, j*step/4));
-	//		texCoords.push_back(Vector2(i*step/4, (step + j*step)/4));
-	//		texCoords.push_back(Vector2((step + i*step)/4, (step + j*step)/4));
-	//		texCoords.push_back(Vector2((step + i*step)/4, (step + j*step)/4));
-	//		texCoords.push_back(Vector2((step + i*step)/4, j*step/4));
-	//		texCoords.push_back(Vector2(i*step/4, j*step/4));
-	//	}
-	//}
 	for (float i = 0; i < size; i++) {
 		for (float j = 0; j < size; j++) {
 			verts.push_back(Vector3(i*step, noise.TurbulentPerlin2D(i*step, j*step, n), j*step));
@@ -76,11 +46,11 @@ void Terrain::Create(NoiseObject n)
 	for (int i = 0; i < size-1; i++) {
 		for (int j = 0; j < size-1; j++) {
 			index.push_back(i+j*size);
+			index.push_back(1+i+(1+j)*size);
 			index.push_back(i+(1+j)*size);
 			index.push_back(1+i+(1+j)*size);
-			index.push_back(1+i+(1+j)*size);
-			index.push_back(1+i+j*size);
 			index.push_back(i+j*size);
+			index.push_back(1+i+j*size);
 		}
 	}
 
