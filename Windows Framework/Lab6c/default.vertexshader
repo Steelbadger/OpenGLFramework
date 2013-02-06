@@ -8,6 +8,9 @@ layout(location = 2) in vec2 vertexUV;
 out vec2 UV;
 out vec3 worldPosition;
 out vec3 normal;
+out vec3 lightDir;
+out vec3 lightCol;
+out vec3 vertNorm;
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
@@ -15,6 +18,8 @@ uniform mat4 modelMatrix;
 uniform mat4 modelViewMatrix;
 uniform mat4 normalMatrix;
 uniform vec3 position;
+uniform vec3 globalLightDir;
+uniform vec3 globalLightColour;
 
 void main(){
 
@@ -23,5 +28,8 @@ void main(){
 	worldPosition = vec3(viewMatrix * modelMatrix * vec4(vertexPosition_modelspace, 1.0));
 	normal = vec3(normalMatrix * vec4(vertexNormal, 1.0));
 	UV = vertexUV;
+	vertNorm = vertexNormal;
+	lightDir = globalLightDir;
+	lightCol = globalLightColour;
 }
 

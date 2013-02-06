@@ -9,33 +9,27 @@ struct PointLight
 	float r;
 	float g;
 	float b;
-	float brightness;
 };
 
 struct DirectionalLight
 {
-	float directionVectorX;
-	float directionVectorY;
-	float directionVectorZ;
+	DirectionalLight(float dX, float dY, float dZ, float r, float g, float b);
+	Vector3 direction;
 	float r;
 	float g;
 	float b;
-	float brightness;
 };
 
 
-
-
-
-class LightSource : public GameObject
+class LightSource
 {
 public:
-	LightSource(void);
+	LightSource(GameObject* parent);
 	~LightSource(void);
+	DirectionalLight GetAsDLight();
+private:
+	GameObject* parent;
 	Vector3 colour;
 	float brightness;
-
-
-private:
 };
 

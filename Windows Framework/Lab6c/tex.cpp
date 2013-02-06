@@ -1,4 +1,4 @@
-//Basic texture loading functions
+﻿//Basic texture loading functions
 //Matthew Bett 2006
 
 
@@ -346,8 +346,16 @@ bool CreateGLTexture(const char *name, GLuint & TexID )
 	// Typical Texture Generation Using Data From The TGA ( CHANGE )
 	glGenTextures(1, &TexID);				// Create The Texture ( CHANGE )
 	glBindTexture(GL_TEXTURE_2D, TexID);
-	glTexImage2D(GL_TEXTURE_2D, 0, texture_bpp / 8, texture_width, texture_height, 0, texture_type, GL_UNSIGNED_BYTE, texture_imageData);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+
+	//  My replacement, need to allocate enough storage to create mipmaps
+	glTexStorage2D(GL_TEXTURE_2D, 8, texture_bpp/8, texture_width, texture_height);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texture_width, texture_height, texture_type, GL_UNSIGNED_BYTE, texture_imageData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	//glTexImage2D(GL_TEXTURE_2D, 0, texture_bpp / 8, texture_width, texture_height, 0, texture_type, GL_UNSIGNED_BYTE, texture_imageData);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
 	if (texture_imageData)						// If Texture Image Exists ( CHANGE )

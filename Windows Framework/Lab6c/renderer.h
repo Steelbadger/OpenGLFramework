@@ -10,6 +10,7 @@
 #include "cameramodule.h"
 #include "staticobject.h"
 #include "mywindow.h"
+#include "lights.h"
 
 class RenderManager
 {
@@ -73,6 +74,8 @@ private:
 	int terrainVerts;
 
 	GameObject base;
+
+	DirectionalLight sun;
 
 	std::map<int, GLuint> VAOMap;
 	std::map<int, GLuint> UniqueIDToShaderMap;

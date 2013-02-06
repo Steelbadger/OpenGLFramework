@@ -5,7 +5,8 @@
 
 CameraModule* RenderManager::activeCamera;
 
-RenderManager::RenderManager()
+RenderManager::RenderManager():
+	sun(0.0f, -1.0f, 0.0f, 0.7f, 0.7f, 0.7f)
 {
 	opaqueRenderList.reserve(2048);
 }
@@ -133,7 +134,7 @@ void RenderManager::AddTerrainToRenderer(Terrain &t)
 	terrainRock = tex;
 
 	terrain = SetupVAO(t);
-	//terrainVerts = t.GetNumberOfVerts();
+
 	terrainVerts = t.GetIndexLength();
 	terrainShaderProgram = CreateShaderProgram(t.GetVertexShader(), t.GetFragmentShader());
 }
@@ -163,14 +164,17 @@ void RenderManager::RenderAll()
 //  Objects are drawn in order, opaque first then transparent, with transparent objects
 //  further away being drawn first
 {
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
 	BuildProjectionMatrix();
 
 	DrawSkyBox();
+
+	if (input.ReportKeyState(VK_LEFT)) {
+		sun.direction.x += 0.1f;
+	}
+
+	if(input.ReportKeyState(VK_RIGHT)) {
+		sun.direction.x -= 0.1f;
+	}
 
 	DrawTerrain();
 
@@ -626,6 +630,8 @@ void RenderManager::DrawSkyBox()
 	glActiveTexture(GL_TEXTURE0);
 	//  Put our texture into unit zero
 	glBindTexture(GL_TEXTURE_2D, skyBoxTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	// Set our texture variable in the shader to use unit zero
 	glUniform1i(TextureID, 0);
 
@@ -650,7 +656,8 @@ void RenderManager::DrawTerrain()
 	GLuint ModelMatrixID = glGetUniformLocation(terrainShaderProgram, "modelMatrix");
 	GLuint ModelViewMatrixID = glGetUniformLocation(terrainShaderProgram, "modelViewMatrix");
 	GLuint NormalMatrixID = glGetUniformLocation(terrainShaderProgram, "normalMatrix");
-	GLuint LightPositionID = glGetUniformLocation(terrainShaderProgram, "lightpos");
+	GLuint GlobalLightDirectionID = glGetUniformLocation(terrainShaderProgram, "globalLightDir");
+	GLuint GlobalLightColourID = glGetUniformLocation(terrainShaderProgram, "globalLightColour");
 
 	//  find the location in gfx card memory of the texture we wish to pass in
 	GLuint TextureID  = glGetUniformLocation(terrainShaderProgram, "texture");
@@ -660,8 +667,9 @@ void RenderManager::DrawTerrain()
 	BuildProjectionMatrix();
 	BuildModelViewMatrix(base);
 
-	Vector3 lightPos = activeCamera->GetParent()->GetPosition();
-	float light[3] = {lightPos.x, lightPos.y, lightPos.z};
+	Vector3 lightPosition = activeCamera->GetParent()->GetPosition();
+	float light[3] = {sun.direction.x, sun.direction.y, sun.direction.z};
+	float lightcol[3] = {sun.r, sun.g, sun.b};
 
 	//  Pass them into the locations we found earlier
 	glUniformMatrix4fv(ProjectMatrixID, 1, GL_FALSE, projectionMatrix);
@@ -669,22 +677,26 @@ void RenderManager::DrawTerrain()
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, viewMatrix);
 	glUniformMatrix4fv(ModelViewMatrixID, 1, GL_FALSE, modelViewMatrix);
 	glUniformMatrix4fv(NormalMatrixID, 1, GL_FALSE, normalMatrix);
-	glUniform3fv(LightPositionID, 1, light);
+	glUniform3fv(GlobalLightDirectionID, 1, light);
+	glUniform3fv(GlobalLightColourID, 1, lightcol);
 
 	//  We're using Texture unit Zero
 	glActiveTexture(GL_TEXTURE0);
 	//  Put our texture into unit zero
 	glBindTexture(GL_TEXTURE_2D, terrainTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	// Set our texture variable in the shader to use unit zero
 	glUniform1i(TextureID, 0);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, terrainRock);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glUniform1i(RockTextureID, 1);
 
 	//  draw the skybox
 	glBindVertexArray(terrain);
-//	glDrawArrays(GL_TRIANGLES, 0, terrainVerts);
 
 	glDrawElements(GL_TRIANGLES, terrainVerts, GL_UNSIGNED_INT, (void*)0);
 
@@ -709,7 +721,8 @@ bool RenderManager::DrawMesh(int meshID)
 		GLuint ModelMatrixID = glGetUniformLocation(currentShaderProgram, "modelMatrix");
 		GLuint ModelViewMatrixID = glGetUniformLocation(currentShaderProgram, "modelViewMatrix");
 		GLuint NormalMatrixID = glGetUniformLocation(currentShaderProgram, "normalMatrix");
-		GLuint LightPositionID = glGetUniformLocation(currentShaderProgram, "lightpos");
+		GLuint GlobalLightDirectionID = glGetUniformLocation(terrainShaderProgram, "globalLightDir");
+		GLuint GlobalLightColourID = glGetUniformLocation(terrainShaderProgram, "globalLightColour");
 
 		//  find the location in gfx card memory of the texture we wish to pass in
 		GLuint TextureID  = glGetUniformLocation(currentShaderProgram, "texture");
@@ -718,8 +731,9 @@ bool RenderManager::DrawMesh(int meshID)
 		BuildProjectionMatrix();
 		BuildModelViewMatrix(*m->GetParentPointer());
 
-		Vector3 lightPos = activeCamera->GetParent()->GetPosition();
-		float light[3] = {lightPos.x, lightPos.y, lightPos.z};
+		Vector3 lightPosition = activeCamera->GetParent()->GetPosition();
+		float light[3] = {sun.direction.x, sun.direction.y, sun.direction.z};
+		float lightcol[3] = {sun.r, sun.g, sun.b};
 
 		//  Pass them into the locations we found earlier
 		glUniformMatrix4fv(ProjectMatrixID, 1, GL_FALSE, projectionMatrix);
@@ -727,12 +741,15 @@ bool RenderManager::DrawMesh(int meshID)
 		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, viewMatrix);
 		glUniformMatrix4fv(ModelViewMatrixID, 1, GL_FALSE, modelViewMatrix);
 		glUniformMatrix4fv(NormalMatrixID, 1, GL_FALSE, normalMatrix);
-		glUniform3fv(LightPositionID, 1, light);
+		glUniform3fv(GlobalLightDirectionID, 1, light);
+		glUniform3fv(GlobalLightColourID, 1, lightcol);
 
 		//  We're using Texture unit Zero
 		glActiveTexture(GL_TEXTURE0);
 		//  Put our texture into unit zero
 		glBindTexture(GL_TEXTURE_2D, TextureMap[m->GetTexturePath()]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		// Set our texture variable in the shader to use unit zero
 		glUniform1i(TextureID, 0);
 
