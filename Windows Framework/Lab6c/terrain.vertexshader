@@ -31,7 +31,7 @@ void main(){
 	UV = vertexUV;
 	vertNorm = vertexNormal;
 	globalPos = vertexPosition_modelspace;
-	lightDir = globalLightDir;
+	lightDir =  vec3(normalMatrix * vec4(globalLightDir, 1.0));
 	lightCol = globalLightColour;
 }
 

@@ -28,8 +28,9 @@ void main(){
 	worldPosition = vec3(viewMatrix * modelMatrix * vec4(vertexPosition_modelspace, 1.0));
 	normal = vec3(normalMatrix * vec4(vertexNormal, 1.0));
 	UV = vertexUV;
+
 	vertNorm = vertexNormal;
-	lightDir = globalLightDir;
+	lightDir = vec3(normalMatrix * vec4(globalLightDir, 1.0));
 	lightCol = globalLightColour;
 }
 

@@ -32,9 +32,9 @@ void main()
 
 
 	float alt = globalPos.y;
-	alt = min(1.6, alt);
-	alt = max(1.2, alt);
-	alt = alt-1.2;
+	alt = min(2.0, alt);
+	alt = max(1.6, alt);
+	alt = alt-1.6;
 
 	float portion = (angle-grassThresh)/(rockThresh-grassThresh);
 	color = portion*texture2D(rock, UV/4).rgb + (1-portion)*texture2D(texture, UV).rgb;
@@ -43,15 +43,14 @@ void main()
 
 	float distance = max(1.0, distance(vec3(0.0, 0.0, 0.0), worldPosition)/10);
 
-	vec3 ambient = color * lightcolor * 0.05;
+	vec3 ambient = color * lightcolor * 0.2;
 
-//	vec3 fragToLight = normalize(-worldPosition);
 	vec3 fragToLight = normalize(-lightDir);
 	vec3 norm = normalize(normal);
 	vec3 fragToView = normalize(-worldPosition);
 
-	float diffuseContribution = max(0.0, dot(vn, fragToLight));
-	vec3 diffuse = color * lightcolor * diffuseContribution;
+	float diffuseContribution = max(0.0, dot(norm, fragToLight));
+	vec3 diffuse = color * lightcolor * diffuseContribution*0.7*diffuseContribution;
 
 	vec3 reflection = reflect(fragToLight, norm);
 

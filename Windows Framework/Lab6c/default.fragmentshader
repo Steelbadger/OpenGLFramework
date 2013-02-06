@@ -15,24 +15,23 @@ uniform sampler2D texture;
 
 void main()
 {
-	float shininess = 10;
+	float shininess = 20;
 	vec3 lightcolor = lightCol;
 	color = texture2D( texture, UV ).rgb;
 	vec3 nv = normalize(vertNorm);
 
-	vec3 ambient = color * lightcolor * 0.1;
+	vec3 ambient = color * lightcolor * 0.5;
 
 	vec3 fragToLight = normalize(-lightDir);
 	vec3 norm = normalize(normal);
 	vec3 fragToView = normalize(-worldPosition);
 
-	float diffuseContribution = max(0.0, dot(nv, fragToLight));
-	vec3 diffuse = color * lightcolor * diffuseContribution;
+	float diffuseContribution = max(0.0, dot(norm, fragToLight));
+	vec3 diffuse = color * lightcolor * diffuseContribution * 0.7;
 
-	vec3 reflection = reflect(fragToLight, nv);
-	vec3 thing = normalize(fragToLight - worldPosition);
+	vec3 reflection = reflect(fragToLight, norm);
 
-	float specContribution = max(0.0, dot(reflection, thing));
+	float specContribution = max(0.0, dot(reflection, -fragToView));
 	specContribution = pow(specContribution, shininess);
 	
 	vec3 specular = specContribution * lightcolor * color;
