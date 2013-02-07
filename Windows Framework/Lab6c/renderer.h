@@ -75,7 +75,8 @@ private:
 
 	GameObject base;
 
-	DirectionalLight sun;
+	LightSource sun;
+	Light sunSource;
 
 	std::map<int, GLuint> VAOMap;
 	std::map<int, GLuint> UniqueIDToShaderMap;

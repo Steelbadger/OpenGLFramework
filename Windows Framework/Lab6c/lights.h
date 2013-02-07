@@ -1,35 +1,28 @@
 #pragma once
 #include "gameobject.h"
 
-struct PointLight
+struct Light
 {
-	float x;
-	float y;
-	float z;
-	float r;
-	float g;
-	float b;
+	float position[4];
+	float colour[4];
 };
 
-struct DirectionalLight
-{
-	DirectionalLight(float dX, float dY, float dZ, float r, float g, float b);
-	Vector3 direction;
-	float r;
-	float g;
-	float b;
-};
-
-
-class LightSource
+class LightSource : public GameObject
 {
 public:
-	LightSource(GameObject* parent);
-	~LightSource(void);
-	DirectionalLight GetAsDLight();
-private:
-	GameObject* parent;
-	Vector3 colour;
-	float brightness;
-};
+	enum Type{POINT, DIRECTIONAL, SPOT};
 
+	LightSource(Type);
+	~LightSource(void);
+	Light GetLightAsStruct(Matrix4x4 view);
+	void SetColour(float r, float g, float b);
+	void SetAmbient(float brightness);
+	void SetBeamAngle(float angle);
+private:
+	Vector3 colour;
+	float ambient;
+	Type type;
+	float angle;
+
+	void CalculateDirectional(Matrix4x4 view, Light &out);
+};

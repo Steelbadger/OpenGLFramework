@@ -6,8 +6,6 @@ in vec3 worldPosition;
 in vec3 normal;
 in vec3 vertNorm;
 in vec3 globalPos;
-in vec3 lightDir;
-in vec3 lightCol;
 
 // Ouput data
 out vec3 color;
@@ -15,10 +13,18 @@ out vec3 color;
 uniform sampler2D texture;
 uniform sampler2D rock;
 
+struct Light {
+	vec4 position;
+	vec4 colour;
+};
+
+uniform Light sun;
+
 void main()
 {
+	vec3 lightcolour = vec3(sun.colour);
+	vec3 texcolour;
 
-	vec3 lightcolor = lightCol;
 	vec3 baseline = vec3(vertNorm.x, 0.0, vertNorm.z);
 	baseline = normalize(baseline);
 	vec3 vn = normalize(vertNorm);
@@ -37,23 +43,32 @@ void main()
 	alt = alt-1.6;
 
 	float portion = (angle-grassThresh)/(rockThresh-grassThresh);
-	color = portion*texture2D(rock, UV/4).rgb + (1-portion)*texture2D(texture, UV).rgb;
+	texcolour = portion*texture2D(rock, UV/4).rgb + (1-portion)*texture2D(texture, UV).rgb;
 
-	color = (alt/0.4) * color + (1-(alt/0.4)) * (texture2D(rock, UV/4).rgb * vec3(0.543, 0.36, 0.36));
+	texcolour = (alt/0.4) * texcolour + (1-(alt/0.4)) * (texture2D(rock, UV/4).rgb * vec3(0.543, 0.36, 0.36));
 
-	float distance = max(1.0, distance(vec3(0.0, 0.0, 0.0), worldPosition)/10);
+	float distance = distance(vec3(0.0, 0.0, 0.0), worldPosition);
 
-	vec3 ambient = color * lightcolor * 0.2;
 
-	vec3 fragToLight = normalize(-lightDir);
-	vec3 norm = normalize(normal);
+
+	vec3 ambient = texcolour * lightcolour * sun.colour.w;
+	vec3 direction = vec3(sun.position);
+
+	vec3 fragToLight = normalize(direction);
+
+	vec3 surfaceNormal = normalize(normal);
+	
 	vec3 fragToView = normalize(-worldPosition);
 
-	float diffuseContribution = max(0.0, dot(norm, fragToLight));
-	vec3 diffuse = color * lightcolor * diffuseContribution*0.7*diffuseContribution;
+	float diffuseContribution = max(0.0, dot(surfaceNormal, fragToLight));
 
-	vec3 reflection = reflect(fragToLight, norm);
+	vec3 diffuse = texcolour * lightcolour * diffuseContribution * (1-sun.colour.w);
+
+	fragToLight = normalize(-worldPosition);
+
+	diffuseContribution = max(0.0, dot(surfaceNormal, fragToLight));
+
+	diffuse = diffuse + (texcolour * lightcolour * diffuseContribution * (1/(1 + 0.01*distance + 0.0001 * distance * distance)));
 
 	color = ambient + diffuse;
-
 }

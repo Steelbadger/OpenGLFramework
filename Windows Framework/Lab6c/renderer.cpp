@@ -6,9 +6,12 @@
 CameraModule* RenderManager::activeCamera;
 
 RenderManager::RenderManager():
-	sun(0.0f, -1.0f, 0.0f, 0.7f, 0.7f, 0.7f)
+	sun(LightSource::DIRECTIONAL)
 {
 	opaqueRenderList.reserve(2048);
+	sun.SetAmbient(0.15f);
+	sun.SetColour(0.7f, 0.7f, 0.7f);
+	sun.RotateDeltaX(90);
 }
 
 RenderManager::~RenderManager(void)
@@ -33,6 +36,8 @@ bool RenderManager::AddToRenderer(Mesh &m)
 	std::string vertexShader = m.GetVertexShader();
 	std::string fragmentShader = m.GetFragmentShader();
 	GLuint tex;
+
+	sun.RotateDeltaX(0.01f);
 
 	//  Only bother compiling a new Display List if one doesn't already exist for this object
 	if (!VAOMap.count(m.GetUniqueID())) {
@@ -165,17 +170,11 @@ void RenderManager::RenderAll()
 //  further away being drawn first
 {
 	BuildProjectionMatrix();
+	sun.RotateDeltaX(0.01f);
+
+	sunSource = sun.GetLightAsStruct(BuildViewMatrix());
 
 	DrawSkyBox();
-
-	if (input.ReportKeyState(VK_LEFT)) {
-		sun.direction.x += 0.1f;
-	}
-
-	if(input.ReportKeyState(VK_RIGHT)) {
-		sun.direction.x -= 0.1f;
-	}
-
 	DrawTerrain();
 
 	std::vector<int>::iterator vit;
@@ -656,8 +655,8 @@ void RenderManager::DrawTerrain()
 	GLuint ModelMatrixID = glGetUniformLocation(terrainShaderProgram, "modelMatrix");
 	GLuint ModelViewMatrixID = glGetUniformLocation(terrainShaderProgram, "modelViewMatrix");
 	GLuint NormalMatrixID = glGetUniformLocation(terrainShaderProgram, "normalMatrix");
-	GLuint GlobalLightDirectionID = glGetUniformLocation(terrainShaderProgram, "globalLightDir");
-	GLuint GlobalLightColourID = glGetUniformLocation(terrainShaderProgram, "globalLightColour");
+	GLuint SunColourID = glGetUniformLocation(terrainShaderProgram, "sun.colour");
+	GLuint SunPositionID = glGetUniformLocation(terrainShaderProgram, "sun.position");
 
 	//  find the location in gfx card memory of the texture we wish to pass in
 	GLuint TextureID  = glGetUniformLocation(terrainShaderProgram, "texture");
@@ -667,18 +666,15 @@ void RenderManager::DrawTerrain()
 	BuildProjectionMatrix();
 	BuildModelViewMatrix(base);
 
-	Vector3 lightPosition = activeCamera->GetParent()->GetPosition();
-	float light[3] = {sun.direction.x, sun.direction.y, sun.direction.z};
-	float lightcol[3] = {sun.r, sun.g, sun.b};
-
 	//  Pass them into the locations we found earlier
 	glUniformMatrix4fv(ProjectMatrixID, 1, GL_FALSE, projectionMatrix);
 	glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, modelMatrix);
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, viewMatrix);
 	glUniformMatrix4fv(ModelViewMatrixID, 1, GL_FALSE, modelViewMatrix);
 	glUniformMatrix4fv(NormalMatrixID, 1, GL_FALSE, normalMatrix);
-	glUniform3fv(GlobalLightDirectionID, 1, light);
-	glUniform3fv(GlobalLightColourID, 1, lightcol);
+
+	glUniform4fv(SunColourID, 1, sunSource.colour);
+	glUniform4fv(SunPositionID, 1, sunSource.position);
 
 	//  We're using Texture unit Zero
 	glActiveTexture(GL_TEXTURE0);
@@ -721,8 +717,8 @@ bool RenderManager::DrawMesh(int meshID)
 		GLuint ModelMatrixID = glGetUniformLocation(currentShaderProgram, "modelMatrix");
 		GLuint ModelViewMatrixID = glGetUniformLocation(currentShaderProgram, "modelViewMatrix");
 		GLuint NormalMatrixID = glGetUniformLocation(currentShaderProgram, "normalMatrix");
-		GLuint GlobalLightDirectionID = glGetUniformLocation(terrainShaderProgram, "globalLightDir");
-		GLuint GlobalLightColourID = glGetUniformLocation(terrainShaderProgram, "globalLightColour");
+		GLuint SunColourID = glGetUniformLocation(currentShaderProgram, "sun.colour");
+		GLuint SunPositionID = glGetUniformLocation(currentShaderProgram, "sun.position");
 
 		//  find the location in gfx card memory of the texture we wish to pass in
 		GLuint TextureID  = glGetUniformLocation(currentShaderProgram, "texture");
@@ -732,8 +728,7 @@ bool RenderManager::DrawMesh(int meshID)
 		BuildModelViewMatrix(*m->GetParentPointer());
 
 		Vector3 lightPosition = activeCamera->GetParent()->GetPosition();
-		float light[3] = {sun.direction.x, sun.direction.y, sun.direction.z};
-		float lightcol[3] = {sun.r, sun.g, sun.b};
+
 
 		//  Pass them into the locations we found earlier
 		glUniformMatrix4fv(ProjectMatrixID, 1, GL_FALSE, projectionMatrix);
@@ -741,8 +736,9 @@ bool RenderManager::DrawMesh(int meshID)
 		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, viewMatrix);
 		glUniformMatrix4fv(ModelViewMatrixID, 1, GL_FALSE, modelViewMatrix);
 		glUniformMatrix4fv(NormalMatrixID, 1, GL_FALSE, normalMatrix);
-		glUniform3fv(GlobalLightDirectionID, 1, light);
-		glUniform3fv(GlobalLightColourID, 1, lightcol);
+
+		glUniform4fv(SunColourID, 1, sunSource.colour);
+		glUniform4fv(SunPositionID, 1, sunSource.position);
 
 		//  We're using Texture unit Zero
 		glActiveTexture(GL_TEXTURE0);
