@@ -11,7 +11,8 @@ GameObject::GameObject(void):
 		localX(GLOBALX),
 		localY(GLOBALY),
 		localZ(GLOBALZ),
-		scale(1.0f, 1.0f, 1.0f)
+		scale(1.0f, 1.0f, 1.0f),
+		parent(NULL)
 {
 }
 
@@ -232,29 +233,49 @@ void GameObject::RotateLocalDeltaZ(float dz)
 	localZ = rotation * Quaternion(GLOBALZ) * rotation.Inverse();
 }
 
-Vector4& GameObject::GetPosition()
+Vector4 GameObject::GetPosition()
 {
-	return position;
+	if (parent == NULL) {
+		return position;
+	} else {
+		return position + parent->GetPosition();
+	}
 }
 
 Vector4 GameObject::GetLocalX()
 {
-	return localX;
+	if (parent == NULL) {
+		return localX;
+	} else {
+		return parent->GetRotation() * Quaternion(localX) * parent->GetRotation().Inverse();
+	}
 }
 
 Vector4 GameObject::GetLocalY()
 {
-	return localY;
+	if (parent == NULL) {
+		return localY;
+	} else {
+		return parent->GetRotation() * Quaternion(localY) * parent->GetRotation().Inverse();
+	}
 }
 
 Vector4 GameObject::GetLocalZ()
 {
-	return localZ;
+	if (parent == NULL) {
+		return localZ;
+	} else {
+		return parent->GetRotation() * Quaternion(localZ) * parent->GetRotation().Inverse();
+	}
 }
 
 Quaternion GameObject::GetRotation()
 {
-	return rotation;
+	if (parent == NULL) {
+		return rotation;
+	} else {
+		return parent->GetRotation() * rotation;
+	}
 }
 
 Collider* GameObject::GetCollider()
@@ -282,6 +303,16 @@ Controller* GameObject::GetController()
 	return NULL;
 }
 
+GameObject* GameObject::GetParent()
+{
+	return parent;
+}
+
+void GameObject::SetParent(GameObject &g)
+{
+	parent = &g;
+}
+
 void GameObject::UniformScale(float scaleFactor)
 {
 	scale = Vector4(scale) * scaleFactor;
@@ -300,3 +331,4 @@ void GameObject::NonUniformScale(float xScale, float yScale, float zScale)
 	scale.y *= yScale;
 	scale.z *= zScale;
 }
+

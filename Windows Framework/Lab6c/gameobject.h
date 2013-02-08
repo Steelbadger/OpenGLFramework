@@ -8,6 +8,8 @@
 #include "mesh.h"
 #include "quaternion.h"
 
+class LightSource;
+
 class GameObject
 {
 public:
@@ -38,7 +40,7 @@ public:
 	void NonUniformScale(float xScale, float yScale, float zScale);
 	Vector3 GetScale(){return scale;}
 
-	Vector4& GetPosition();
+	Vector4 GetPosition();
 	Vector4 GetLocalX();
 	Vector4 GetLocalY();
 	Vector4 GetLocalZ();
@@ -50,11 +52,17 @@ public:
 	virtual Rigidbody* GetRigidbody();
 	virtual Mesh* GetMesh();
 	virtual Controller* GetController();
+	virtual GameObject* GetParent();
+
+	void SetParent(GameObject& target);
 
 	static const Vector4 GLOBALX;
 	static const Vector4 GLOBALY;
 	static const Vector4 GLOBALZ;
 private:
+
+	GameObject* parent;
+
 	Vector4 position;
 	Quaternion rotation;
 	Vector3 scale;

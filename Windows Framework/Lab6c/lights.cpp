@@ -4,7 +4,8 @@
 LightSource::LightSource(Type t):
 	type(t),
 	ambient(0.0f),
-	colour(0.0f, 0.0f, 0.0f)
+	colour(0.0f, 0.0f, 0.0f),
+	angle(0.0f)
 {
 }
 
@@ -18,11 +19,7 @@ Light LightSource::GetLightAsStruct(Matrix4x4 view)
 
 	switch (type) {
 		case POINT:
-			out.position[0] = GetPosition().x;
-			out.position[1] = GetPosition().y;
-			out.position[2] = GetPosition().z;
-			out.position[3] = 1.0f;
-			out.colour[3] = ambient;
+			CalculatePoint(view, out);
 			break;
 		case DIRECTIONAL:
 			CalculateDirectional(view, out);
@@ -33,6 +30,7 @@ Light LightSource::GetLightAsStruct(Matrix4x4 view)
 			out.position[2] = GetPosition().z;
 			out.position[3] = 1.0f;
 			out.colour[3] = angle;
+			out.type = 2;
 			break;
 	}
 
@@ -69,4 +67,18 @@ void LightSource::CalculateDirectional(Matrix4x4 view, Light &out)
 	out.position[2] = pos.z;
 	out.position[3] = 0.0f;
 	out.colour[3] = ambient;
+	out.type = 1;
+}
+
+void LightSource::CalculatePoint(Matrix4x4 view, Light&out)
+{
+	Vector4 pos = GetPosition();
+
+	pos = view * pos;
+	out.position[0] = pos.x;
+	out.position[1] = pos.y;
+	out.position[2] = pos.z;
+	out.position[3] = 1.0f;
+	out.colour[3] = ambient;
+	out.type = 0;
 }

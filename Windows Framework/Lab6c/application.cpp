@@ -1,6 +1,7 @@
 #include "application.h"
 #include <iostream>
 #include <time.h>
+#include "lights.h"
 
 
 Application::Application(void):
@@ -24,9 +25,21 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	glewInit();
 	player.SetLocation(50.0f, 30.0f, 50.0f);
+	LightSource playerLight(LightSource::POINT);
+	playerLight.SetColour(0.7f, 0.7f, 0.7f);
+	playerLight.SetAmbient(0.0f);
 
+	LightSource sunSource(LightSource::DIRECTIONAL);
+	sunSource.SetColour(0.7f, 0.7f, 0.7f);
+	sunSource.SetAmbient(0.2f);
+
+	sunSource.SetParent(sunParent);
 	player.SetCameraTargetWindow(&window);
+	playerLight.SetParent(player);
+
 	renderer.SetActiveCamera(*player.GetCamera());
+	renderer.AddLight(sunSource);
+	renderer.AddLight(playerLight);
 
 
 	Mesh skyBox("inwardCube.obj", "skyboxseamless.tga");
@@ -99,7 +112,7 @@ void Application::MainLoop()
 			window.SetMouseLockedCentre();
 		}
 
-
+		sunParent.RotateDeltaX(0.01f);
 
 		if (input.ReportKeyPress(VK_ESCAPE))
 			exit(0);

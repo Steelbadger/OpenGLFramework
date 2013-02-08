@@ -2,6 +2,7 @@
 #include "gameobject.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 CameraModule* RenderManager::activeCamera;
 
@@ -37,7 +38,7 @@ bool RenderManager::AddToRenderer(Mesh &m)
 	std::string fragmentShader = m.GetFragmentShader();
 	GLuint tex;
 
-	sun.RotateDeltaX(0.01f);
+//	sun.RotateDeltaX(0.01f);
 
 	//  Only bother compiling a new Display List if one doesn't already exist for this object
 	if (!VAOMap.count(m.GetUniqueID())) {
@@ -76,6 +77,13 @@ bool RenderManager::AddToRenderer(Mesh &m)
 	}
 	m.DeleteVertexData();
 	return true;
+}
+
+void RenderManager::AddLight(LightSource &l)
+{
+	if (lightObjects.size() < 8) {
+		lightObjects.push_back(l);
+	}
 }
 
 void RenderManager::BuildDefaultShaderProgram()
@@ -170,9 +178,9 @@ void RenderManager::RenderAll()
 //  further away being drawn first
 {
 	BuildProjectionMatrix();
-	sun.RotateDeltaX(0.01f);
+//	sun.RotateDeltaX(0.01f);
 
-	sunSource = sun.GetLightAsStruct(BuildViewMatrix());
+//	sunSource = sun.GetLightAsStruct(BuildViewMatrix());
 
 	DrawSkyBox();
 	DrawTerrain();
@@ -601,18 +609,19 @@ void RenderManager::SetShaders(std::string vertex, std::string fragment)
 
 void RenderManager::DrawSkyBox()
 {
+	currentShaderProgram = skyboxShaderProgram;
 
 	//  Use the default Shader (no lighting)
-	glUseProgram(skyboxShaderProgram);
+	glUseProgram(currentShaderProgram);
 
 	//  Find the location in gfx card memory of the matrix variables we wish to pass in
-	GLuint ProjectMatrixID = glGetUniformLocation(skyboxShaderProgram, "projectionMatrix");
-	GLuint ViewMatrixID = glGetUniformLocation(skyboxShaderProgram, "viewMatrix");
-	GLuint ModelMatrixID = glGetUniformLocation(skyboxShaderProgram, "modelMatrix");
-	GLuint ModelViewMatrixID = glGetUniformLocation(skyboxShaderProgram, "modelViewMatrix");
+	GLuint ProjectMatrixID = glGetUniformLocation(currentShaderProgram, "projectionMatrix");
+	GLuint ViewMatrixID = glGetUniformLocation(currentShaderProgram, "viewMatrix");
+	GLuint ModelMatrixID = glGetUniformLocation(currentShaderProgram, "modelMatrix");
+	GLuint ModelViewMatrixID = glGetUniformLocation(currentShaderProgram, "modelViewMatrix");
 
 	//  find the location in gfx card memory of the texture we wish to pass in
-	GLuint TextureID  = glGetUniformLocation(skyboxShaderProgram, "texture");
+	GLuint TextureID  = glGetUniformLocation(currentShaderProgram, "texture");
 
 	//  Make our MVP matrices
 	BuildProjectionMatrix();
@@ -647,20 +656,23 @@ void RenderManager::DrawSkyBox()
 
 void RenderManager::DrawTerrain()
 {
-	glUseProgram(terrainShaderProgram);
+	currentShaderProgram = terrainShaderProgram;
+	glUseProgram(currentShaderProgram);
+
+	PrepareLights();
 
 	//  Find the location in gfx card memory of the matrix variables we wish to pass in
-	GLuint ProjectMatrixID = glGetUniformLocation(terrainShaderProgram, "projectionMatrix");
-	GLuint ViewMatrixID = glGetUniformLocation(terrainShaderProgram, "viewMatrix");
-	GLuint ModelMatrixID = glGetUniformLocation(terrainShaderProgram, "modelMatrix");
-	GLuint ModelViewMatrixID = glGetUniformLocation(terrainShaderProgram, "modelViewMatrix");
-	GLuint NormalMatrixID = glGetUniformLocation(terrainShaderProgram, "normalMatrix");
-	GLuint SunColourID = glGetUniformLocation(terrainShaderProgram, "sun.colour");
-	GLuint SunPositionID = glGetUniformLocation(terrainShaderProgram, "sun.position");
+	GLuint ProjectMatrixID = glGetUniformLocation(currentShaderProgram, "projectionMatrix");
+	GLuint ViewMatrixID = glGetUniformLocation(currentShaderProgram, "viewMatrix");
+	GLuint ModelMatrixID = glGetUniformLocation(currentShaderProgram, "modelMatrix");
+	GLuint ModelViewMatrixID = glGetUniformLocation(currentShaderProgram, "modelViewMatrix");
+	GLuint NormalMatrixID = glGetUniformLocation(currentShaderProgram, "normalMatrix");
+//	GLuint SunColourID = glGetUniformLocation(currentShaderProgram, "sun.colour");
+//	GLuint SunPositionID = glGetUniformLocation(currentShaderProgram, "sun.position");
 
 	//  find the location in gfx card memory of the texture we wish to pass in
-	GLuint TextureID  = glGetUniformLocation(terrainShaderProgram, "texture");
-	GLuint RockTextureID = glGetUniformLocation(terrainShaderProgram, "rock");
+	GLuint TextureID  = glGetUniformLocation(currentShaderProgram, "texture");
+	GLuint RockTextureID = glGetUniformLocation(currentShaderProgram, "rock");
 
 	//  Make our MVP matrices
 	BuildProjectionMatrix();
@@ -673,8 +685,8 @@ void RenderManager::DrawTerrain()
 	glUniformMatrix4fv(ModelViewMatrixID, 1, GL_FALSE, modelViewMatrix);
 	glUniformMatrix4fv(NormalMatrixID, 1, GL_FALSE, normalMatrix);
 
-	glUniform4fv(SunColourID, 1, sunSource.colour);
-	glUniform4fv(SunPositionID, 1, sunSource.position);
+//	glUniform4fv(SunColourID, 1, sunSource.colour);
+//	glUniform4fv(SunPositionID, 1, sunSource.position);
 
 	//  We're using Texture unit Zero
 	glActiveTexture(GL_TEXTURE0);
@@ -705,11 +717,13 @@ void RenderManager::DrawTerrain()
 bool RenderManager::DrawMesh(int meshID)
 {
 	Mesh* m = Mesh::GetMeshPointer(meshID);
-	SetShaders(m->GetVertexShader(), m->GetFragmentShader());
 
 	if (m != NULL) {
 		//  Use the default Shader (no lighting)
+		SetShaders(m->GetVertexShader(), m->GetFragmentShader());
+
 		glUseProgram(currentShaderProgram);
+		PrepareLights();
 
 		//  Find the location in gfx card memory of the matrix variables we wish to pass in
 		GLuint ProjectMatrixID = glGetUniformLocation(currentShaderProgram, "projectionMatrix");
@@ -717,8 +731,6 @@ bool RenderManager::DrawMesh(int meshID)
 		GLuint ModelMatrixID = glGetUniformLocation(currentShaderProgram, "modelMatrix");
 		GLuint ModelViewMatrixID = glGetUniformLocation(currentShaderProgram, "modelViewMatrix");
 		GLuint NormalMatrixID = glGetUniformLocation(currentShaderProgram, "normalMatrix");
-		GLuint SunColourID = glGetUniformLocation(currentShaderProgram, "sun.colour");
-		GLuint SunPositionID = glGetUniformLocation(currentShaderProgram, "sun.position");
 
 		//  find the location in gfx card memory of the texture we wish to pass in
 		GLuint TextureID  = glGetUniformLocation(currentShaderProgram, "texture");
@@ -736,9 +748,6 @@ bool RenderManager::DrawMesh(int meshID)
 		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, viewMatrix);
 		glUniformMatrix4fv(ModelViewMatrixID, 1, GL_FALSE, modelViewMatrix);
 		glUniformMatrix4fv(NormalMatrixID, 1, GL_FALSE, normalMatrix);
-
-		glUniform4fv(SunColourID, 1, sunSource.colour);
-		glUniform4fv(SunPositionID, 1, sunSource.position);
 
 		//  We're using Texture unit Zero
 		glActiveTexture(GL_TEXTURE0);
@@ -760,4 +769,41 @@ bool RenderManager::DrawMesh(int meshID)
 	} else {
 		return false;
 	}
+}
+
+void RenderManager::PrepareLights()
+{
+	std::vector<LightSource>::iterator it;
+	int i = 0;
+	std::string nameString;
+	std::stringstream stream;
+
+	for (it = lightObjects.begin(); it != lightObjects.end(); it++) {
+		lights[i] = it->GetLightAsStruct(BuildViewMatrix());
+		stream << "lights[" << i << "].colour";
+		nameString = stream.str();
+		stream.str(std::string());
+
+		GLuint LightColourID = glGetUniformLocation(currentShaderProgram, nameString.c_str());
+
+		stream << "lights[" << i << "].position";
+		nameString = stream.str();
+		stream.str(std::string());
+
+		GLuint LightPositionID = glGetUniformLocation(currentShaderProgram, nameString.c_str());
+
+		stream << "lights[" << i << "].type";
+		nameString = stream.str();
+		stream.str(std::string());
+
+		GLuint LightTypeID = glGetUniformLocation(currentShaderProgram, nameString.c_str());
+
+		glUniform4fv(LightColourID, 1, lights[i].colour);
+		glUniform4fv(LightPositionID, 1, lights[i].position);
+		glUniform1i(LightTypeID, lights[i].type);
+		i++;
+	}
+
+	GLuint LightNumberID = glGetUniformLocation(currentShaderProgram, "numLights");
+	glUniform1i(LightNumberID, i);
 }

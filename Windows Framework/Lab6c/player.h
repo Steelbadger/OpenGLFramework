@@ -36,7 +36,6 @@ private:
 	CameraModule camera;
 	CameraController camController;
 	Rigidbody rigidbody;
-//	Mesh skybox;
 
 };
 

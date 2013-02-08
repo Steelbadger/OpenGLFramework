@@ -27,6 +27,7 @@ public:
 	void AddSkyBox(Mesh &m);
 	void AddTerrainToRenderer(Terrain &t);
 	void BuildDefaultShaderProgram();
+	void AddLight(LightSource &l);
 
 	void RenderAll();
 	void SetShaders(std::string vertex, std::string fragment);
@@ -48,6 +49,8 @@ private:
 	void BuildProjectionMatrix();
 	void BuildModelViewMatrix(GameObject g);
 	void BuildSkyBoxViewMatrix(GameObject g);
+
+	void PrepareLights();
 	
 	void DrawSkyBox();
 	void DrawTerrain();
@@ -77,6 +80,8 @@ private:
 
 	LightSource sun;
 	Light sunSource;
+	std::vector<LightSource> lightObjects;
+	Light lights[LightSource::MAXLIGHTS];
 
 	std::map<int, GLuint> VAOMap;
 	std::map<int, GLuint> UniqueIDToShaderMap;
@@ -90,5 +95,6 @@ private:
 
 	GLuint skyboxShaderProgram;
 	GLuint terrainShaderProgram;
+
 };
 

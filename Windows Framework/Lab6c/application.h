@@ -35,8 +35,7 @@ private:
 	NoiseObject myNoise;
 	Terrain ground;
 	RenderManager renderer;
-
-//	std::vector<StaticObject> objectList;
+	GameObject sunParent;
 
 	StaticObject testObject;
 };

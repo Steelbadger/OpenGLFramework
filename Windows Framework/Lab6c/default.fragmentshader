@@ -14,9 +14,10 @@ uniform sampler2D texture;
 struct Light {
 	vec4 position;
 	vec4 colour;
+	int type;
 };
-
-uniform Light sun;
+uniform Light lights[8];
+uniform int numLights;
 
 void main()
 {
@@ -25,41 +26,51 @@ void main()
 	//  Set our light colour
 	//vec3 lightcolor = vec3(1.0, 1.0, 1.0);
 
-	vec3 lightcolour = vec3(sun.colour);
-
 	//  Our texture colour
 	vec3 texcolour = texture2D( texture, UV ).rgb;
 
+	vec3 diffuse = vec3(0.0, 0.0, 0.0);
+	vec3 ambient = vec3(0.0, 0.0, 0.0);
+	vec3 specular = vec3(0.0, 0.0, 0.0);
+	vec3 lightcolour = vec3(0.0, 0.0, 0.0);
 
+	for (int i = 0; i <= numLights; i++) {
 
+		lightcolour = vec3(lights[i].colour);
 
-	vec3 ambient = texcolour * lightcolour * sun.colour.w;
-	vec3 direction = vec3(sun.position);
+		ambient = ambient + (texcolour * lightcolour * lights[i].colour.w);
+		vec3 fragToLight;
 
-	vec3 fragToLight = normalize(direction);
+		float dist;
 
-	vec3 surfaceNormal = normalize(normal);
-	
-	vec3 fragToView = normalize(-worldPosition);
+		if (lights[i].type == 1) {
+			fragToLight = normalize(vec3(lights[i].position));
+			dist = 0;
+		} else {
+			fragToLight = normalize(vec3(lights[i].position)-worldPosition);
+			dist = distance(vec3(lights[i].position), worldPosition);
+		}
 
-	float diffuseContribution = max(0.0, dot(surfaceNormal, fragToLight));
+		vec3 surfaceNormal = normalize(normal);
+		vec3 fragToView = normalize(-worldPosition);
 
-	vec3 diffuse = texcolour * lightcolour * diffuseContribution * (1-sun.colour.w);
+		float diffuseContribution = max(0.0, dot(surfaceNormal, fragToLight));
 
-	vec3 lightReflection = reflect(fragToLight, surfaceNormal);
+		diffuseContribution = max(0.0, dot(surfaceNormal, fragToLight));
 
-	float specularContribution = max(0.0, dot(-lightReflection, fragToView));
-	specularContribution = pow(specularContribution, shininess);
+		float attenuation = (1/(1 + 0.01*dist + 0.0001 * dist * dist));
 
-	vec3 specular = texcolour * lightcolour * specularContribution;
+		diffuse = diffuse + (texcolour * lightcolour * diffuseContribution * attenuation);
 
-	fragToLight = normalize(-worldPosition);
+		vec3 lightReflection = reflect(fragToLight, surfaceNormal);
 
-	diffuseContribution = max(0.0, dot(surfaceNormal, fragToLight));
+		float specularContribution = max(0.0, dot(-lightReflection, fragToView));
+		specularContribution = pow(specularContribution, shininess);
 
-	float distance = distance(vec3(0.0, 0.0, 0.0), worldPosition);
-
-	diffuse = diffuse + (texcolour * lightcolour * diffuseContribution * (1/(1 + 0.01*distance + 0.0001 * distance * distance)));
+		specular = specular + (texcolour * lightcolour * specularContribution * attenuation);
+	}
 
 	color = ambient + diffuse + specular;
+
+
 }

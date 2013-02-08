@@ -1,16 +1,21 @@
 #pragma once
 #include "gameobject.h"
+class Matrix4x4;
+class Vector4;
+class Vector3;
 
 struct Light
 {
 	float position[4];
 	float colour[4];
+	int type;
 };
 
 class LightSource : public GameObject
 {
 public:
 	enum Type{POINT, DIRECTIONAL, SPOT};
+	const static int MAXLIGHTS = 8;
 
 	LightSource(Type);
 	~LightSource(void);
@@ -25,4 +30,5 @@ private:
 	float angle;
 
 	void CalculateDirectional(Matrix4x4 view, Light &out);
+	void CalculatePoint(Matrix4x4 view, Light &out);
 };
