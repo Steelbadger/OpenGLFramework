@@ -54,6 +54,7 @@ private:
 	void BuildSkyBoxViewMatrix(GameObject g);
 
 	bool viewMatrixMade;
+	bool lightsPrepared;
 
 	void PrepareLights();
 	void SetUniforms();
@@ -121,7 +122,5 @@ struct UniformLocations
 	GLuint Texture2;
 	GLuint Texture3;
 	GLuint Texture4;
-
-	bool locationsFound;
 };
 

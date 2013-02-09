@@ -10,8 +10,8 @@ in vec3 globalPos;
 // Ouput data
 out vec3 color;
 
-uniform sampler2D texture;
-uniform sampler2D rock;
+uniform sampler2D texture1;
+uniform sampler2D texture2;
 
 struct Light {
 	vec4 position;
@@ -46,9 +46,9 @@ void main()
 	alt = alt-1.6;
 
 	float portion = (angle-grassThresh)/(rockThresh-grassThresh);
-	texcolour = portion*texture2D(rock, UV/4).rgb + (1-portion)*texture2D(texture, UV).rgb;
+	texcolour = portion*texture2D(texture2, UV/4).rgb + (1-portion)*texture2D(texture1, UV).rgb;
 
-	texcolour = (alt/0.4) * texcolour + (1-(alt/0.4)) * (texture2D(rock, UV/4).rgb * vec3(0.543, 0.36, 0.36));
+	texcolour = (alt/0.4) * texcolour + (1-(alt/0.4)) * (texture2D(texture2, UV/4).rgb * vec3(0.543, 0.36, 0.36));
 
 	vec3 diffuse = vec3(0.0, 0.0, 0.0);
 	vec3 ambient = vec3(0.0, 0.0, 0.0);
