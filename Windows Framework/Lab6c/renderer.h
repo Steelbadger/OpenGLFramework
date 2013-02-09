@@ -12,6 +12,9 @@
 #include "mywindow.h"
 #include "lights.h"
 
+struct UniformLocations;
+
+
 class RenderManager
 {
 public:
@@ -50,7 +53,10 @@ private:
 	void BuildModelViewMatrix(GameObject g);
 	void BuildSkyBoxViewMatrix(GameObject g);
 
+	bool viewMatrixMade;
+
 	void PrepareLights();
+	void SetUniforms();
 	
 	void DrawSkyBox();
 	void DrawTerrain();
@@ -63,6 +69,7 @@ private:
 
 	GLfloat modelMatrix[16];
 	GLfloat viewMatrix[16];
+	Matrix4x4 viewMat;
 	GLfloat modelViewMatrix[16];
 	GLfloat projectionMatrix[16];
 	GLfloat normalMatrix[16];
@@ -89,12 +96,32 @@ private:
 	std::map<std::string, GLuint> ShaderMap;
 	std::map<std::string, GLuint> MeshFileMap;
 	std::map<std::string, GLuint> ShaderProgramMap;
+	std::map<GLuint, UniformLocations> ProgramUniformLocationMap;
 
 	GLuint defaultShaderProgram;
 	GLuint currentShaderProgram;
 
 	GLuint skyboxShaderProgram;
 	GLuint terrainShaderProgram;
+};
 
+
+struct UniformLocations
+{
+	GLuint ProjectionMatrix;
+	GLuint ViewMatrix;
+	GLuint ModelMatrix;
+	GLuint ModelViewMatrix;
+	GLuint NormalMatrix;
+	GLuint LightPositions[8];
+	GLuint LightColours[8];
+	GLuint NumLights;
+	GLuint LightTypes[8];
+	GLuint Texture1;
+	GLuint Texture2;
+	GLuint Texture3;
+	GLuint Texture4;
+
+	bool locationsFound;
 };
 

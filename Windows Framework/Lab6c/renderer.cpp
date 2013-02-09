@@ -178,6 +178,7 @@ void RenderManager::RenderAll()
 //  further away being drawn first
 {
 	BuildProjectionMatrix();
+	viewMatrixMade = false;
 //	sun.RotateDeltaX(0.01f);
 
 //	sunSource = sun.GetLightAsStruct(BuildViewMatrix());
@@ -348,21 +349,30 @@ Matrix4x4 RenderManager::BuildModelMatrix(GameObject g)
 
 Matrix4x4 RenderManager::BuildViewMatrix()
 {
-	Vector4 position = activeCamera->GetParent()->GetPosition();
-	Vector4 upVector = activeCamera->GetParent()->GetLocalY();
-	Vector4 lookAt = position + activeCamera->GetParent()->GetLocalZ();
-
 	Matrix4x4 view;
+	if (viewMatrixMade == false) {
+		Vector4 position = activeCamera->GetParent()->GetPosition();
+		Vector4 upVector = activeCamera->GetParent()->GetLocalY();
+		Vector4 lookAt = position + activeCamera->GetParent()->GetLocalZ();
 
-	view.LookAt(position, lookAt, upVector);
-	ConvertToOpenGLMatrix(view, viewMatrix);
+		view.LookAt(position, lookAt, upVector);
+		ConvertToOpenGLMatrix(view, viewMatrix);
+		viewMat = view;
+		viewMatrixMade = true;
+	} else {
+		view = viewMat;
+	}
 	return view;
 }
 
 void RenderManager::BuildModelViewMatrix(GameObject g)
 {
 	Matrix4x4 mvMatrix;
-	mvMatrix = BuildModelMatrix(g) * BuildViewMatrix();
+	Matrix4x4 model = BuildModelMatrix(g);
+	Matrix4x4 view = BuildViewMatrix();
+
+
+	mvMatrix = model * view;
 	ConvertToOpenGLMatrix(mvMatrix, modelViewMatrix);
 
 
@@ -624,7 +634,7 @@ void RenderManager::DrawSkyBox()
 	GLuint TextureID  = glGetUniformLocation(currentShaderProgram, "texture");
 
 	//  Make our MVP matrices
-	BuildProjectionMatrix();
+	//BuildProjectionMatrix();
 	BuildSkyBoxViewMatrix(*activeCamera->GetParent());
 
 	//  Pass them into the locations we found earlier
@@ -675,7 +685,7 @@ void RenderManager::DrawTerrain()
 	GLuint RockTextureID = glGetUniformLocation(currentShaderProgram, "rock");
 
 	//  Make our MVP matrices
-	BuildProjectionMatrix();
+	//BuildProjectionMatrix();
 	BuildModelViewMatrix(base);
 
 	//  Pass them into the locations we found earlier
@@ -736,7 +746,7 @@ bool RenderManager::DrawMesh(int meshID)
 		GLuint TextureID  = glGetUniformLocation(currentShaderProgram, "texture");
 
 		//  Make our MVP matrices
-		BuildProjectionMatrix();
+		//BuildProjectionMatrix();
 		BuildModelViewMatrix(*m->GetParentPointer());
 
 		Vector3 lightPosition = activeCamera->GetParent()->GetPosition();
@@ -806,4 +816,63 @@ void RenderManager::PrepareLights()
 
 	GLuint LightNumberID = glGetUniformLocation(currentShaderProgram, "numLights");
 	glUniform1i(LightNumberID, i);
+}
+
+
+void RenderManager::SetUniforms()
+{
+	if(ProgramUniformLocationMap.count(currentShaderProgram) == 0) {
+
+		UniformLocations newLocations;
+
+		newLocations.ProjectionMatrix = glGetUniformLocation(currentShaderProgram, "projectionMatrix");
+		newLocations.ViewMatrix = glGetUniformLocation(currentShaderProgram, "viewMatrix");
+		newLocations.ModelMatrix = glGetUniformLocation(currentShaderProgram, "modelMatrix");
+		newLocations.ModelViewMatrix = glGetUniformLocation(currentShaderProgram, "modelViewMatrix");
+		newLocations.NormalMatrix = glGetUniformLocation(currentShaderProgram, "normalMatrix");
+
+		std::vector<LightSource>::iterator it;
+		int i = 0;
+		std::string nameString;
+		std::stringstream stream;
+
+		for (it = lightObjects.begin(); it != lightObjects.end(); it++) {
+			lights[i] = it->GetLightAsStruct(BuildViewMatrix());
+			stream << "lights[" << i << "].colour";
+			nameString = stream.str();
+			stream.str(std::string());
+
+			newLocations.LightColours[i] = glGetUniformLocation(currentShaderProgram, nameString.c_str());
+
+			stream << "lights[" << i << "].position";
+			nameString = stream.str();
+			stream.str(std::string());
+
+			newLocations.LightPositions[i] = glGetUniformLocation(currentShaderProgram, nameString.c_str());
+
+			stream << "lights[" << i << "].type";
+			nameString = stream.str();
+			stream.str(std::string());
+
+			newLocations.LightTypes[i] = glGetUniformLocation(currentShaderProgram, nameString.c_str());
+		}
+
+		ProgramUniformLocationMap[currentShaderProgram] = newLocations;
+	}
+
+	UniformLocations uniform = ProgramUniformLocationMap[currentShaderProgram];
+
+	glUniformMatrix4fv(uniform.ProjectionMatrix, 1, GL_FALSE, projectionMatrix);
+	glUniformMatrix4fv(uniform.ModelMatrix, 1, GL_FALSE, modelMatrix);
+	glUniformMatrix4fv(uniform.ViewMatrix, 1, GL_FALSE, viewMatrix);
+	glUniformMatrix4fv(uniform.ModelViewMatrix, 1, GL_FALSE, modelViewMatrix);
+	glUniformMatrix4fv(uniform.NormalMatrix, 1, GL_FALSE, normalMatrix);
+
+	for (int i = 0; i < lightObjects.size(); i++) {
+		glUniform4fv(uniform.LightColours[i], 1, lights[i].colour);
+		glUniform4fv(uniform.LightPositions[i], 1, lights[i].position);
+		glUniform1i(uniform.LightTypes[i], lights[i].type);
+	}
+
+	glUniform1i(uniform.NumLights, lightObjects.size());
 }
