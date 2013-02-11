@@ -776,6 +776,7 @@ void RenderManager::SetUniforms()
 			stream.str(std::string());
 
 			newLocations.LightTypes[i] = glGetUniformLocation(currentShaderProgram, nameString.c_str());
+			i++;
 		}
 
 		newLocations.Texture1 = glGetUniformLocation(currentShaderProgram, "texture1");

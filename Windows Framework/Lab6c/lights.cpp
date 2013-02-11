@@ -70,7 +70,7 @@ void LightSource::CalculateDirectional(Matrix4x4 view, Light &out)
 	out.type = 1;
 }
 
-void LightSource::CalculatePoint(Matrix4x4 view, Light&out)
+void LightSource::CalculatePoint(Matrix4x4 view, Light& out)
 {
 	Vector4 pos = GetPosition();
 
