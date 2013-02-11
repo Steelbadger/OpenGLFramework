@@ -748,6 +748,8 @@ void RenderManager::SetUniforms()
 		newLocations.ModelViewMatrix = glGetUniformLocation(currentShaderProgram, "modelViewMatrix");
 		newLocations.NormalMatrix = glGetUniformLocation(currentShaderProgram, "normalMatrix");
 
+		newLocations.NumLights = glGetUniformLocation(currentShaderProgram, "numLights");
+
 		std::vector<LightSource>::iterator it;
 		int i = 0;
 		std::string nameString;
