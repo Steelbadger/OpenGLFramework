@@ -77,7 +77,7 @@ bool RenderManager::AddToRenderer(Mesh &m)
 
 void RenderManager::AddLight(LightSource &l)
 {
-	if (lightObjects.size() < 8) {
+	if (lightObjects.size() < LightSource::MAXLIGHTS) {
 		lightObjects.push_back(l);
 	}
 }
@@ -608,7 +608,9 @@ void RenderManager::DrawTerrain()
 	//  draw the skybox
 	glBindVertexArray(terrain);
 
-	glDrawElements(GL_TRIANGLES, terrainVerts, GL_UNSIGNED_INT, (void*)0);
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
+//	glDrawElements(GL_TRIANGLES, terrainVerts, GL_UNSIGNED_INT, (void*)0);
+	glDrawElements(GL_PATCHES, terrainVerts, GL_UNSIGNED_INT, (void*)0);
 
 	//  unbind our shaders and arrays
 	glBindVertexArray(0);

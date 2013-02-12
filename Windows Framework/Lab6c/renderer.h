@@ -14,7 +14,6 @@
 
 struct UniformLocations;
 
-
 class RenderManager
 {
 public:
@@ -115,10 +114,10 @@ struct UniformLocations
 	GLuint ModelMatrix;
 	GLuint ModelViewMatrix;
 	GLuint NormalMatrix;
-	GLuint LightPositions[8];
-	GLuint LightColours[8];
+	GLuint LightPositions[LightSource::MAXLIGHTS];
+	GLuint LightColours[LightSource::MAXLIGHTS];
 	GLuint NumLights;
-	GLuint LightTypes[8];
+	GLuint LightTypes[LightSource::MAXLIGHTS];
 	GLuint Texture1;
 	GLuint Texture2;
 	GLuint Texture3;

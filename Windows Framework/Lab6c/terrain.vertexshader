@@ -1,30 +1,45 @@
-#version 330 core
+#version 400 core
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexUV;
 
-out vec2 UV;
-out vec3 worldPosition;
-out vec3 normal;
-out vec3 vertNorm;
-out vec3 globalPos;
+//out vec2 UV;
+//out vec3 worldPosition;
+//out vec3 normal;
+//out vec3 vertNorm;
+//out vec3 globalPos;
 
-uniform mat4 projectionMatrix;
+out vec2 vUV;
+out vec3 vworldPosition;
+out vec3 vnormal;
+out vec3 vvertNorm;
+out vec3 vglobalPos;
+
+//uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
-uniform mat4 modelViewMatrix;
-uniform mat4 normalMatrix;
+//uniform mat4 modelViewMatrix;
+//uniform mat4 normalMatrix;
 
 void main(){
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition_modelspace, 1.0);
+  //  gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition_modelspace, 1.0);
 
-	worldPosition = vec3(modelViewMatrix * vec4(vertexPosition_modelspace, 1.0));
-	normal = vec3(normalMatrix * vec4(vertexNormal, 1.0));
-	UV = vertexUV;
-	vertNorm = vertexNormal;
-	globalPos = vertexPosition_modelspace;
+//	vworldPosition = vec3(modelViewMatrix * vec4(vertexPosition_modelspace, 1.0));
+//	vnormal = vec3(normalMatrix * vec4(vertexNormal, 1.0));
+//	vUV = vertexUV;
+//	vvertNorm = vertexNormal;
+//	vglobalPos = vertexPosition_modelspace;
+
+	gl_Position = vec4(vertexPosition_modelspace, 1.0);
+//	vworldPosition = vertexPosition_modelspace, 1.0;
+	vworldPosition = vec3(viewMatrix * modelMatrix * vec4(vertexPosition_modelspace, 1.0));
+	vnormal = vertexNormal;
+	vUV = vertexUV;
+	vvertNorm = vertexNormal;
+	vglobalPos = vertexPosition_modelspace;
+
 }
 
