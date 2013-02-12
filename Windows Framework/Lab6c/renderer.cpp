@@ -36,8 +36,6 @@ bool RenderManager::AddToRenderer(Mesh &m)
 	std::string meshModel = m.GetMeshSourceFilePath();
 	GLuint tex;
 
-//	sun.RotateDeltaX(0.01f);
-
 	//  Only bother compiling a new Display List if one doesn't already exist for this object
 	if (!VAOMap.count(m.GetUniqueID())) {
 		if (!MeshFileMap.count(meshModel)) {
@@ -87,37 +85,11 @@ void RenderManager::AddLight(LightSource &l)
 void RenderManager::BuildDefaultShaderProgram()
 {
 	if (glIsProgram(defaultShaderProgram) == GL_FALSE) {
-		std::string vertex = "default.vertexshader";
-		std::string fragment = "default.fragmentshader";
+		std::vector<std::string> shaders;
+		shaders.push_back("default.vertexshader");
+		shaders.push_back("default.fragmentshader");
 
-		//  load the two shaders
-		LoadShader(vertex);
-		LoadShader(fragment);
-
-		//  Create a new program reference and attach our shaders
-		GLuint program = glCreateProgram();
-
-		glAttachShader(program, ShaderMap[vertex]);
-		glAttachShader(program, ShaderMap[fragment]);
-		glLinkProgram(program);
-
-
-		//  Check the infolog for errors
-		GLint result = GL_FALSE;
-		int logLength;
-
-		glGetProgramiv(program, GL_LINK_STATUS, &result);
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
-		std::vector<char> ProgramErrorMessage(logLength);
-		glGetProgramInfoLog(program, logLength, NULL, &ProgramErrorMessage[0]);
-		std::string output(ProgramErrorMessage.begin(), ProgramErrorMessage.end());
-		std::cout << output << std::endl;
-
-		//  If we failed to link then quit before adding the program
-		if (result == GL_FALSE) {
-			return;
-		}
-		defaultShaderProgram = program;
+		defaultShaderProgram = CreateShaderProgram(shaders);
 	}
 }
 
