@@ -28,6 +28,7 @@ public:
 
 	std::string GetVertexShader() {return vertexShader;}
 	std::string GetFragmentShader() {return fragmentShader;}
+	std::vector<std::string> GetShaders(){return shaders;}
 
 private:
 	std::vector<Vector3> verts;
@@ -40,6 +41,10 @@ private:
 
 	std::string vertexShader;
 	std::string fragmentShader;
+	std::string tesselationControlShader;
+	std::string tesselationEvaluationShader;
+
+	std::vector<std::string>shaders;
 
 	float squareSize;
 	float resolution;

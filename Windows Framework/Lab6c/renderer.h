@@ -33,7 +33,7 @@ public:
 	void AddLight(LightSource &l);
 
 	void RenderAll();
-	void SetShaders(std::string vertex, std::string fragment);
+	void SetShaders(std::vector<std::string> shaders);
 	static bool MeshComparator(int rhs, int lhs);
 
 private:
@@ -45,7 +45,8 @@ private:
 
 	void InitializeOpenGL();
 	bool LoadShader(std::string fileName);
-	GLuint CreateShaderProgram(std::string vertex, std::string fragment);
+	GLuint CreateShaderProgram(std::vector<std::string> shaders);
+
 
 	Matrix4x4 BuildModelMatrix(GameObject g);
 	Matrix4x4 BuildViewMatrix();

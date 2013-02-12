@@ -165,15 +165,24 @@ void Mesh::AttachShader(std::string shader)
 {
 	std::string type = shader.substr(shader.find_last_of(".") + 1);
 
-	if (type == "vertexshader") {
-		vertexShader = shader;
-	} else if (type == "fragmentshader") {
-		fragmentShader = shader;
+	//if (type == "vertexshader") {
+	//	vertexShader = shader;
+	//} else if (type == "fragmentshader") {
+	//	fragmentShader = shader;
+	//} else {
+	//	//  If the file extension is not correct then return an error and stop
+	//	std::cout << "Cannot Attach Shader, Unrecognised Shader File Extension: " << type << std::endl;
+	//	return;
+	//}
+
+	if (type == "vertexshader" || type == "fragmentshader" || type == "tesscontrol" || type == "tessevaluation") {
+		shaders.push_back(shader);
 	} else {
 		//  If the file extension is not correct then return an error and stop
 		std::cout << "Cannot Attach Shader, Unrecognised Shader File Extension: " << type << std::endl;
 		return;
 	}
+
 }
 
 void Mesh::DeleteVertexData()

@@ -34,8 +34,6 @@ bool RenderManager::AddToRenderer(Mesh &m)
 {
 	std::string fn = m.GetTexturePath();
 	std::string meshModel = m.GetMeshSourceFilePath();
-	std::string vertexShader = m.GetVertexShader();
-	std::string fragmentShader = m.GetFragmentShader();
 	GLuint tex;
 
 //	sun.RotateDeltaX(0.01f);
@@ -67,7 +65,7 @@ bool RenderManager::AddToRenderer(Mesh &m)
 		}
 	}
 
-	SetShaders(vertexShader, fragmentShader);
+	SetShaders(m.GetShaders());
 
 	//  Add our new (or repeated) item to the render list
 	if(m.IsTransparent()) {
@@ -131,7 +129,11 @@ void RenderManager::AddSkyBox(Mesh &m)
 	CreateGLTexture(fn.c_str(), tex);
 	skyBoxTexture = tex;
 	skyBox = SetupVAO(m);
-	skyboxShaderProgram = CreateShaderProgram("skybox.vertexshader", "skybox.fragmentshader");
+	std::vector<std::string> skyboxShaders;
+	skyboxShaders.push_back("skybox.vertexshader");
+	skyboxShaders.push_back("skybox.fragmentshader");
+
+	skyboxShaderProgram = CreateShaderProgram(skyboxShaders);
 }
 
 void RenderManager::AddTerrainToRenderer(Terrain &t)
@@ -149,7 +151,7 @@ void RenderManager::AddTerrainToRenderer(Terrain &t)
 	terrain = SetupVAO(t);
 
 	terrainVerts = t.GetIndexLength();
-	terrainShaderProgram = CreateShaderProgram(t.GetVertexShader(), t.GetFragmentShader());
+	terrainShaderProgram = CreateShaderProgram(t.GetShaders());
 }
 
 void RenderManager::RemoveFromRenderer(Mesh m)
@@ -180,9 +182,6 @@ void RenderManager::RenderAll()
 	BuildProjectionMatrix();
 	PrepareLights();
 	viewMatrixMade = false;
-//	sun.RotateDeltaX(0.01f);
-
-//	sunSource = sun.GetLightAsStruct(BuildViewMatrix());
 
 	DrawSkyBox();
 	DrawTerrain();
@@ -465,6 +464,10 @@ bool RenderManager::LoadShader(std::string fileName)
 			shader = glCreateShader(GL_VERTEX_SHADER);
 		} else if (type == "fragmentshader") {
 			shader = glCreateShader(GL_FRAGMENT_SHADER);
+		} else if (type == "tesscontrol") {
+			shader = glCreateShader(GL_TESS_CONTROL_SHADER);
+		} else if (type == "tessevaluation") {
+			shader = glCreateShader(GL_TESS_EVALUATION_SHADER);
 		} else {
 			//  If the file extension is not correct then return an error and stop
 			std::cout << "Unrecognised Shader File Extension: " << type << std::endl;
@@ -514,19 +517,22 @@ bool RenderManager::LoadShader(std::string fileName)
 	return true;
 }
 
-GLuint RenderManager::CreateShaderProgram(std::string vertex, std::string fragment)
+GLuint RenderManager::CreateShaderProgram(std::vector<std::string> shaders)
 {
-	//  load the two shaders
-	if (!LoadShader(vertex) || !LoadShader(fragment)) {
-		BuildDefaultShaderProgram();
-		return defaultShaderProgram;
+	for (int i = 0; i < shaders.size(); i++) {
+		if (!LoadShader(shaders[i])) {
+			BuildDefaultShaderProgram();
+			return defaultShaderProgram;
+		}		
 	}
 
 	//  Create a new program reference and attach our shaders
 	GLuint program = glCreateProgram();
 
-	glAttachShader(program, ShaderMap[vertex]);
-	glAttachShader(program, ShaderMap[fragment]);
+	for (int i = 0; i < shaders.size(); i++) {
+		glAttachShader(program, ShaderMap[shaders[i]]);
+	}
+
 	glLinkProgram(program);
 
 
@@ -549,73 +555,23 @@ GLuint RenderManager::CreateShaderProgram(std::string vertex, std::string fragme
 	return program;
 }
 
-void RenderManager::SetShaders(std::string vertex, std::string fragment)
+void RenderManager::SetShaders(std::vector<std::string> shaders)
 {
-	if (vertex.empty() || fragment.empty()) {
-		BuildDefaultShaderProgram();
-		currentShaderProgram = defaultShaderProgram;
-		return;		
-	}
-	std::string type1 = vertex.substr(vertex.find_last_of(".") + 1);
-	std::string type2 = fragment.substr(vertex.find_last_of(".") + 1);
+	std::stringstream stream;
+	std::string name;
 
-	std::string name1 = vertex.substr(0, vertex.find_last_of("."));
-	std::string name2 = fragment.substr(0, fragment.find_last_of("."));
-
-	std::string fn;
-
-	if (type1 == "vertexshader" && type2 == "fragmentshader") {
-		fn = name1 + name2;
-	} else if (type1 == "fragmentshader" && type2 == "vertexshader") {
-		fn = name2 + name1;
-		std::string swap = fragment;
-		fragment = vertex;
-		vertex = swap;
-	} else {
-		std::cout  << "Cannot create program from " << vertex << " and " << fragment << " check file names" << std::endl;
-		BuildDefaultShaderProgram();
-		currentShaderProgram = defaultShaderProgram;
-		return;
-	}	
-
-
-	if (!ShaderProgramMap.count(fn)) {
-		//  load the two shaders
-		if (!LoadShader(vertex) || !LoadShader(fragment)) {
-			BuildDefaultShaderProgram();
-			currentShaderProgram = defaultShaderProgram;
-			return;
-		}
-
-		//  Create a new program reference and attach our shaders
-		GLuint program = glCreateProgram();
-
-		glAttachShader(program, ShaderMap[vertex]);
-		glAttachShader(program, ShaderMap[fragment]);
-		glLinkProgram(program);
-
-
-		//  Check the infolog for errors
-		GLint result = GL_FALSE;
-		int logLength;
-
-		glGetProgramiv(program, GL_LINK_STATUS, &result);
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
-		std::vector<char> ProgramErrorMessage(logLength);
-		glGetProgramInfoLog(program, logLength, NULL, &ProgramErrorMessage[0]);
-		std::string output(ProgramErrorMessage.begin(), ProgramErrorMessage.end());
-		std::cout << output << std::endl;
-
-		//  If we failed to link then quit before adding the program
-		if (result == GL_FALSE) {
-			BuildDefaultShaderProgram();
-			currentShaderProgram = defaultShaderProgram;
-			return;
-		}
-		ShaderProgramMap[fn] = program;
+	for (int i = 0; i < shaders.size(); i++) {
+		name = shaders[i].substr(0, shaders[i].find_last_of("."));
+		stream << name;
 	}
 
-	currentShaderProgram = ShaderProgramMap[fn];
+	name = stream.str();
+
+	if (!ShaderProgramMap.count(name)) {
+		ShaderProgramMap[name] = CreateShaderProgram(shaders);
+	}
+
+	currentShaderProgram = ShaderProgramMap[name];
 }
 
 void RenderManager::DrawSkyBox()
@@ -694,7 +650,8 @@ bool RenderManager::DrawMesh(int meshID)
 
 	if (m != NULL) {
 		//  Use the shaders specified by the mesh in question
-		SetShaders(m->GetVertexShader(), m->GetFragmentShader());
+		//SetShaders(m->GetVertexShader(), m->GetFragmentShader());
+		SetShaders(m->GetShaders());
 
 		glUseProgram(currentShaderProgram);
 		BuildModelViewMatrix(*m->GetParentPointer());

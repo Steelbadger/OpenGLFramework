@@ -39,6 +39,7 @@ public:
 
 	std::string GetVertexShader(){return vertexShader;}
 	std::string GetFragmentShader(){return fragmentShader;}
+	std::vector<std::string> GetShaders(){return shaders;}
 
 	void DeleteVertexData();
 
@@ -59,6 +60,7 @@ private:
 
 	std::string vertexShader;
 	std::string fragmentShader;
+	std::vector<std::string> shaders;
 
 	bool successfullBuild;
 	bool transparency;
