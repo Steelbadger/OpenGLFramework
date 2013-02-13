@@ -16,6 +16,7 @@ out vec3 globalPos;
 //uniform mat4 projectionMatrix;
 //uniform mat4 modelViewMatrix;
 uniform mat4 normalMatrix;
+uniform sampler2D heightmap;
 
 void main()
 {

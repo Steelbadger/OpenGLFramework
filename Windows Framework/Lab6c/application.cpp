@@ -2,11 +2,12 @@
 #include <iostream>
 #include <time.h>
 #include "lights.h"
+#include "heightmap.h"
 
 
 Application::Application(void):
 	myNoise(8, 200.0f, 0.42f, 40.0f, -1563.155f),
-	ground(1500.0f, myNoise, 4.0f)
+	ground(1000.0f, myNoise, 4.0f)
 {
 }
 
@@ -75,6 +76,16 @@ void Application::Initialize(HINSTANCE hInstance)
 	std::cout << "OpenGL 4.2 Initialized: " << 	GLEW_VERSION_4_2 << std::endl;
 	std::cout << "Number of Texture Units: " << numTextureUnits << std::endl;
 	std::cout << std::endl << "Time to Add Terrain To Renderer: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+
+//	myTimer = clock();
+
+//	Heightmap heights;
+//	renderer.PassInHeights(heights.GenerateHeightmap(0, 0, myNoise));
+
+//	myTimer = clock() - myTimer;
+
+//	std::cout << std::endl << "Time to Generate Heightmap: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+
 
 	lastTime = time(NULL);
 	nbFrames = 0;

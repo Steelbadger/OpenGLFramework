@@ -30,6 +30,7 @@ public:
 	void AddTerrainToRenderer(Terrain &t);
 	void BuildDefaultShaderProgram();
 	void AddLight(LightSource &l);
+	void PassInHeights(GLuint h){heights = h;}
 
 	void RenderAll();
 	void SetShaders(std::vector<std::string> shaders);
@@ -81,6 +82,7 @@ private:
 	GLuint terrain;
 	GLuint terrainTexture;
 	GLuint terrainRock;
+	GLuint heights;
 
 	int terrainVerts;
 
