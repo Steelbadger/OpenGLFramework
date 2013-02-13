@@ -13,8 +13,8 @@ out vec3 normal;
 out vec3 vertNorm;
 out vec3 globalPos;
 
-uniform mat4 projectionMatrix;
-uniform mat4 modelViewMatrix;
+//uniform mat4 projectionMatrix;
+//uniform mat4 modelViewMatrix;
 uniform mat4 normalMatrix;
 
 void main()
@@ -25,7 +25,8 @@ void main()
 
 	vec4 pos = normalize(p0 + p1 + p2);
 
-    gl_Position = projectionMatrix * modelViewMatrix * pos;
+  //  gl_Position = projectionMatrix * modelViewMatrix * pos;
+	gl_Position = pos;
 
 	vec2 uv0 = gl_TessCoord.x * tcUV[0];
 	vec2 uv1 = gl_TessCoord.y * tcUV[1];

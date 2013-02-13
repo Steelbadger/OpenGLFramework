@@ -27,39 +27,41 @@ void main()
 	tcnormal[ID] = vnormal[ID];
 	tcvertNorm[ID] = vvertNorm[ID];
 	tcglobalPos[ID] = vglobalPos[ID];
-	float distance = distance(vec3(0,0,0), vworldPosition[ID]);
+//	float distance = distance(vec3(0,0,0), vworldPosition[ID]);
+	
+	if (ID == 0) {
+		if (gl_in[0].gl_Position.z < -0.5 && 
+			gl_in[1].gl_Position.z < -0.5 &&
+			gl_in[2].gl_Position.z < -0.5)
+		{
+			gl_TessLevelInner[0] = 0.0;
+			gl_TessLevelOuter[0] = 0.0;
+			gl_TessLevelOuter[1] = 0.0;
+			gl_TessLevelOuter[2] = 0.0;
+		} else {
+			float distance = distance(vec3(0,0,0), (vworldPosition[0] + vworldPosition[1] + vworldPosition[2])/3);
 
-    if (distance < 10) {
-        gl_TessLevelInner[0] = 40.0;
-        gl_TessLevelOuter[0] = 40.0;
-        gl_TessLevelOuter[1] = 40.0;
-        gl_TessLevelOuter[2] = 40.0;
-    } else if (distance < 20) {
-        gl_TessLevelInner[0] = 20.0;
-        gl_TessLevelOuter[0] = 20.0;
-        gl_TessLevelOuter[1] = 20.0;
-        gl_TessLevelOuter[2] = 20.0;
-    } 
-	else if (distance < 40) {
-        gl_TessLevelInner[0] = 10.0;
-        gl_TessLevelOuter[0] = 10.0;
-        gl_TessLevelOuter[1] = 10.0;
-        gl_TessLevelOuter[2] = 10.0;
-    } else if (distance < 80) {
-        gl_TessLevelInner[0] = 5.0;
-        gl_TessLevelOuter[0] = 5.0;
-        gl_TessLevelOuter[1] = 5.0;
-        gl_TessLevelOuter[2] = 5.0;
-    } else if (distance < 160) {
-        gl_TessLevelInner[0] = 2.0;
-        gl_TessLevelOuter[0] = 2.0;
-        gl_TessLevelOuter[1] = 2.0;
-        gl_TessLevelOuter[2] = 2.0;
-    }
-	else {
-        gl_TessLevelInner[0] = 1.0;
-        gl_TessLevelOuter[0] = 1.0;
-        gl_TessLevelOuter[1] = 1.0;
-        gl_TessLevelOuter[2] = 1.0;
-    }
+			if (distance < 10) {
+				gl_TessLevelInner[0] = 20.0;
+				gl_TessLevelOuter[0] = 20.0;
+				gl_TessLevelOuter[1] = 20.0;
+				gl_TessLevelOuter[2] = 20.0;
+			} else if (distance < 40) {
+				gl_TessLevelInner[0] = 5.0;
+				gl_TessLevelOuter[0] = 5.0;
+				gl_TessLevelOuter[1] = 5.0;
+				gl_TessLevelOuter[2] = 5.0;
+			} else if (distance < 160) {
+				gl_TessLevelInner[0] = 2.0;
+				gl_TessLevelOuter[0] = 2.0;
+				gl_TessLevelOuter[1] = 2.0;
+				gl_TessLevelOuter[2] = 2.0;
+			} else {
+				gl_TessLevelInner[0] = 1.0;
+				gl_TessLevelOuter[0] = 1.0;
+				gl_TessLevelOuter[1] = 1.0;
+				gl_TessLevelOuter[2] = 1.0;
+			}
+		}
+	}
 }
