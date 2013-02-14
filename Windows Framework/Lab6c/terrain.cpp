@@ -33,9 +33,8 @@ void Terrain::Create(NoiseObject n)
 
 	for (float i = 0; i < size; i++) {
 		for (float j = 0; j < size; j++) {
-			verts.push_back(Vector3(i*step, noise.TurbulentPerlin2D(i*step, j*step, n), j*step));
-
-			Vector3 normalA = noise.NormalToTurbulentPerlin2D(i*step, j*step, n, step);
+			verts.push_back(Vector3(i*step, noise.FractalSimplex(i*step, j*step, n)+15.0, j*step));
+			Vector3 normalA = noise.FractalSimplexNormal(i*step, j*step, n);
 
 			normals.push_back(normalA);
 
@@ -66,16 +65,6 @@ void Terrain::Create(NoiseObject n)
 void Terrain::AttachShader(std::string shader)
 {
 	std::string type = shader.substr(shader.find_last_of(".") + 1);
-
-	//if (type == "vertexshader") {
-	//	vertexShader = shader;
-	//} else if (type == "fragmentshader") {
-	//	fragmentShader = shader;
-	//} else {
-	//	//  If the file extension is not correct then return an error and stop
-	//	std::cout << "Cannot Attach Shader, Unrecognised Shader File Extension: " << type << std::endl;
-	//	return;
-	//}
 
 	if (type == "vertexshader" || type == "fragmentshader" || type == "tesscontrol" || type == "tessevaluation") {
 		shaders.push_back(shader);

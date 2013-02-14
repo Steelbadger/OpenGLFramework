@@ -17,15 +17,15 @@ out vec3 vnormal;
 out vec3 vvertNorm;
 out vec3 vglobalPos;
 
-uniform mat4 projectionMatrix;
-//uniform mat4 viewMatrix;
-//uniform mat4 modelMatrix;
-uniform mat4 modelViewMatrix;
+//uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
+//uniform mat4 modelViewMatrix;
 //uniform mat4 normalMatrix;
 
 void main(){
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition_modelspace, 1.0);
+//  gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition_modelspace, 1.0);
 
 //	vworldPosition = vec3(modelViewMatrix * vec4(vertexPosition_modelspace, 1.0));
 //	vnormal = vec3(normalMatrix * vec4(vertexNormal, 1.0));
@@ -33,10 +33,10 @@ void main(){
 //	vvertNorm = vertexNormal;
 //	vglobalPos = vertexPosition_modelspace;
 
-//	gl_Position = vec4(vertexPosition_modelspace, 1.0);
-//	vworldPosition = vertexPosition_modelspace, 1.0;
-//	vworldPosition = vec3(viewMatrix * modelMatrix * vec4(vertexPosition_modelspace, 1.0));
-	vworldPosition = vec3(modelViewMatrix * vec4(vertexPosition_modelspace, 1.0));
+	gl_Position = vec4(vertexPosition_modelspace, 1.0);
+//	vworldPosition = vertexPosition_modelspace;
+	vworldPosition = vec3(viewMatrix * modelMatrix * vec4(vertexPosition_modelspace, 1.0));
+//	vworldPosition = vec3(modelViewMatrix * vec4(vertexPosition_modelspace, 1.0));
 	vnormal = vertexNormal;
 	vUV = vertexUV;
 	vvertNorm = vertexNormal;

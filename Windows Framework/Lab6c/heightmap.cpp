@@ -24,22 +24,22 @@ Heightmap::~Heightmap(void)
 
 unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n)
 {
-	const int size = 2048;
-//	unsigned char map[size][size][4];
+	const int size = 1024;
 	unsigned char* map = (GLubyte *)malloc(size*size*4);	
 	NoiseGenerator noise;
-	float max = n.amplitude;
+	float max = n.amplitude+3;
 	GLuint currentByte = 0;
-
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
-			float height = noise.TurbulentPerlin2D(x+i, y+j, n);
-			Vector3 normal = noise.NormalToTurbulentPerlin2D(x+i, y+j, n, 0.25);
-
+	float step = 1500/((1500/0.75)-1);
+	float height;
+	Vector3 normal;
+	for (float i = 0; i < size; i++) {
+		for (float j = 0; j < size; j++) {
+			height = noise.FractalSimplex(i*step, j*step, n);
+			normal = noise.FractalSimplexNormal(i*step, j*step, n);
 			map[currentByte] = unsigned char(normal.x * 255);
 			map[currentByte + 1] = unsigned char(normal.y * 255);
 			map[currentByte + 2] = unsigned char(normal.z * 255);
-			map[currentByte + 3] = unsigned char((height/max) * 255);
+			map[currentByte + 3] = unsigned char(((height+max)/(2*max)) * 255);
 
 			currentByte += 4;
 		}
@@ -53,6 +53,8 @@ unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
+	write_tga("output.tga", 1024, map);
+
 	if (map)						// If Texture Image Exists ( CHANGE )
 	{
 		free(map);					// Free The Texture Image Memory ( CHANGE )
@@ -60,4 +62,41 @@ unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n)
 
 
 	return TexID;
+}
+
+void Heightmap::write_tga(const char *filename, int size, unsigned char* base)
+{
+	FILE *f = fopen(filename, "wb");
+	if (f == NULL) {
+		fprintf(stderr, "Cannot open %s\n", filename);
+		exit(1);
+	}
+
+	unsigned char header[18] = {
+		0, // no image ID
+		0, // no colour map
+		2, // uncompressed 24-bit image
+		0, 0, 0, 0, 0, // empty colour map specification
+		0, 0, // X origin
+		0, 0, // Y origin
+		size & 0xFF, (size >> 8) & 0xFF, // width
+		size & 0xFF, (size >> 8) & 0xFF, // height
+		24, // bits per pixel
+		0, // image descriptor
+	};
+	fwrite(header, 1, 18, f);
+
+	unsigned int currentByte = 0;
+
+	for (int y = 0; y < size; ++y)
+	{
+		for (int x = 0; x < size; ++x)
+		{
+			unsigned char pixel[3] = {base[currentByte+3], base[currentByte+3], base[currentByte+3]};
+			currentByte +=4;
+			fwrite(pixel, 1, 3, f);
+		}
+	}
+
+	fclose(f);
 }

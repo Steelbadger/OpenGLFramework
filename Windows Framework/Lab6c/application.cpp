@@ -6,7 +6,7 @@
 
 
 Application::Application(void):
-	myNoise(8, 200.0f, 0.42f, 40.0f, -1563.155f),
+	myNoise(12, 500.0f, 0.42f, 50.0f, -1563.155f),
 	ground(1000.0f, myNoise, 4.0f)
 {
 }
@@ -77,14 +77,14 @@ void Application::Initialize(HINSTANCE hInstance)
 	std::cout << "Number of Texture Units: " << numTextureUnits << std::endl;
 	std::cout << std::endl << "Time to Add Terrain To Renderer: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
-//	myTimer = clock();
+	myTimer = clock();
 
-//	Heightmap heights;
-//	renderer.PassInHeights(heights.GenerateHeightmap(0, 0, myNoise));
+	Heightmap heights;
+	renderer.PassInHeights(heights.GenerateHeightmap(0, 0, myNoise));
 
-//	myTimer = clock() - myTimer;
+	myTimer = clock() - myTimer;
 
-//	std::cout << std::endl << "Time to Generate Heightmap: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	std::cout << std::endl << "Time to Generate Heightmap: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
 
 	lastTime = time(NULL);

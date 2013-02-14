@@ -28,6 +28,9 @@ public:
 	float FastPerlin2D(float x, float y, int octaves, float zoom, float persistance, float amplitude);
 	float FastPerlin2D(float x, float y, NoiseObject n);
 	float FastPerlin2DSinglePass(float x, float y);
+	float Simplex(float x, float y);
+	float FractalSimplex(float x, float y, NoiseObject n);
+	Vector3 FractalSimplexNormal(float x, float y, NoiseObject n);
 	Vector3 NormalToPerlin2D(float x, float y, NoiseObject n, float step);
 	Vector3 FastNormalToPerlin2D(float x, float y, NoiseObject n);
 	static void GeneratePermutationTable();
@@ -42,8 +45,10 @@ private:
 
 	static const int SIZE = 256;
 	static unsigned char permutation[SIZE];
+	static unsigned char perm[SIZE*2];
 	static float gradX[SIZE];
 	static float gradY[SIZE];
 	static bool pTableBuilt;
+	static int grads[12][3];
 };
 
