@@ -315,155 +315,107 @@ float NoiseGenerator::NonCoherentNoise2D(float x, float y)
 
 float NoiseGenerator::Simplex(float x, float y)
 {
-	double xin = x;
-	double yin = y;
 	float root3 = 1.73205080757;
-    double n0, n1, n2; // Noise contributions from the three corners
-    // Skew the input space to determine which simplex cell we're in
-    double F2 = 0.5*(root3-1.0);
-    double s = (xin+yin)*F2; // Hairy factor for 2D
-    int i = int(xin+s);
-    int j = int(yin+s);
-    double G2 = (3.0-root3)/6.0;
-    double t = (i+j)*G2;
-    double X0 = i-t; // Unskew the cell origin back to (x,y) space
-    double Y0 = j-t;
-    double x0 = xin-X0; // The x,y distances from the cell origin
-    double y0 = yin-Y0;
-    // For the 2D case, the simplex shape is an equilateral triangle.
-    // Determine which simplex we are in.
-    int i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords
-    if(x0>y0) {i1=1; j1=0;} // lower triangle, XY order: (0,0)->(1,0)->(1,1)
-    else {i1=0; j1=1;}      // upper triangle, YX order: (0,0)->(0,1)->(1,1)
-    // A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
-    // a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
-    // c = (3-sqrt(3))/6
-    double x1 = x0 - i1 + G2; // Offsets for middle corner in (x,y) unskewed coords
-    double y1 = y0 - j1 + G2;
-    double x2 = x0 - 1.0 + 2.0 * G2; // Offsets for last corner in (x,y) unskewed coords
-    double y2 = y0 - 1.0 + 2.0 * G2;
-    // Work out the hashed gradient indices of the three simplex corners
-    int ii = i & 255;
-    int jj = j & 255;
-    int gi0 = perm[ii+perm[jj]] % 12;
-    int gi1 = perm[ii+i1+perm[jj+j1]] % 12;
-    int gi2 = perm[ii+1+perm[jj+1]] % 12;
-    // Calculate the contribution from the three corners
-    double t0 = 0.5 - x0*x0-y0*y0;
-    if(t0<0) n0 = 0.0;
-    else {
-      t0 *= t0;
-      n0 = t0 * t0 * (grads[gi0][0] * x0 + grads[gi0][1] * y0);  // (x,y) of grad3 used for 2D gradient
-    }
-    double t1 = 0.5 - x1*x1-y1*y1;
-    if(t1<0) n1 = 0.0;
-    else {
-      t1 *= t1;
-      n1 = t1 * t1 *(grads[gi1][0] * x1 + grads[gi1][1] * y1);
-    }
+	double n1, n2, n3; // Noise contributions from the three corners
+
+	// Skew the input space to determine which simplex cell we're in
+	double skewFactor = 0.5*(root3-1.0);
+	double s = (x+y)*skewFactor;			// Hairy factor for 2D
+
+	int i = int(x+s);
+	int j = int(y+s);
+
+	double unskewFactor = (3.0-root3)/6.0;
+	double t = (i+j)*unskewFactor;
+
+	double X0 = i-t;		// Unskew the cell origin back to (x,y) space
+	double Y0 = j-t;
+	double dx = x-X0;		// The x,y distances from the cell origin
+	double dy = y-Y0;
+
+	// For the 2D case, the simplex shape is an equilateral triangle.
+	// Determine which simplex we are in.
+
+	int i1, j1;		// Offsets for second (middle) corner of simplex in (i,j) coords
+
+	if(dx>dy) {		// lower triangle, XY order: (0,0)->(1,0)->(1,1)
+		i1=1;
+		j1=0;
+	}
+	else {			// upper triangle, YX order: (0,0)->(0,1)->(1,1)
+		i1=0;
+		j1=1;
+	}				
+
+
+	double x2 = dx - i1 + unskewFactor;				// Offsets for middle corner in (x,y) unskewed coords
+	double y2 = dy - j1 + unskewFactor;
+	double x3 = dx - 1.0 + 2.0 * unskewFactor;		// Offsets for last corner in (x,y) unskewed coords
+	double y3 = dy - 1.0 + 2.0 * unskewFactor;
+
+	// Work out the hashed gradient indices of the three simplex corners
+
+	int ii = i & 255;
+	int jj = j & 255;
+
+	int grad1 = perm[ii+perm[jj]] % 12;
+	int grad2 = perm[ii+i1+perm[jj+j1]] % 12;
+	int grad3 = perm[ii+1+perm[jj+1]] % 12;
+
+
+	// Calculate the contribution from the three corners
+	double t1 = 0.5 - dx*dx-dy*dy;
+	if (t1<0) {
+		n1 = 0.0;
+	} else {
+		t1 *= t1;
+		n1 = t1 * t1 * (grads[grad1][0] * dx + grads[grad1][1] * dy);		// (x,y) of grad3 used for 2D gradient
+	}
+
+
 	double t2 = 0.5 - x2*x2-y2*y2;
-    if(t2<0) n2 = 0.0;
-    else {
-      t2 *= t2;
-      n2 = t2 * t2 * (grads[gi2][0]* x2 + grads[gi2][1] * y2);
-    }
-    // Add contributions from each corner to get the final noise value.
-    // The result is scaled to return values in the interval [-1,1].
-    return 70.0 * (n0 + n1 + n2);
+	if (t2<0) {
+		n2 = 0.0;
+	} else {
+		t2 *= t2;
+		n2 = t2 * t2 *(grads[grad2][0] * x2 + grads[grad2][1] * y2);
+	}
 
 
-	////  Skew input to find coordinates in simplex-space
-	//float skewFactor = 0.5*(root3-1);
-	//float s = (x + y) * skewFactor;
-	//int i = int(x+s);
-	//int j = int(y+s);
+	double t3 = 0.5 - x3*x3-y3*y3;
+	if (t3<0) {
+		n3 = 0.0;
+	} else {
+		t3 *= t3;
+		n3 = t3 * t3 * (grads[grad3][0]* x3 + grads[grad3][1] * y3);
+	}
 
-	////  Skew back to input space and find first simplex corner
-	//float unskewFactor = (3.0 - root3)/6;
-	//float t = (i + j) * unskewFactor;
-	//float x0 = i - t;
-	//float y0 = j - t;
 
-	//float x1 = x - x0;
-	//float y1 = x - y0;
+	// Add contributions from each corner to get the final noise value.
+	// The result is scaled to return values in the interval [-1,1].
+	return 70.0 * (n1 + n2 + n3);
 
-	////  2D case, simplex is triangle, determine which triangle we are in
-	////  We're working in Simplex space again here, so i and j come back.
-	//int iOffset, jOffset;
-
-	//if (x1 > y1) {
-	//	iOffset = 1;
-	//	jOffset = 0;
-	//} else {
-	//	iOffset = 0;
-	//	jOffset = 1;
-	//}
-
-	////  Find other two simplex corners
-	//float x2 = x1 - iOffset + unskewFactor;
-	//float y2 = y1 - jOffset + unskewFactor;
-
-	//float x3 = x1 - 1.0 + 2*unskewFactor;
-	//float y3 = y1 - 1.0 + 2*unskewFactor;
-
-	////  Find the hashed gradient indices for the three corners
-	//int ihash = i & 255;
-	//int jhash = j & 255;
-
-	//int grad1 = perm[ihash + perm[jhash]]%12;
-	//int grad2 = perm[ihash + iOffset + perm[jhash + jOffset]]%12;
-	//int grad3 = perm[ihash + 1 + perm[jhash + 1]]%12;
-
-	////  Calculate the noise contributions
-
-	//float n1, n2, n3;
-
-	//float smooth1 = 0.5 - x1 * x1 - y1 * y1;
-	//if (smooth1 < 0) {
-	//	n1 = 0.0;
-	//} else {
-	//	smooth1 *= smooth1;
-	//	n1 = smooth1 * smooth1 * (grads[grad1][0] * x1 + grads[grad1][1] * y1);
-	//}
-
-	//float smooth2 = 0.5 - x2 * x2 - y2 - y2;
-	//if (smooth2 < 0) {
-	//	n2 = 0;
-	//} else {
-	//	smooth2 *= smooth2;
-	//	n2 = smooth2 * smooth2 * (grads[grad2][0] * x2 + grads[grad2][1] * y2);
-	//}
-
-	//float smooth3 = 0.5 - x3 * x3 - y3 * y3;
-	//if (smooth3 < 0) {
-	//	n3 = 0;
-	//} else {
-	//	smooth3 *= smooth3;
-	//	n3 = smooth3 * smooth3 * (grads[grad3][0] * x3 + grads[grad3][1] * y3);
-	//}
-	//
-	//return (70 * (n1 + n2 + n3));
 }
 
 
 float NoiseGenerator::FractalSimplex(float x, float y, NoiseObject n)
 {
 	float noise = 0;
+	float maxamp = 0;
 	for(int i = 0; i < n.octaves; i++) {
 		float frequency = pow(2.0f,i);//This increases the frequency with every loop of the octave.
 		float amplitude = pow(n.persistance,i);//This decreases the amplitude with every loop of the octave.
-
-		//noise += Perlin2DSinglePass(x*frequency/n.zoom, y/n.zoom*frequency)*amplitude;
-		//noise += Simplex(x, y)*amplitude;
+		maxamp += amplitude;
 		noise += Simplex(x*frequency/n.zoom, y/n.zoom*frequency)*amplitude;
 	}
+	noise /= maxamp;
 
 	return noise*n.amplitude;	
 }
 
-Vector3 NoiseGenerator::FractalSimplexNormal(float x, float y, NoiseObject n)
+Vector3 NoiseGenerator::FractalSimplexNormal(float x, float y, NoiseObject n, float step)
 {
-	float offs = 0.1f;
+	float offs = step;
 	float xtrioffs = offs * 0.86602540378;
 	float ytrioffs = offs * 0.5;
 	Vector4 A(x, FractalSimplex(x,y+xtrioffs,n), y+xtrioffs, 1.0f);

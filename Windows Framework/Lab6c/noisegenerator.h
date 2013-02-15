@@ -30,7 +30,7 @@ public:
 	float FastPerlin2DSinglePass(float x, float y);
 	float Simplex(float x, float y);
 	float FractalSimplex(float x, float y, NoiseObject n);
-	Vector3 FractalSimplexNormal(float x, float y, NoiseObject n);
+	Vector3 FractalSimplexNormal(float x, float y, NoiseObject n, float step);
 	Vector3 NormalToPerlin2D(float x, float y, NoiseObject n, float step);
 	Vector3 FastNormalToPerlin2D(float x, float y, NoiseObject n);
 	static void GeneratePermutationTable();

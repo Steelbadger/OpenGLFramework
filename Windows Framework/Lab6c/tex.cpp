@@ -357,6 +357,12 @@ bool CreateGLTexture(const char *name, GLuint & TexID )
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
+	GLenum errors = glGetError();
+
+	if(errors != GL_NO_ERROR) {
+		return false;
+	}
+
 	if (texture_imageData)						// If Texture Image Exists ( CHANGE )
 	{
 		free(texture_imageData);					// Free The Texture Image Memory ( CHANGE )
