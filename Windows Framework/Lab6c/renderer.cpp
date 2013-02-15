@@ -532,18 +532,24 @@ void RenderManager::SetShaders(std::vector<std::string> shaders)
 	std::stringstream stream;
 	std::string name;
 
-	for (int i = 0; i < shaders.size(); i++) {
-		name = shaders[i].substr(0, shaders[i].find_last_of("."));
-		stream << name;
+	if (shaders.size() < 2) {
+		BuildDefaultShaderProgram();
+		currentShaderProgram = defaultShaderProgram;
+	} else {
+
+		for (int i = 0; i < shaders.size(); i++) {
+			name = shaders[i].substr(0, shaders[i].find_last_of("."));
+			stream << name;
+		}
+
+		name = stream.str();
+
+		if (!ShaderProgramMap.count(name)) {
+			ShaderProgramMap[name] = CreateShaderProgram(shaders);
+		}
+
+		currentShaderProgram = ShaderProgramMap[name];
 	}
-
-	name = stream.str();
-
-	if (!ShaderProgramMap.count(name)) {
-		ShaderProgramMap[name] = CreateShaderProgram(shaders);
-	}
-
-	currentShaderProgram = ShaderProgramMap[name];
 }
 
 void RenderManager::DrawSkyBox()

@@ -25,9 +25,10 @@ Heightmap::~Heightmap(void)
 unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n)
 {
 	const int size = 1024;
-	unsigned char* map = (GLubyte *)malloc(size*size*4);	
+	GLubyte* map = (GLubyte *)malloc(size*size*4);	
 	NoiseGenerator noise;
 	float max = n.amplitude+3;
+	n.octaves = 18;
 	GLuint currentByte = 0;
 	float step = 1500/((1500/0.75)-1);
 	float height;
@@ -53,7 +54,7 @@ unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
-	write_tga("output.tga", 1024, map);
+	write_tga("output.tga", size, map);
 
 	if (map)						// If Texture Image Exists ( CHANGE )
 	{
@@ -93,6 +94,7 @@ void Heightmap::write_tga(const char *filename, int size, unsigned char* base)
 		for (int x = 0; x < size; ++x)
 		{
 			unsigned char pixel[3] = {base[currentByte+3], base[currentByte+3], base[currentByte+3]};
+//			unsigned char pixel[4] = {base[currentByte], base[currentByte+1], base[currentByte+2], base[currentByte+3]};
 			currentByte +=4;
 			fwrite(pixel, 1, 3, f);
 		}
