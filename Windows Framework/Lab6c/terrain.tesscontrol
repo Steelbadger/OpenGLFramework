@@ -18,18 +18,17 @@ out vec3 tcglobalPos[];
 
 void main()
 {
-	float TessLevelInner = 3;
-	float TessLevelOuter = 3;
-
 	gl_out[ID].gl_Position = gl_in[ID].gl_Position;
 	tcUV[ID] = vUV[ID];
 	tcworldPosition[ID] = vworldPosition[ID];
 	tcnormal[ID] = vnormal[ID];
 	tcvertNorm[ID] = vvertNorm[ID];
 	tcglobalPos[ID] = vglobalPos[ID];
-//	float distance = distance(vec3(0,0,0), vworldPosition[ID]);
 	
+	//  Once set tessellation levels once per patch
 	if (ID == 0) {
+
+	//  If the patch is wholly offscreen then don't try to tessellate
 		if (gl_in[0].gl_Position.z < -0.5 && 
 			gl_in[1].gl_Position.z < -0.5 &&
 			gl_in[2].gl_Position.z < -0.5)
@@ -39,13 +38,30 @@ void main()
 			gl_TessLevelOuter[1] = 0.0;
 			gl_TessLevelOuter[2] = 0.0;
 		} else {
-			float distance = distance(vec3(0,0,0), (vworldPosition[0] + vworldPosition[1] + vworldPosition[2])/3);
-			float tesslevel = 200/(1+distance +distance * distance *0.001);
-			tesslevel = min(15, tesslevel);
-			gl_TessLevelInner[0] = tesslevel;
-			gl_TessLevelOuter[0] = tesslevel;
-			gl_TessLevelOuter[1] = tesslevel;
-			gl_TessLevelOuter[2] = tesslevel;
+
+			//  find the distance of the mid-point of each edge from the camera
+			vec3 edge1 = (vworldPosition[0] + vworldPosition[1])/2;
+			vec3 edge2 = (vworldPosition[1] + vworldPosition[2])/2;
+			vec3 edge3 = (vworldPosition[2] + vworldPosition[0])/2;
+
+			float dist1 = distance(vec3(0,0,0),edge1);
+			float dist2 = distance(vec3(0,0,0),edge2);
+			float dist3 = distance(vec3(0,0,0),edge3);
+
+			//  Set the tessellation level for this edge based on this distance
+			float tess0 = 200/(1+dist3 + dist3 * dist3 *0.001);
+			float tess1 = 200/(1+dist2 + dist2 * dist2 *0.001);
+			float tess2 = 200/(1+dist1 + dist1 * dist1 *0.001);
+			float tessm = (tess0 + tess1 + tess2)/3;
+
+
+			gl_TessLevelInner[0] = tessm;
+			gl_TessLevelOuter[1] = tess0;
+			gl_TessLevelOuter[0] = tess1;
+			gl_TessLevelOuter[2] = tess2;
+
+			//  This method ensures that there will be no gaps when tesselation levels change across patches, as each edge has a
+			//  a specific level, regardless of the patch it is in.
 		}
 	}
 }
