@@ -41,9 +41,9 @@ unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n)
 		for (float j = 0; j < size; j++) {
 			height = noise.FractalSimplex(i*step, j*step, n);
 			normal = noise.FractalSimplexNormal(i*step, j*step, n, step);
-			map[currentpixel] = unsigned char(normal.x * 255);			//  R
-			map[currentpixel + 1] = unsigned char(normal.y * 255);		//  G
-			map[currentpixel + 2] = unsigned char(normal.z * 255);		//  B
+			map[currentpixel] = unsigned char((normal.x+1)/2 * 255);			//  R
+			map[currentpixel + 1] = unsigned char((normal.y+1)/2 * 255);		//  G
+			map[currentpixel + 2] = unsigned char((normal.z+1)/2 * 255);		//  B
 			map[currentpixel + 3] = unsigned char(((height+max)/(2*max)) * 255);		// A
 
 			counter++;
@@ -53,25 +53,25 @@ unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n)
 
 	GLuint TexID;
 
-	//glGenTextures(1, &TexID);				// Create The Texture
-	//glBindTexture(GL_TEXTURE_2D, TexID);
+	glGenTextures(1, &TexID);				// Create The Texture
+	glBindTexture(GL_TEXTURE_2D, TexID);
 
-//	glTexStorage2D(GL_TEXTURE_2D, 8, texture_bpp/8, texture_width, texture_height);
-//	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texture_width, texture_height, texture_type, GL_UNSIGNED_BYTE, texture_imageData);
+//	glTexStorage2D(GL_TEXTURE_2D, 8, 4, GL_RGBA, size);
+//	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, size, size, GL_RGBA, GL_UNSIGNED_BYTE, map);
 
 
-	//glTexImage2D(GL_TEXTURE_2D, 0, 4, size, size, 0, GL_RGBA, GL_UNSIGNED_BYTE, map);
-	//glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, size, size, 0, GL_RGBA, GL_UNSIGNED_BYTE, map);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
-	write_tga("output.tga", size, map);
+//	write_tga("output.tga", size, map);
 
 	if (map)						// If Texture Image Exists ( CHANGE )
 	{
 		free(map);					// Free The Texture Image Memory ( CHANGE )
 	}
 
-	CreateGLTexture("output.tga", TexID);
+//	CreateGLTexture("output.tga", TexID);
 
 
 	return TexID;

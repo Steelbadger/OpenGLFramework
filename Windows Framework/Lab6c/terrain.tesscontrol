@@ -49,9 +49,9 @@ void main()
 			float dist3 = distance(vec3(0,0,0),edge3);
 
 			//  Set the tessellation level for this edge based on this distance
-			float tess0 = 200/(1+dist3 + dist3 * dist3 *0.001);
-			float tess1 = 200/(1+dist2 + dist2 * dist2 *0.001);
-			float tess2 = 200/(1+dist1 + dist1 * dist1 *0.001);
+			float tess0 = 200/(1+dist3 + dist3 * dist3 *0.01);
+			float tess1 = 200/(1+dist2 + dist2 * dist2 *0.01);
+			float tess2 = 200/(1+dist1 + dist1 * dist1 *0.01);
 			float tessm = (tess0 + tess1 + tess2)/3;
 
 
