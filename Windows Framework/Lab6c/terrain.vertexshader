@@ -27,15 +27,10 @@ void main(){
 
 //  gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition_modelspace, 1.0);
 
-//	vworldPosition = vec3(modelViewMatrix * vec4(vertexPosition_modelspace, 1.0));
-//	vnormal = vec3(normalMatrix * vec4(vertexNormal, 1.0));
-//	vUV = vertexUV;
-//	vvertNorm = vertexNormal;
-//	vglobalPos = vertexPosition_modelspace;
-
 	gl_Position = vec4(vertexPosition_modelspace, 1.0);
-//	vworldPosition = vertexPosition_modelspace;
-	vworldPosition = vec3(viewMatrix * modelMatrix * vec4(vertexPosition_modelspace, 1.0));
+	vworldPosition = vertexPosition_modelspace;
+	vworldPosition.y = 0.0;
+	vworldPosition = vec3(viewMatrix * modelMatrix * vec4(vworldPosition, 1.0));
 //	vworldPosition = vec3(modelViewMatrix * vec4(vertexPosition_modelspace, 1.0));
 	vnormal = vertexNormal;
 	vUV = vertexUV;

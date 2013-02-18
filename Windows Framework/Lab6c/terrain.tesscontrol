@@ -50,8 +50,11 @@ void main()
 
 			//  Set the tessellation level for this edge based on this distance
 			float tess0 = 200/(1+dist3 + dist3 * dist3 *0.01);
+			tess0 = clamp(tess0, 1, 64);
 			float tess1 = 200/(1+dist2 + dist2 * dist2 *0.01);
+			tess1 = clamp(tess1, 1, 64);
 			float tess2 = 200/(1+dist1 + dist1 * dist1 *0.01);
+			tess2 = clamp(tess2, 1, 64);
 			float tessm = (tess0 + tess1 + tess2)/3;
 
 

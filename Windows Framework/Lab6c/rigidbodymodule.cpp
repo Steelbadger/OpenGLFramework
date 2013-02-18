@@ -28,13 +28,13 @@ bool Rigidbody::CheckGroundCollision(NoiseObject n)
 	ground.Seed(n.seed);
 	n.octaves = 9;
 	if(active) {
-		if (parent->GetPosition().y < 2.0f+ground.TurbulentPerlin2D(parent->GetPosition().x, parent->GetPosition().z, n)) {
-			parent->SetLocation(parent->GetPosition().x, 2.0f+ground.TurbulentPerlin2D(parent->GetPosition().x, parent->GetPosition().z, n), parent->GetPosition().z);
+		if (parent->GetPosition().y < 2.0f+ground.FractalSimplex(parent->GetPosition().x, parent->GetPosition().z, n)) {
+			parent->SetLocation(parent->GetPosition().x, 2.0f+ground.FractalSimplex(parent->GetPosition().x, parent->GetPosition().z, n), parent->GetPosition().z);
 			velocity = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 			return true;
 		}
 
-		if (parent->GetPosition().y > 2.0f+ground.TurbulentPerlin2D(parent->GetPosition().x, parent->GetPosition().z, n)) {
+		if (parent->GetPosition().y > 2.0f+ground.FractalSimplex(parent->GetPosition().x, parent->GetPosition().z, n)) {
 			velocity -= GameObject::GLOBALY*GRAVITY*input.GetTimeForLastFrame();
 			return false;
 		}
