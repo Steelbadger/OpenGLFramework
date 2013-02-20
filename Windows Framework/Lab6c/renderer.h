@@ -30,7 +30,7 @@ public:
 	void AddTerrainToRenderer(Terrain &t);
 	void BuildDefaultShaderProgram();
 	void AddLight(LightSource &l);
-	void PassInHeights(GLuint h){heights = h;}
+	void PassInHeights(GLuint h, float width){heights = h; mapWidth = width;}
 
 	void RenderAll();
 	void SetShaders(std::vector<std::string> shaders);
@@ -106,6 +106,7 @@ private:
 
 	GLuint skyboxShaderProgram;
 	GLuint terrainShaderProgram;
+	float mapWidth;
 };
 
 
@@ -124,5 +125,6 @@ struct UniformLocations
 	GLuint Texture2;
 	GLuint Texture3;
 	GLuint Texture4;
+	GLuint MapWidth;
 };
 

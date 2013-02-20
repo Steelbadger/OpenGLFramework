@@ -692,6 +692,7 @@ void RenderManager::SetUniforms()
 		newLocations.NormalMatrix = glGetUniformLocation(currentShaderProgram, "normalMatrix");
 
 		newLocations.NumLights = glGetUniformLocation(currentShaderProgram, "numLights");
+		newLocations.MapWidth = glGetUniformLocation(currentShaderProgram, "mapWidth");
 
 		std::vector<LightSource>::iterator it;
 		int i = 0;
@@ -737,6 +738,7 @@ void RenderManager::SetUniforms()
 	glUniformMatrix4fv(uniform.ViewMatrix, 1, GL_FALSE, viewMatrix);
 	glUniformMatrix4fv(uniform.ModelViewMatrix, 1, GL_FALSE, modelViewMatrix);
 	glUniformMatrix4fv(uniform.NormalMatrix, 1, GL_FALSE, normalMatrix);
+	glUniform1f(uniform.MapWidth, mapWidth);
 
 	for (int i = 0; i < lightObjects.size(); i++) {
 		glUniform4fv(uniform.LightColours[i], 1, lights[i].colour);

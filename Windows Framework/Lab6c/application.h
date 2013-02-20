@@ -32,6 +32,7 @@ private:
 	bool framerateLogging;
 	bool culling;
 
+	const int gridSize;
 	NoiseObject myNoise;
 	Terrain ground;
 	RenderManager renderer;

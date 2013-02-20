@@ -6,8 +6,9 @@
 
 
 Application::Application(void):
-	myNoise(8, 500.0f, 0.41f, 70.0f, -1563.155f),
-	ground(1000.0f, myNoise, 10.0f)
+	gridSize(2000.0f),
+	myNoise(12, 500.0f, 0.41f, 70.0f, -1563.155f),
+	ground(gridSize, myNoise, 10.0f)
 {
 }
 
@@ -80,7 +81,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	myTimer = clock();
 
 	Heightmap heights;
-	renderer.PassInHeights(heights.GenerateHeightmap(0, 0, myNoise));
+	renderer.PassInHeights(heights.GenerateHeightmap(0, 0, myNoise, gridSize), gridSize);
 
 	myTimer = clock() - myTimer;
 

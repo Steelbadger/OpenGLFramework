@@ -39,6 +39,9 @@ private:
 	std::string textureFile;
 	std::string rockFile;
 
+	float baseX;
+	float baseY;
+
 	std::string vertexShader;
 	std::string fragmentShader;
 	std::string tesselationControlShader;

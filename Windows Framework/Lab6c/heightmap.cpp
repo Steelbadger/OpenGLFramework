@@ -6,12 +6,26 @@
 #include <stdlib.h>
 #include <fstream>
 #include "tex.h"
+#include <process.h>
+#include <iostream>
 
 
-//struct pixel
-//{
-//	unsigned char channels[4];
-//};
+struct ThreadData
+{
+	ThreadData():n(12, 500.0f, 0.41f, 70.0f, -1563.155f){}
+	ThreadData(GLushort* p, int baseX, int baseY, int size, float mbaseX, float mbaseY, float msize, int ssize, NoiseObject noise) :
+		start(p), imageBaseX(baseX), imageBaseY(baseY), imageSize(size), mapBaseX(mbaseX), mapBaseY(mbaseY),	mapSize(msize),
+			sectionSize(ssize),	n(noise) {}
+	GLushort* start;
+	int imageBaseX;
+	int imageBaseY;
+	int imageSize;
+	float mapBaseX;
+	float mapBaseY;
+	float mapSize;
+	int sectionSize;
+	NoiseObject n;
+};
 
 
 Heightmap::Heightmap(void)
@@ -24,58 +38,92 @@ Heightmap::~Heightmap(void)
 }
 
 
-unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n)
+unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n, float square)
 {
-	const int size = 1024;
-	GLubyte* map = (GLubyte *)malloc(size*size*4);	
+
+	const int size = 2048;
+	const int subdivs = 512;
+	const int threads = size/subdivs;
+
+
+	GLushort* map = (GLushort*)malloc(size*size*4*sizeof(GLushort));
+
 	NoiseGenerator noise;
 	float max = n.amplitude;
-	n.octaves = 8;
 	int counter = 0;
 	int currentpixel = 0;
-	float step = 1500/((1500/0.75)-1);
-	step = float(1000.0/size);
+	float step = 1000/((1000/0.75)-1);
+	step = float(square/size);
 	float height;
 	Vector3 normal;
-	for (float i = 0; i < size; i++) {
-		for (float j = 0; j < size; j++) {
-			height = noise.FractalSimplex(i*step, j*step, n);
-			normal = noise.FractalSimplexNormal(i*step, j*step, n, step);
-			map[currentpixel] = unsigned char((normal.x+1)/2 * 255);			//  R
-			map[currentpixel + 1] = unsigned char((normal.y+1)/2 * 255);		//  G
-			map[currentpixel + 2] = unsigned char((normal.z+1)/2 * 255);		//  B
-			map[currentpixel + 3] = unsigned char(((height+max)/(2*max)) * 255);		// A
 
-			counter++;
-			currentpixel = counter*4;
+	ThreadData dataArray[threads][threads];
+	HANDLE threadHandles[threads*threads];
+	
+	
+	for(int i = 0; i < threads; i++) {
+		for(int j = 0; j < threads; j++) {
+			dataArray[i][j] = ThreadData(map, i*size/threads, j*size/threads, size, i*step*subdivs, j*step*subdivs, square, subdivs, n);
+			threadHandles[j+i*threads] = (HANDLE) _beginthreadex(NULL,0,&Heightmap::GenerateSection,(void*)&dataArray[i][j],0,NULL);
 		}
 	}
+
+	WaitForMultipleObjects(threads*threads,threadHandles,TRUE, INFINITE);
 
 	GLuint TexID;
 
 	glGenTextures(1, &TexID);				// Create The Texture
 	glBindTexture(GL_TEXTURE_2D, TexID);
 
-//	glTexStorage2D(GL_TEXTURE_2D, 8, 4, GL_RGBA, size);
-//	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, size, size, GL_RGBA, GL_UNSIGNED_BYTE, map);
-
-
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, size, size, 0, GL_RGBA, GL_UNSIGNED_BYTE, map);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, size, size, 0, GL_RGBA, GL_UNSIGNED_SHORT, map);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-
-//	write_tga("output.tga", size, map);
 
 	if (map)						// If Texture Image Exists ( CHANGE )
 	{
 		free(map);					// Free The Texture Image Memory ( CHANGE )
 	}
 
-//	CreateGLTexture("output.tga", TexID);
-
-
 	return TexID;
 }
+
+unsigned __stdcall Heightmap::GenerateSection(void *data)
+{
+	ThreadData args = *(ThreadData*)data;
+
+	float height = 0;
+	Vector3 normal(0,0,0);
+
+	NoiseGenerator noise;
+	float step = args.mapSize/args.imageSize;
+	float x = args.mapBaseX;
+	float y = args.mapBaseY;
+	int counter = 0;
+	int currentpixel = 0;
+	float max = args.n.amplitude;
+
+	for (float j = 0; j < args.sectionSize; j++) {
+		counter = (j+args.imageBaseY) * args.imageSize + args.imageBaseX;
+		currentpixel = counter*4;
+		for (float i = 0; i < args.sectionSize; i++) {
+			height = noise.FractalSimplex(i*step + x, j*step + y, args.n);
+			normal = noise.FractalSimplexNormal(i*step + x, j*step + y, args.n, step);
+
+			//  Convert the numbers to short int
+			args.start[currentpixel] = GLushort((normal.x+1)/2 * 65535);			//  R
+			args.start[currentpixel + 1] = GLushort((normal.y+1)/2 * 65535);		//  G
+			args.start[currentpixel + 2] = GLushort((normal.z+1)/2 * 65535);		//  B
+			args.start[currentpixel + 3] = GLushort(((height+max)/(2*max)) * 65535);		// A
+
+			counter++;
+			currentpixel = counter*4;
+		}
+	}
+
+
+	return 0;
+}
+
 
 void Heightmap::write_tga(const char *filename, int size, unsigned char* base)
 {

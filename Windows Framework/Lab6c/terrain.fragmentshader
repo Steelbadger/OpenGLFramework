@@ -42,7 +42,7 @@ void main()
 
 	float alt = globalPos.y;
 	float diff = 1.0;
-	float start = 1.0;
+	float start = -15.0;
 	alt = min(start+diff, alt);
 	alt = max(start, alt);
 	alt = alt-start;
