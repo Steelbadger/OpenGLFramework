@@ -5,13 +5,12 @@
 #include "tex.h"
 #include "myvector3.h"
 #include "myvector2.h"
-
-class NoiseObject;
+#include "noisegenerator.h"
 
 class Terrain
 {
 public:
-	Terrain(float size, NoiseObject n, float resolution);
+	Terrain(float size, NoiseObject n, float resolution, float xBase, float yBase);
 	~Terrain(void);
 
 	void Create(NoiseObject n);
@@ -25,6 +24,10 @@ public:
 	std::string GetTexturePath() {return textureFile;}
 	std::string GetRockTexturePath() {return rockFile;}
 	void AttachShader(std::string shader);
+	float GetBaseX(){return baseX;}
+	float GetBaseY(){return baseY;}
+
+	float GetStep(){return step;}
 
 	std::string GetVertexShader() {return vertexShader;}
 	std::string GetFragmentShader() {return fragmentShader;}
@@ -41,6 +44,7 @@ private:
 
 	float baseX;
 	float baseY;
+	float step;
 
 	std::string vertexShader;
 	std::string fragmentShader;
@@ -51,5 +55,21 @@ private:
 
 	float squareSize;
 	float resolution;
+};
+
+
+class TerrainContainer
+{
+public:
+	TerrainContainer(NoiseObject noise);
+	void Update(float x, float z);
+
+private:
+
+	std::vector<std::vector<Terrain> > landscape;
+
+	NoiseObject noise;
+
+	static const int renderbox = 1000;
 };
 

@@ -7,9 +7,11 @@
 #include <string>
 
 
-Terrain::Terrain(float s, NoiseObject n, float r):
+Terrain::Terrain(float s, NoiseObject n, float r, float xBase, float yBase):
 		squareSize(s),
-			resolution(r)
+			resolution(r),
+			baseX(xBase),
+			baseY(yBase)
 {
 	Create(n);
 }
@@ -27,7 +29,7 @@ void Terrain::Create(NoiseObject n)
 	NoiseGenerator noise;
 	noise.Seed(n.seed);
 	int size = squareSize/resolution;
-	float step = squareSize/(size-1);
+	step = squareSize/(size-1);
 
 	double myTime = clock();
 
@@ -35,7 +37,7 @@ void Terrain::Create(NoiseObject n)
 		for (float j = 0; j < size; j++) {
 			//verts.push_back(Vector3(i*step, noise.FractalSimplex(i*step, j*step, n)+15.0, j*step));
 			//Vector3 normalA = noise.FractalSimplexNormal(i*step, j*step, n, step);
-			verts.push_back(Vector3(i*step, 0, j*step));
+			verts.push_back(Vector3(i*step+baseX, 0, j*step+baseY));
 			Vector3 normalA = Vector3(0,0,0);
 
 			normals.push_back(normalA);
@@ -74,5 +76,25 @@ void Terrain::AttachShader(std::string shader)
 		//  If the file extension is not correct then return an error and stop
 		std::cout << "Cannot Attach Shader, Unrecognised Shader File Extension: " << type << std::endl;
 		return;
+	}
+}
+
+
+TerrainContainer::TerrainContainer(NoiseObject n):
+	noise(n)
+{
+}
+
+
+void TerrainContainer::Update(float x, float y)
+{
+	if (landscape.size() == 0) {
+		landscape.resize(3);
+
+		for (int i = 0; i < landscape.size(); i++) {
+			for (int j = 0; j < 3; j++) {
+				landscape[i].push_back(Terrain(512.0f, noise, 2.0f, i*512.0f, j*512.0f));
+			}
+		}
 	}
 }

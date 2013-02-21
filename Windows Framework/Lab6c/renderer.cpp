@@ -119,6 +119,7 @@ void RenderManager::AddTerrainToRenderer(Terrain &t)
 	fn = t.GetRockTexturePath();
 	CreateGLTexture(fn.c_str(), tex);
 	terrainRock = tex;
+	terrainStep = t.GetStep();
 
 	terrain = SetupVAO(t);
 
@@ -589,6 +590,8 @@ void RenderManager::DrawTerrain()
 {
 	currentShaderProgram = terrainShaderProgram;
 	glUseProgram(currentShaderProgram);
+	base.SetLocation(int((activeCamera->GetParent()->GetPosition().x-mapWidth/2)/terrainStep)*terrainStep,
+				0.0, int((activeCamera->GetParent()->GetPosition().z-mapWidth/2)/terrainStep)*terrainStep);
 	BuildModelViewMatrix(base);
 
 	SetUniforms();
@@ -613,8 +616,8 @@ void RenderManager::DrawTerrain()
 
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, heights);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	glUniform1i(locations.Texture3, 2);
 
 	//  draw the skybox

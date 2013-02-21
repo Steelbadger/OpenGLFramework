@@ -85,6 +85,7 @@ private:
 	GLuint heights;
 
 	int terrainVerts;
+	float terrainStep;
 
 	GameObject base;
 
