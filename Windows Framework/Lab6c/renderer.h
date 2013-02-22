@@ -30,7 +30,7 @@ public:
 	void AddTerrainToRenderer(Terrain &t);
 	void BuildDefaultShaderProgram();
 	void AddLight(LightSource &l);
-	void PassInHeights(GLuint h, float width){heights = h; mapWidth = width;}
+	void PassInHeights(GLuint h, float width, float magnitude){heights = h; mapWidth = width; terrainMagnitude = magnitude;}
 
 	void RenderAll();
 	void SetShaders(std::vector<std::string> shaders);
@@ -84,8 +84,10 @@ private:
 	GLuint terrainRock;
 	GLuint heights;
 
+
 	int terrainVerts;
 	float terrainStep;
+	float terrainMagnitude;
 
 	GameObject base;
 
@@ -127,5 +129,6 @@ struct UniformLocations
 	GLuint Texture3;
 	GLuint Texture4;
 	GLuint MapWidth;
+	GLuint Magnitude;
 };
 

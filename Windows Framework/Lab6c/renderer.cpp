@@ -38,25 +38,23 @@ bool RenderManager::AddToRenderer(Mesh &m)
 
 	//  Only bother compiling a new Display List if one doesn't already exist for this object
 	if (!VAOMap.count(m.GetUniqueID())) {
-		if (!MeshFileMap.count(meshModel)) {
-			//  Compile the object's Display List and remember that this object has been compiled to save repetition
-			MeshFileMap[meshModel] = SetupVAO(m);
-		} else {
-			VAOMap[m.GetUniqueID()] = MeshFileMap[meshModel];
+		if (meshModel.length() > 0) {
+			if (!MeshFileMap.count(meshModel)) {
+				//  Compile the object's Display List and remember that this object has been compiled to save repetition
+				MeshFileMap[meshModel] = SetupVAO(m);
+			} else {
+				VAOMap[m.GetUniqueID()] = MeshFileMap[meshModel];
+			}
 		}
-
 		//  Only bother importing the texture if this texture has not already been imported
 		if (!TextureMap.count(fn)) {
 			//  Check file extension, included for possible extension to other formats
 			if(fn.substr(fn.find_last_of(".") + 1) == "tga") {
 				//  Load the texture and put it in our temporary holder 'tex'
 				CreateGLTexture(fn.c_str(), tex);
-			} else {
-				//  If the file type is not recognised then stop
-				return false;
+				//  Keep a note that this file has been imported to save repetitions
+				TextureMap[fn] = tex;
 			}
-			//  Keep a note that this file has been imported to save repetitions
-			TextureMap[fn] = tex;
 		} else {
 			//  If the texture has been imported before then use that old version to save importing again
 			tex = TextureMap[fn];
@@ -590,8 +588,8 @@ void RenderManager::DrawTerrain()
 {
 	currentShaderProgram = terrainShaderProgram;
 	glUseProgram(currentShaderProgram);
-	base.SetLocation(int((activeCamera->GetParent()->GetPosition().x-mapWidth/2)/terrainStep)*terrainStep,
-				0.0, int((activeCamera->GetParent()->GetPosition().z-mapWidth/2)/terrainStep)*terrainStep);
+//	base.SetLocation(int((activeCamera->GetParent()->GetPosition().x-mapWidth/2)/terrainStep)*terrainStep,
+//				0.0, int((activeCamera->GetParent()->GetPosition().z-mapWidth/2)/terrainStep)*terrainStep);
 	BuildModelViewMatrix(base);
 
 	SetUniforms();
@@ -696,6 +694,7 @@ void RenderManager::SetUniforms()
 
 		newLocations.NumLights = glGetUniformLocation(currentShaderProgram, "numLights");
 		newLocations.MapWidth = glGetUniformLocation(currentShaderProgram, "mapWidth");
+		newLocations.Magnitude = glGetUniformLocation(currentShaderProgram, "magnitude");
 
 		std::vector<LightSource>::iterator it;
 		int i = 0;
@@ -742,6 +741,7 @@ void RenderManager::SetUniforms()
 	glUniformMatrix4fv(uniform.ModelViewMatrix, 1, GL_FALSE, modelViewMatrix);
 	glUniformMatrix4fv(uniform.NormalMatrix, 1, GL_FALSE, normalMatrix);
 	glUniform1f(uniform.MapWidth, mapWidth);
+	glUniform1f(uniform.Magnitude, terrainMagnitude);
 
 	for (int i = 0; i < lightObjects.size(); i++) {
 		glUniform4fv(uniform.LightColours[i], 1, lights[i].colour);

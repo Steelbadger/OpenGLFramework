@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <list>
 #include <windows.h>
 #include <stdio.h>
 #include "tex.h"
@@ -56,20 +57,3 @@ private:
 	float squareSize;
 	float resolution;
 };
-
-
-class TerrainContainer
-{
-public:
-	TerrainContainer(NoiseObject noise);
-	void Update(float x, float z);
-
-private:
-
-	std::vector<std::vector<Terrain> > landscape;
-
-	NoiseObject noise;
-
-	static const int renderbox = 1000;
-};
-

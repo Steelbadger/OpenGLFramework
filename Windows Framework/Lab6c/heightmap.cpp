@@ -41,7 +41,7 @@ Heightmap::~Heightmap(void)
 unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n, float square)
 {
 
-	const int size = 4096;
+	const int size = 2048;
 	const int subdivs = 512;
 	const int threads = size/subdivs;
 

@@ -18,6 +18,7 @@ uniform mat4 modelViewMatrix;
 uniform mat4 normalMatrix;
 uniform sampler2D texture3;
 uniform float mapWidth;
+uniform float magnitude;
 
 void main()
 {
@@ -34,7 +35,7 @@ void main()
 	vec4 gPos = (gp0 + gp1 + gp2);
 
 
-	pos.y  = (texture(texture3, vec2(gPos.x/mapWidth+0.5, gPos.z/mapWidth+0.5)).a-0.5)*160;
+	pos.y  = (texture(texture3, vec2(gPos.x/mapWidth, gPos.z/mapWidth)).a-0.5)*magnitude*2;
 
     gl_Position = projectionMatrix * modelViewMatrix * pos;
 
@@ -51,7 +52,7 @@ void main()
     vec3 n1 = gl_TessCoord.y * tcnormal[1];
     vec3 n2 = gl_TessCoord.z * tcnormal[2];
 
-	vec3 norm = texture(texture3, vec2(gPos.x/mapWidth+0.5, gPos.z/mapWidth+0.5)).rgb-0.5;
+	vec3 norm = texture(texture3, vec2(gPos.x/mapWidth, gPos.z/mapWidth)).rgb-0.5;
 	norm = normalize(norm);
 	normal = vec3(normalMatrix * vec4(norm, 1.0));
 

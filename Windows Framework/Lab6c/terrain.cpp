@@ -79,22 +79,3 @@ void Terrain::AttachShader(std::string shader)
 	}
 }
 
-
-TerrainContainer::TerrainContainer(NoiseObject n):
-	noise(n)
-{
-}
-
-
-void TerrainContainer::Update(float x, float y)
-{
-	if (landscape.size() == 0) {
-		landscape.resize(3);
-
-		for (int i = 0; i < landscape.size(); i++) {
-			for (int j = 0; j < 3; j++) {
-				landscape[i].push_back(Terrain(512.0f, noise, 2.0f, i*512.0f, j*512.0f));
-			}
-		}
-	}
-}

@@ -3,12 +3,13 @@
 #include <time.h>
 #include "lights.h"
 #include "heightmap.h"
+#include "primitives.h"
 
 
 Application::Application(void):
-	gridSize(1000.0f),
+	gridSize(1500.0f),
 	myNoise(12, 500.0f, 0.41f, 70.0f, -1563.155f),
-	ground(gridSize, myNoise, 10.0f, 0.0f, 0.0f)
+	ground(gridSize, myNoise, 15.0f, 0.0f, 0.0f)
 {
 }
 
@@ -57,6 +58,7 @@ void Application::Initialize(HINSTANCE hInstance)
 			}
 		}
 	}
+
 	testObject.CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
 	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
@@ -81,7 +83,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	myTimer = clock();
 
 	Heightmap heights;
-	renderer.PassInHeights(heights.GenerateHeightmap(0, 0, myNoise, gridSize), gridSize);
+	renderer.PassInHeights(heights.GenerateHeightmap(0, 0, myNoise, gridSize), gridSize, myNoise.amplitude);
 
 	myTimer = clock() - myTimer;
 
@@ -126,7 +128,7 @@ void Application::MainLoop()
 			window.SetMouseLockedCentre();
 		}
 
-		sunParent.RotateDeltaX(0.01f);
+		sunParent.RotateDeltaX(0.001f);
 
 		if (input.ReportKeyPress(VK_ESCAPE))
 			exit(0);

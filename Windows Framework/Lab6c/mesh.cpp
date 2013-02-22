@@ -59,6 +59,17 @@ Mesh::Mesh(const char* mPath, const char* tPath):
 	LoadMesh(meshPath.c_str());
 }
 
+Mesh::Mesh(std::vector<Vector3> v, std::vector<Vector3> n, std::vector<Vector2> u):
+	uniqueID(IDCOUNTER++)
+{
+	parent = NULL;
+	IdToMeshMap[uniqueID] = this;
+	transparency = false;
+	verts = v;
+	normals = n;
+	uvs = u;
+}
+
 
 Mesh::~Mesh(void)
 {

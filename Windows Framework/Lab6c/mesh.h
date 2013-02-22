@@ -15,6 +15,7 @@ class Mesh
 public:
 	Mesh(const char* meshPath, const char* texturePath, GameObject* parent);
 	Mesh(const char* meshPath, const char* texturePath);
+	Mesh(std::vector<Vector3> verts, std::vector<Vector3> normals, std::vector<Vector2> uvs);
 	Mesh();
 	Mesh(const Mesh& mesh);
 	~Mesh(void);
@@ -24,8 +25,10 @@ public:
 	int GetUniqueID(){return uniqueID;}
 	void GetNewUniqueID();
 	void SetParent(GameObject* p) {parent = p;}
+	void SetTexture(const char* texPath) {texturePath = texPath;}
 	GameObject* GetParentPointer(){return parent;}
 	bool IsTransparent(){return transparency;}
+	void SetTransparent(bool t) {transparency = t;}
 	Vector3* GetVertexArrayBase(){return &verts[0];}
 	Vector3* GetNormalArrayBase(){return &normals[0];}
 	Vector2* GetUVArrayBase(){return &uvs[0];}
