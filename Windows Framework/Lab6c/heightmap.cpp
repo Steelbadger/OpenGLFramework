@@ -42,7 +42,7 @@ unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n, float
 {
 
 	const int size = 2048;
-	const int subdivs = 512;
+	const int subdivs = 1024;  //  256, 512, 1024
 	const int threads = size/subdivs;
 
 
@@ -52,10 +52,7 @@ unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n, float
 	float max = n.amplitude;
 	int counter = 0;
 	int currentpixel = 0;
-	float step = 1000/((1000/0.75)-1);
-	step = float(square/size);
-	float height;
-	Vector3 normal;
+	float step = float(square/size);
 
 	ThreadData dataArray[threads][threads];
 	HANDLE threadHandles[threads*threads];
@@ -68,7 +65,13 @@ unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n, float
 		}
 	}
 
-	WaitForMultipleObjects(threads*threads,threadHandles,TRUE, INFINITE);
+	for (int i = 0; i < threads*threads; i+=64) {
+		if (threads*threads - i > 64) {
+			WaitForMultipleObjects(64, &threadHandles[i], TRUE, INFINITE);
+		} else {
+			WaitForMultipleObjects(threads*threads-i, &threadHandles[i], TRUE, INFINITE);
+		}
+	}
 
 	GLuint TexID;
 

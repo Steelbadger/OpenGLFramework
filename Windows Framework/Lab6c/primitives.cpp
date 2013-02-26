@@ -15,10 +15,10 @@ Mesh PrimitiveFactory::Plane(float width, float height, int widthSubDivs, int he
 	std::vector<Vector3> verts;
 	std::vector<Vector3> normals;
 	std::vector<Vector2> texCoords;
+	std::vector<unsigned int> index;
 
 	float widthStep = width/widthSubDivs;
 	float heightStep = height/heightSubDivs;
-
 
 	for (int i = 0; i < heightSubDivs; i++) {
 		for (int j = 0; j < widthSubDivs; j++) {
@@ -26,6 +26,17 @@ Mesh PrimitiveFactory::Plane(float width, float height, int widthSubDivs, int he
 			Vector3 normalA = Vector3(0,1,0);
 			normals.push_back(normalA);
 			texCoords.push_back(Vector2(i*widthStep/width, j*heightStep/height));
+		}
+	}
+
+	for (int i = 0; i < heightSubDivs-1; i++) {
+		for (int j = 0; j < widthSubDivs-1; j++) {
+			index.push_back(i+j*widthSubDivs);
+			index.push_back(1+i+(1+j)*widthSubDivs);
+			index.push_back(i+(1+j)*widthSubDivs);
+			index.push_back(1+i+(1+j)*widthSubDivs);
+			index.push_back(i+j*widthSubDivs);
+			index.push_back(1+i+j*widthSubDivs);
 		}
 	}
 

@@ -31,6 +31,7 @@ Mesh::Mesh(const Mesh& m):
 	verts(m.verts),
 	normals(m.normals),
 	uvs(m.uvs),
+	index(m.index),
 	numVerts(m.numVerts),
 	successfullBuild(m.successfullBuild)
 {
@@ -164,7 +165,7 @@ bool Mesh::LoadObj(const char* path)
 		verts.push_back(vertex);
 		uvs.push_back(uv);
 		normals.push_back(normal);
-	
+		index.push_back(i);
 	}
 	fclose(file);
 	numVerts = vertIndices.size();
@@ -175,16 +176,6 @@ bool Mesh::LoadObj(const char* path)
 void Mesh::AttachShader(std::string shader)
 {
 	std::string type = shader.substr(shader.find_last_of(".") + 1);
-
-	//if (type == "vertexshader") {
-	//	vertexShader = shader;
-	//} else if (type == "fragmentshader") {
-	//	fragmentShader = shader;
-	//} else {
-	//	//  If the file extension is not correct then return an error and stop
-	//	std::cout << "Cannot Attach Shader, Unrecognised Shader File Extension: " << type << std::endl;
-	//	return;
-	//}
 
 	if (type == "vertexshader" || type == "fragmentshader" || type == "tesscontrol" || type == "tessevaluation") {
 		shaders.push_back(shader);
@@ -201,4 +192,5 @@ void Mesh::DeleteVertexData()
 	verts.clear();
 	normals.clear();
 	uvs.clear();
+	index.clear();
 }

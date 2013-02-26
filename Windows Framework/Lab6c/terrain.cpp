@@ -35,13 +35,9 @@ void Terrain::Create(NoiseObject n)
 
 	for (float i = 0; i < size; i++) {
 		for (float j = 0; j < size; j++) {
-			//verts.push_back(Vector3(i*step, noise.FractalSimplex(i*step, j*step, n)+15.0, j*step));
-			//Vector3 normalA = noise.FractalSimplexNormal(i*step, j*step, n, step);
 			verts.push_back(Vector3(i*step+baseX, 0, j*step+baseY));
 			Vector3 normalA = Vector3(0,0,0);
-
 			normals.push_back(normalA);
-
 			texCoords.push_back(Vector2(i*step/4, j*step/4));
 		}
 	}

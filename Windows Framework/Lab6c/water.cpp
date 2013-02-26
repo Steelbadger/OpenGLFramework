@@ -7,8 +7,8 @@ Water::Water(float size, float xBase, float yBase):
 		squareSize(size)
 {
 	Create();
-	AttachShader("water.vertexshader");
-	AttachShader("water.fragmentshader");
+//	AttachShader("water.vertexshader");
+//	AttachShader("water.fragmentshader");
 }
 
 

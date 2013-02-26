@@ -69,7 +69,7 @@ bool RenderManager::AddToRenderer(Mesh &m)
 	} else {
 		opaqueRenderList.push_back(m.GetUniqueID());
 	}
-	m.DeleteVertexData();
+//	m.DeleteVertexData();
 	return true;
 }
 
@@ -216,6 +216,12 @@ GLuint RenderManager::SetupVAO(Mesh &m)
 	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	//  Bind our index array to it's own buffer.
+	GLuint elementBuffer;
+	glGenBuffers(1, &elementBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m.GetIndexLength()*sizeof(unsigned int), m.GetIndexArrayBase(), GL_STATIC_DRAW);
 
 	//  Unbind our VAO so we don't mess with it
 	glBindVertexArray(0);
@@ -576,7 +582,8 @@ void RenderManager::DrawSkyBox()
 	//  draw the skybox
 	glDisable(GL_DEPTH_TEST);
 	glBindVertexArray(skyBox);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+//	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
 
 	//  unbind our shaders and arrays
 	glBindVertexArray(0);
@@ -618,7 +625,7 @@ void RenderManager::DrawTerrain()
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	glUniform1i(locations.Texture3, 2);
 
-	//  draw the skybox
+	//  draw the terrain
 	glBindVertexArray(terrain);
 
 	glPatchParameteri(GL_PATCH_VERTICES, 3);
@@ -637,14 +644,17 @@ bool RenderManager::DrawMesh(int meshID)
 
 	if (m != NULL) {
 		//  Use the shaders specified by the mesh in question
-		//SetShaders(m->GetVertexShader(), m->GetFragmentShader());
 		SetShaders(m->GetShaders());
 
+		//  Tell OpenGL to use the program we just set to currentShaderProgram
 		glUseProgram(currentShaderProgram);
+		//  Build the modelview matrix for the mesh
 		BuildModelViewMatrix(*m->GetParentPointer());
+
+		//  Find the uniform locations for this program and put relevant data into said locations
 		SetUniforms();
 
-		//  find the location in gfx card memory of the texture we wish to pass in
+		//  Check our location map for the Uniform address tracker (UniformLocation object)
 		UniformLocations locations = ProgramUniformLocationMap[currentShaderProgram];
 
 		//  We're using Texture unit Zero
@@ -656,15 +666,17 @@ bool RenderManager::DrawMesh(int meshID)
 		// Set our texture variable in the shader to use unit zero
 		glUniform1i(locations.Texture1, 0);
 
-		//  draw the skybox
+		//  Bind the VAO and draw the array
 		glBindVertexArray(VAOMap[meshID]);
 		glDrawArrays(GL_TRIANGLES, 0, m->GetNumberOfVerts());
+		//glDrawElements(GL_TRIANGLES, m->GetNumberOfVerts(), GL_UNSIGNED_INT, (void*)0);
 
 		//  unbind our shaders and arrays
 		glBindVertexArray(0);
 		glUseProgram(0);
 		return true;
 	} else {
+		//  If the mesh pointer is NULL then retrun false so we know to remove it from the renderlist
 		return false;
 	}
 }
@@ -706,7 +718,11 @@ void RenderManager::SetUniforms()
 
 			//  Create the string to search for; eg. lights[0].colour by combining the counter and string concatenation
 			stream << "lights[" << i << "].colour";
+
+			//  Get the created string out of the stringstream
 			nameString = stream.str();
+
+			//  Clear the stringstream for next usage
 			stream.str(std::string());
 
 			newLocations.LightColours[i] = glGetUniformLocation(currentShaderProgram, nameString.c_str());
