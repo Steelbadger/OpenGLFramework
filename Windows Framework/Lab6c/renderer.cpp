@@ -42,9 +42,8 @@ bool RenderManager::AddToRenderer(Mesh &m)
 			if (!MeshFileMap.count(meshModel)) {
 				//  Compile the object's Display List and remember that this object has been compiled to save repetition
 				MeshFileMap[meshModel] = SetupVAO(m);
-			} else {
-				VAOMap[m.GetUniqueID()] = MeshFileMap[meshModel];
 			}
+			VAOMap[m.GetUniqueID()] = MeshFileMap[meshModel];
 		}
 		//  Only bother importing the texture if this texture has not already been imported
 		if (!TextureMap.count(fn)) {

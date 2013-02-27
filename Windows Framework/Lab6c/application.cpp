@@ -8,7 +8,7 @@
 
 Application::Application(void):
 	gridSize(1500.0f),
-	myNoise(12, 500.0f, 0.41f, 70.0f, -1563.155f),
+	myNoise(12, 500.0f, 0.41f, 80.0f, -1563.155f),
 	ground(gridSize, myNoise, 15.0f, 0.0f, 0.0f)
 {
 }
