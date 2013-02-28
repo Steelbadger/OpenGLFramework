@@ -25,7 +25,7 @@ Mesh PrimitiveFactory::Plane(float width, float height, int widthSubDivs, int he
 			verts.push_back(Vector3(i*widthStep-width/2, 0, j*heightStep-height/2));
 			Vector3 normalA = Vector3(0,1,0);
 			normals.push_back(normalA);
-			texCoords.push_back(Vector2(i*widthStep/width, j*heightStep/height));
+			texCoords.push_back(Vector2(i*widthStep/4, j*heightStep/4));
 		}
 	}
 
@@ -40,7 +40,7 @@ Mesh PrimitiveFactory::Plane(float width, float height, int widthSubDivs, int he
 		}
 	}
 
-	return Mesh(verts, normals, texCoords);
+	return Mesh(verts, normals, texCoords, index);
 }
 
 Mesh PrimitiveFactory::SimpleInnerBox()

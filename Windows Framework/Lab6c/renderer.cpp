@@ -36,15 +36,13 @@ bool RenderManager::AddToRenderer(Mesh &m)
 	std::string meshModel = m.GetMeshSourceFilePath();
 	GLuint tex;
 
-	//  Only bother compiling a new Display List if one doesn't already exist for this object
+	//  Only bother building a new VAO if one doesn't already exist for this object
 	if (!VAOMap.count(m.GetUniqueID())) {
-		if (meshModel.length() > 0) {
-			if (!MeshFileMap.count(meshModel)) {
-				//  Compile the object's Display List and remember that this object has been compiled to save repetition
-				MeshFileMap[meshModel] = SetupVAO(m);
-			}
-			VAOMap[m.GetUniqueID()] = MeshFileMap[meshModel];
+		if (!MeshFileMap.count(meshModel)) {
+			//  Compile the object's Display List and remember that this object has been compiled to save repetition
+			MeshFileMap[meshModel] = SetupVAO(m);
 		}
+		VAOMap[m.GetUniqueID()] = MeshFileMap[meshModel];
 		//  Only bother importing the texture if this texture has not already been imported
 		if (!TextureMap.count(fn)) {
 			//  Check file extension, included for possible extension to other formats
@@ -92,17 +90,22 @@ void RenderManager::BuildDefaultShaderProgram()
 
 void RenderManager::AddSkyBox(Mesh &m)
 {
-	std::string fn = m.GetTexturePath();
-	GLuint tex;
+	//std::string fn = m.GetTexturePath();
+	//GLuint tex;
 
-	CreateGLTexture(fn.c_str(), tex);
-	skyBoxTexture = tex;
+	//CreateGLTexture(fn.c_str(), tex);
+	//skyBoxTexture = tex;
+	//skyBox = SetupVAO(m);
+	//std::vector<std::string> skyboxShaders;
+	//skyboxShaders.push_back("skybox.vertexshader");
+	//skyboxShaders.push_back("skybox.fragmentshader");
+
+	//skyboxShaderProgram = CreateShaderProgram(skyboxShaders);
+
+	skyboxMaterial = m.GetMaterial();
 	skyBox = SetupVAO(m);
-	std::vector<std::string> skyboxShaders;
-	skyboxShaders.push_back("skybox.vertexshader");
-	skyboxShaders.push_back("skybox.fragmentshader");
+	skyboxShaderProgram = CreateShaderProgram(m.GetMaterial().GetShaders());
 
-	skyboxShaderProgram = CreateShaderProgram(skyboxShaders);
 }
 
 void RenderManager::AddTerrainToRenderer(Terrain &t)
@@ -154,7 +157,7 @@ void RenderManager::RenderAll()
 	viewMatrixMade = false;
 
 	DrawSkyBox();
-	DrawTerrain();
+//	DrawTerrain();
 
 	std::vector<int>::iterator vit;
 	if (opaqueRenderList.size() > 0) {
@@ -164,14 +167,14 @@ void RenderManager::RenderAll()
 			}
 		}
 	}
-	std::list<int>::iterator lit;
-	if (renderList.size() > 0) {
-		for (lit = renderList.begin(); lit != renderList.end(); lit++) {
-			if (!DrawMesh(*lit)) {
-				renderList.erase(lit);
-			}
-		}
-	}
+	//std::list<int>::iterator lit;
+	//if (renderList.size() > 0) {
+	//	for (lit = renderList.begin(); lit != renderList.end(); lit++) {
+	//		if (!DrawMesh(*lit)) {
+	//			renderList.erase(lit);
+	//		}
+	//	}
+	//}
 }
 
 GLuint RenderManager::SetupVAO(Mesh &m)
@@ -563,20 +566,20 @@ void RenderManager::DrawSkyBox()
 	//  Use the default Shader (no lighting)
 	glUseProgram(currentShaderProgram);
 	BuildSkyBoxViewMatrix(*activeCamera->GetParent());
-	SetUniforms();
+	SetUniforms(skyboxMaterial);
 
-	//  find the location in gfx card memory of the texture we wish to pass in
-	UniformLocations locations = ProgramUniformLocationMap[currentShaderProgram];
-	
-	//  We're using Texture unit Zero
-	glActiveTexture(GL_TEXTURE0);
-	//  Put our texture into unit zero
-	glBindTexture(GL_TEXTURE_2D, skyBoxTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	////  find the location in gfx card memory of the texture we wish to pass in
+	//UniformLocations locations = ProgramUniformLocationMap[currentShaderProgram];
+	//
+	////  We're using Texture unit Zero
+	//glActiveTexture(GL_TEXTURE0);
+	////  Put our texture into unit zero
+	//glBindTexture(GL_TEXTURE_2D, skyBoxTexture);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	//glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	// Set our texture variable in the shader to use unit zero
-	glUniform1i(locations.Texture1, 0);
+	//// Set our texture variable in the shader to use unit zero
+	//glUniform1i(locations.Texture1, 0);
 
 	//  draw the skybox
 	glDisable(GL_DEPTH_TEST);
@@ -598,7 +601,7 @@ void RenderManager::DrawTerrain()
 //				0.0, int((activeCamera->GetParent()->GetPosition().z-mapWidth/2)/terrainStep)*terrainStep);
 	BuildModelViewMatrix(base);
 
-	SetUniforms();
+	SetUniforms(Material());
 
 	//  find the location in gfx card memory of the texture we wish to pass in
 	UniformLocations locations = ProgramUniformLocationMap[currentShaderProgram];
@@ -643,7 +646,7 @@ bool RenderManager::DrawMesh(int meshID)
 
 	if (m != NULL) {
 		//  Use the shaders specified by the mesh in question
-		SetShaders(m->GetShaders());
+		SetShaders(m->GetMaterial().GetShaders());
 
 		//  Tell OpenGL to use the program we just set to currentShaderProgram
 		glUseProgram(currentShaderProgram);
@@ -651,31 +654,31 @@ bool RenderManager::DrawMesh(int meshID)
 		BuildModelViewMatrix(*m->GetParentPointer());
 
 		//  Find the uniform locations for this program and put relevant data into said locations
-		SetUniforms();
+		SetUniforms(m->GetMaterial());
 
 		//  Check our location map for the Uniform address tracker (UniformLocation object)
-		UniformLocations locations = ProgramUniformLocationMap[currentShaderProgram];
+		//UniformLocations locations = ProgramUniformLocationMap[currentShaderProgram];
 
-		//  We're using Texture unit Zero
-		glActiveTexture(GL_TEXTURE0);
-		//  Put our texture into unit zero
-		glBindTexture(GL_TEXTURE_2D, TextureMap[m->GetTexturePath()]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		// Set our texture variable in the shader to use unit zero
-		glUniform1i(locations.Texture1, 0);
+		////  We're using Texture unit Zero
+		//glActiveTexture(GL_TEXTURE0);
+		////  Put our texture into unit zero
+		//glBindTexture(GL_TEXTURE_2D, TextureMap[m->GetTexturePath()]);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		//glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		//// Set our texture variable in the shader to use unit zero
+		//glUniform1i(locations.Texture1, 0);
 
 		//  Bind the VAO and draw the array
 		glBindVertexArray(VAOMap[meshID]);
-		glDrawArrays(GL_TRIANGLES, 0, m->GetNumberOfVerts());
-		//glDrawElements(GL_TRIANGLES, m->GetNumberOfVerts(), GL_UNSIGNED_INT, (void*)0);
+		//glDrawArrays(GL_TRIANGLES, 0, m->GetNumberOfVerts());
+		glDrawElements(GL_TRIANGLES, m->GetNumberOfVerts(), GL_UNSIGNED_INT, (void*)0);
 
 		//  unbind our shaders and arrays
 		glBindVertexArray(0);
 		glUseProgram(0);
 		return true;
 	} else {
-		//  If the mesh pointer is NULL then retrun false so we know to remove it from the renderlist
+		//  If the mesh pointer is NULL then return false so we know to remove it from the renderlist
 		return false;
 	}
 }
@@ -691,7 +694,7 @@ void RenderManager::PrepareLights()
 }
 
 
-void RenderManager::SetUniforms()
+void RenderManager::SetUniforms(Material m)
 {
 	if(ProgramUniformLocationMap.count(currentShaderProgram) == 0) {
 
@@ -739,12 +742,11 @@ void RenderManager::SetUniforms()
 			newLocations.LightTypes[i] = glGetUniformLocation(currentShaderProgram, nameString.c_str());
 			i++;
 		}
-
 		newLocations.Texture1 = glGetUniformLocation(currentShaderProgram, "texture1");
 		newLocations.Texture2 = glGetUniformLocation(currentShaderProgram, "texture2");
 		newLocations.Texture3 = glGetUniformLocation(currentShaderProgram, "texture3");
 		newLocations.Texture4 = glGetUniformLocation(currentShaderProgram, "texture4");
-
+				
 		ProgramUniformLocationMap[currentShaderProgram] = newLocations;
 	}
 
@@ -755,8 +757,6 @@ void RenderManager::SetUniforms()
 	glUniformMatrix4fv(uniform.ViewMatrix, 1, GL_FALSE, viewMatrix);
 	glUniformMatrix4fv(uniform.ModelViewMatrix, 1, GL_FALSE, modelViewMatrix);
 	glUniformMatrix4fv(uniform.NormalMatrix, 1, GL_FALSE, normalMatrix);
-	glUniform1f(uniform.MapWidth, mapWidth);
-	glUniform1f(uniform.Magnitude, terrainMagnitude);
 
 	for (int i = 0; i < lightObjects.size(); i++) {
 		glUniform4fv(uniform.LightColours[i], 1, lights[i].colour);
@@ -765,4 +765,34 @@ void RenderManager::SetUniforms()
 	}
 
 	glUniform1i(uniform.NumLights, lightObjects.size());
+	int textures = min(m.GetTextures().size(), MaxTextures);
+	float bumpMagnitude = 0.0;
+
+
+	for (int i = 0; i < textures; i++) {
+		glActiveTexture(GL_TEXTURE0+i);
+		TexStruct inTex = m.GetTextures()[i].GetTexture();
+		//  Put our texture into unit zero
+		glBindTexture(GL_TEXTURE_2D, inTex.tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, inTex.wrapping);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, inTex.wrapping);
+
+		if (inTex.type == Texture::DISPLACEMENT) {
+			glUniform1i(uniform.Magnitude, inTex.magnitude);
+		}
+	}
+
+	// Set our texture variable in the shader to use unit zero
+	glUniform1i(uniform.Texture1, 0);
+	glUniform1i(uniform.Texture2, 1);
+	glUniform1i(uniform.Texture3, 2);
+	glUniform1i(uniform.Texture4, 3);
+}
+
+void RenderManager::SetTextureUnitNumber()
+{
+	int numTextureUnits;
+	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &numTextureUnits);	
+
+	MaxTextures = numTextureUnits;
 }

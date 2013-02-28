@@ -4,6 +4,8 @@
 #include "lights.h"
 #include "heightmap.h"
 #include "primitives.h"
+#include "material.h"
+#include "texture.h"
 
 
 Application::Application(void):
@@ -40,28 +42,52 @@ void Application::Initialize(HINSTANCE hInstance)
 	player.SetCameraTargetWindow(&window);
 	playerLight.SetParent(player);
 
+	renderer.SetTextureUnitNumber();
+
 	renderer.SetActiveCamera(*player.GetCamera());
 	renderer.AddLight(sunSource);
 	renderer.AddLight(playerLight);
 
+	Texture skyTex;
 
-	Mesh skyBox("inwardCube.obj", "skyboxseamless.tga");
-	renderer.AddSkyBox(skyBox);
+	skyTex.Create(Texture::DIFFUSE, "skyboxseamless.tga");
+
+	Material skyMaterial;
+	skyMaterial.AddTexture(skyTex);
+	skyMaterial.AddShader("skybox.vertexshader");
+	skyMaterial.AddShader("skybox.fragmentshader");
+
+	Mesh newSkyBox("inwardCube.obj", skyMaterial);
+	renderer.AddSkyBox(newSkyBox);
+
+	Texture crateTexture;
+	crateTexture.Create(Texture::DIFFUSE, "crateDiffuse.tga");
+	Material crateMaterial;
+	crateMaterial.AddTexture(crateTexture);
+	crateMaterial.AddShader("default.fragmentshader");
+	crateMaterial.AddShader("default.vertexshader");
+	Mesh crateMesh("crate.obj", crateMaterial);
+
+//	Mesh skyBox("inwardCube.obj", "skyboxseamless.tga");
+//	renderer.AddSkyBox(skyBox);
 	int num = 5;
-	for (int i = 0; i < num; i++) {
-		for (int j = 0; j < num; j++) {
-			for (int k = 0; k < num; k++) {
-				StaticObject* curr = new StaticObject();
-				curr->CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
-				curr->SetLocation(i*3.0f, 20.0f+j*3.0f, k*3.0f);
-				renderer.AddToRenderer(*curr->GetMesh());
-			}
-		}
-	}
+	//for (int i = 0; i < num; i++) {
+	//	for (int j = 0; j < num; j++) {
+	//		for (int k = 0; k < num; k++) {
+	//			StaticObject* curr = new StaticObject();
+	//			curr->AttachMesh(crateMesh);
+	////			curr->CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
+	//			curr->SetLocation(i*3.0f, 20.0f+j*3.0f, k*3.0f);
+	//			renderer.AddToRenderer(*curr->GetMesh());
+	//		}
+	//	}
+	//}
 
-	testObject.CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
+//	testObject.CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
+	testObject.AttachMesh(crateMesh);
 	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
+
 	ground.AttachShader("terrain.vertexshader");
 	ground.AttachShader("terrain.fragmentshader");
 	ground.AttachShader("terrain.tesscontrol");
@@ -83,11 +109,38 @@ void Application::Initialize(HINSTANCE hInstance)
 	myTimer = clock();
 
 	Heightmap heights;
-	renderer.PassInHeights(heights.GenerateHeightmap(0, 0, myNoise, gridSize), gridSize, myNoise.amplitude);
+//	renderer.PassInHeights(heights.GenerateHeightmap(0, 0, myNoise, gridSize), gridSize, myNoise.amplitude);
 
 	myTimer = clock() - myTimer;
 
 	std::cout << std::endl << "Time to Generate Heightmap: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+
+	Texture grass;
+	grass.Create(Texture::DIFFUSE, "grass.tga");
+	Texture rock;
+	rock.Create(Texture::DIFFUSE, "rockTexture.tga");
+	Texture heightTex;
+	heightTex.Create(Texture::DISPLACEMENT, heights.GenerateHeightmap(0, 0, myNoise, gridSize));
+	heightTex.SetMagnitude(myNoise.amplitude);
+
+	Material terrainMat;
+	terrainMat.AddTexture(grass);
+	terrainMat.AddTexture(rock);
+	terrainMat.AddTexture(heightTex);
+	terrainMat.AddShader("terrain.vertexshader");
+	terrainMat.AddShader("terrain.fragmentshader");
+	terrainMat.AddShader("terrain.tesscontrol");
+	terrainMat.AddShader("terrain.tessevaluation");
+
+	PrimitiveFactory maker;
+
+	Mesh terrainMesh(maker.Plane(1500, 1500, 100, 100));
+	terrainMesh.SetMaterial(terrainMat);
+
+	StaticObject* curr = new StaticObject();
+	curr->AttachMesh(terrainMesh);
+	curr->SetLocation(0,0,0);
+	renderer.AddToRenderer(*curr->GetMesh());
 
 
 	lastTime = time(NULL);

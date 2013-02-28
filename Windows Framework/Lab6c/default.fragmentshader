@@ -11,6 +11,13 @@ out vec3 color;
 
 uniform sampler2D texture1;
 
+struct Texture {
+	sampler2D texSampler;
+	int type;
+};
+
+uniform Texture texture[32];
+
 struct Light {
 	vec4 position;
 	vec4 colour;
@@ -18,6 +25,7 @@ struct Light {
 };
 uniform Light lights[8];
 uniform int numLights;
+uniform int numTextures;
 
 void main()
 {

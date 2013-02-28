@@ -6,6 +6,7 @@
 #include "myvector2.h"
 #include <string>
 #include <map>
+#include "material.h"
 
 class GameObject;
 
@@ -15,7 +16,9 @@ class Mesh
 public:
 	Mesh(const char* meshPath, const char* texturePath, GameObject* parent);
 	Mesh(const char* meshPath, const char* texturePath);
+	Mesh(const char* meshPath, Material m);
 	Mesh(std::vector<Vector3> verts, std::vector<Vector3> normals, std::vector<Vector2> uvs);
+	Mesh(std::vector<Vector3> verts, std::vector<Vector3> normals, std::vector<Vector2> uvs, std::vector<unsigned int> index);
 	Mesh();
 	Mesh(const Mesh& mesh);
 	~Mesh(void);
@@ -26,6 +29,8 @@ public:
 	void GetNewUniqueID();
 	void SetParent(GameObject* p) {parent = p;}
 	void SetTexture(const char* texPath) {texturePath = texPath;}
+	void SetMaterial(Material m){material = m;}
+	Material GetMaterial(){return material;}
 	GameObject* GetParentPointer(){return parent;}
 	bool IsTransparent(){return transparency;}
 	void SetTransparent(bool t) {transparency = t;}
@@ -57,6 +62,8 @@ private:
 	std::vector<Vector3> normals;
 	std::vector<Vector2> uvs;
 	std::vector<unsigned int> index;
+
+	Material material;
 
 	int numVerts;
 	const int uniqueID;

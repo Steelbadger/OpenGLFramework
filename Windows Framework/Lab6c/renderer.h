@@ -11,6 +11,8 @@
 #include "staticobject.h"
 #include "mywindow.h"
 #include "lights.h"
+#include "material.h"
+#include "texture.h"
 
 struct UniformLocations;
 
@@ -23,6 +25,7 @@ public:
 	void MaintainRenderList();
 
 	void SetActiveCamera(CameraModule& cam){activeCamera = &cam;}
+	void SetTextureUnitNumber();
 
 	bool AddToRenderer(Mesh &m);
 	void RemoveFromRenderer(Mesh m);
@@ -58,7 +61,7 @@ private:
 	bool lightsPrepared;
 
 	void PrepareLights();
-	void SetUniforms();
+	void SetUniforms(Material m);
 	
 	void DrawSkyBox();
 	void DrawTerrain();
@@ -78,6 +81,7 @@ private:
 
 	GLuint skyBox;
 	GLuint skyBoxTexture;
+	Material skyboxMaterial;
 
 	GLuint terrain;
 	GLuint terrainTexture;
@@ -110,6 +114,7 @@ private:
 	GLuint skyboxShaderProgram;
 	GLuint terrainShaderProgram;
 	float mapWidth;
+	int MaxTextures;
 };
 
 
