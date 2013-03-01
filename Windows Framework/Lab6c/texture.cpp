@@ -58,7 +58,7 @@ void Texture::Create(Type t, GLuint texH)
 	tex = texH;
 }
 
-TexStruct Texture::GetTexture()
+TexStruct Texture::GetTexStruct()
 {
 	TexStruct out;
 	out.tex = tex;
@@ -68,3 +68,7 @@ TexStruct Texture::GetTexture()
 	return out;
 }
 
+GLuint Texture::GetTexture()
+{
+	return tex;
+}

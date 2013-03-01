@@ -50,7 +50,7 @@ public:
 
 	std::string GetVertexShader(){return vertexShader;}
 	std::string GetFragmentShader(){return fragmentShader;}
-	std::vector<std::string> GetShaders(){return shaders;}
+	std::vector<std::string> GetShaders(){return material.GetShaders();}
 
 	void DeleteVertexData();
 
@@ -67,6 +67,7 @@ private:
 
 	int numVerts;
 	const int uniqueID;
+	bool tesselated;
 
 	GameObject* parent;
 	std::string meshPath;

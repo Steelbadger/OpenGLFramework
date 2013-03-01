@@ -14,11 +14,14 @@ public:
 	
 	std::vector<Texture> GetTextures();
 	std::vector<std::string> GetShaders();
+	std::vector<TexStruct> GetTexStructs();
 
 	static void AddToMaterialLibrary(Material m);
 	static Material FetchMaterial(std::string name);
 private:
 	std::vector<Texture> textures;
+	std::vector<TexStruct> texStructs;
+
 	std::vector<std::string> shaders;
 	std::string name;
 

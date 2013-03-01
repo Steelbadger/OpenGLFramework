@@ -17,7 +17,8 @@ public:
 	void SetWrapping(GLenum wrapType){wrapping = wrapType;}
 	~Texture(void);
 
-	TexStruct GetTexture();
+	TexStruct GetTexStruct();
+	GLuint GetTexture();
 
 private:
 	Type texType;

@@ -61,7 +61,7 @@ private:
 	bool lightsPrepared;
 
 	void PrepareLights();
-	void SetUniforms(Material m);
+	void SetUniforms();
 	
 	void DrawSkyBox();
 	void DrawTerrain();
@@ -103,7 +103,12 @@ private:
 	std::map<int, GLuint> VAOMap;
 	std::map<int, GLuint> UniqueIDToShaderMap;
 	std::map<std::string, GLuint> TextureMap;
+
+	std::map<int, std::vector<TexStruct> > MultiTexMap;
+	std::map<int, GLenum> PrimitiveTypeMap;
+
 	std::map<std::string, GLuint> ShaderMap;
+	std::map<int, Material> MaterialMap;
 	std::map<std::string, GLuint> MeshFileMap;
 	std::map<std::string, GLuint> ShaderProgramMap;
 	std::map<GLuint, UniformLocations> ProgramUniformLocationMap;

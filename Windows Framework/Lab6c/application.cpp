@@ -115,32 +115,32 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	std::cout << std::endl << "Time to Generate Heightmap: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
-	//Texture grass;
-	//grass.Create(Texture::DIFFUSE, "grass.tga");
-	//Texture rock;
-	//rock.Create(Texture::DIFFUSE, "rockTexture.tga");
-	//Texture heightTex;
-	//heightTex.Create(Texture::DISPLACEMENT, heights.GenerateHeightmap(0, 0, myNoise, gridSize));
-	//heightTex.SetMagnitude(myNoise.amplitude);
+	Texture grass;
+	grass.Create(Texture::DIFFUSE, "grass.tga");
+	Texture rock;
+	rock.Create(Texture::DIFFUSE, "rockTexture.tga");
+	Texture heightTex;
+	heightTex.Create(Texture::DISPLACEMENT, heights.GenerateHeightmap(0, 0, myNoise, gridSize));
+	heightTex.SetMagnitude(myNoise.amplitude);
 
-	//Material terrainMat;
-	//terrainMat.AddTexture(grass);
-	//terrainMat.AddTexture(rock);
-	//terrainMat.AddTexture(heightTex);
-	//terrainMat.AddShader("terrain.vertexshader");
-	//terrainMat.AddShader("terrain.fragmentshader");
-	//terrainMat.AddShader("terrain.tesscontrol");
-	//terrainMat.AddShader("terrain.tessevaluation");
+	Material terrainMat;
+	terrainMat.AddTexture(grass);
+	terrainMat.AddTexture(rock);
+	terrainMat.AddTexture(heightTex);
+	terrainMat.AddShader("terrain.vertexshader");
+	terrainMat.AddShader("terrain.fragmentshader");
+	terrainMat.AddShader("terrain.tesscontrol");
+	terrainMat.AddShader("terrain.tessevaluation");
 
-	//PrimitiveFactory maker;
+	PrimitiveFactory maker;
 
-	//Mesh terrainMesh(maker.Plane(1500, 1500, 100, 100));
-	//terrainMesh.SetMaterial(terrainMat);
+	Mesh terrainMesh(maker.Plane(1500, 1500, 100, 100));
+	terrainMesh.SetMaterial(terrainMat);
 
-	//StaticObject* curr = new StaticObject();
-	//curr->AttachMesh(terrainMesh);
-	//curr->SetLocation(0,0,0);
-	//renderer.AddToRenderer(*curr->GetMesh());
+	StaticObject* curr = new StaticObject();
+	curr->AttachMesh(terrainMesh);
+	curr->SetLocation(0,0,0);
+	renderer.AddToRenderer(*curr->GetMesh());
 
 
 	lastTime = time(NULL);
