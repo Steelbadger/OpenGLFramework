@@ -73,7 +73,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	myTimer = clock() - myTimer;
 	int numTextureUnits;
 
-	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &numTextureUnits);
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &numTextureUnits);
 
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "OpenGL 4.2 Initialized: " << 	GLEW_VERSION_4_2 << std::endl;

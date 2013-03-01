@@ -16,6 +16,7 @@ Material::~Material(void)
 void Material::AddTexture(Texture t)
 {
 	textures.push_back(t);
+	texRefs.push_back(t.Reference());
 }
 
 void Material::AddShader(std::string shader)

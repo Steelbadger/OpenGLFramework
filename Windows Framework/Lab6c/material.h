@@ -1,4 +1,5 @@
 #pragma once
+#include "glew.h"
 #include "texture.h"
 #include <vector>
 #include <map>
@@ -19,6 +20,8 @@ public:
 	static Material FetchMaterial(std::string name);
 private:
 	std::vector<Texture> textures;
+	std::vector<GLuint> texRefs;
+
 	std::vector<std::string> shaders;
 	std::string name;
 
