@@ -10,14 +10,6 @@ in vec3 vertNorm;
 out vec3 color;
 
 uniform sampler2D texture1;
-
-struct Texture {
-	sampler2D texSampler;
-	int type;
-};
-
-uniform Texture texture[32];
-
 struct Light {
 	vec4 position;
 	vec4 colour;

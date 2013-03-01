@@ -71,39 +71,39 @@ void Application::Initialize(HINSTANCE hInstance)
 //	Mesh skyBox("inwardCube.obj", "skyboxseamless.tga");
 //	renderer.AddSkyBox(skyBox);
 	int num = 5;
-	//for (int i = 0; i < num; i++) {
-	//	for (int j = 0; j < num; j++) {
-	//		for (int k = 0; k < num; k++) {
-	//			StaticObject* curr = new StaticObject();
-	//			curr->AttachMesh(crateMesh);
-	////			curr->CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
-	//			curr->SetLocation(i*3.0f, 20.0f+j*3.0f, k*3.0f);
-	//			renderer.AddToRenderer(*curr->GetMesh());
-	//		}
-	//	}
-	//}
+	for (int i = 0; i < num; i++) {
+		for (int j = 0; j < num; j++) {
+			for (int k = 0; k < num; k++) {
+				StaticObject* curr = new StaticObject();
+				curr->AttachMesh(crateMesh);
+	//			curr->CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
+				curr->SetLocation(i*3.0f, 20.0f+j*3.0f, k*3.0f);
+				renderer.AddToRenderer(*curr->GetMesh());
+			}
+		}
+	}
 
 //	testObject.CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
 	testObject.AttachMesh(crateMesh);
 	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
 
-	ground.AttachShader("terrain.vertexshader");
-	ground.AttachShader("terrain.fragmentshader");
-	ground.AttachShader("terrain.tesscontrol");
-	ground.AttachShader("terrain.tessevaluation");
+	//ground.AttachShader("terrain.vertexshader");
+	//ground.AttachShader("terrain.fragmentshader");
+	//ground.AttachShader("terrain.tesscontrol");
+	//ground.AttachShader("terrain.tessevaluation");
 	double myTimer = clock();
 
-	renderer.AddTerrainToRenderer(ground);
+	//renderer.AddTerrainToRenderer(ground);
 
 	myTimer = clock() - myTimer;
 	int numTextureUnits;
 
-	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &numTextureUnits);
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &numTextureUnits);
 
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "OpenGL 4.2 Initialized: " << 	GLEW_VERSION_4_2 << std::endl;
-	std::cout << "Number of Texture Units: " << numTextureUnits << std::endl;
+	std::cout << "Number of Fragment Texture Units: " << numTextureUnits << std::endl;
 	std::cout << std::endl << "Time to Add Terrain To Renderer: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
 	myTimer = clock();
@@ -115,32 +115,32 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	std::cout << std::endl << "Time to Generate Heightmap: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
-	Texture grass;
-	grass.Create(Texture::DIFFUSE, "grass.tga");
-	Texture rock;
-	rock.Create(Texture::DIFFUSE, "rockTexture.tga");
-	Texture heightTex;
-	heightTex.Create(Texture::DISPLACEMENT, heights.GenerateHeightmap(0, 0, myNoise, gridSize));
-	heightTex.SetMagnitude(myNoise.amplitude);
+	//Texture grass;
+	//grass.Create(Texture::DIFFUSE, "grass.tga");
+	//Texture rock;
+	//rock.Create(Texture::DIFFUSE, "rockTexture.tga");
+	//Texture heightTex;
+	//heightTex.Create(Texture::DISPLACEMENT, heights.GenerateHeightmap(0, 0, myNoise, gridSize));
+	//heightTex.SetMagnitude(myNoise.amplitude);
 
-	Material terrainMat;
-	terrainMat.AddTexture(grass);
-	terrainMat.AddTexture(rock);
-	terrainMat.AddTexture(heightTex);
-	terrainMat.AddShader("terrain.vertexshader");
-	terrainMat.AddShader("terrain.fragmentshader");
-	terrainMat.AddShader("terrain.tesscontrol");
-	terrainMat.AddShader("terrain.tessevaluation");
+	//Material terrainMat;
+	//terrainMat.AddTexture(grass);
+	//terrainMat.AddTexture(rock);
+	//terrainMat.AddTexture(heightTex);
+	//terrainMat.AddShader("terrain.vertexshader");
+	//terrainMat.AddShader("terrain.fragmentshader");
+	//terrainMat.AddShader("terrain.tesscontrol");
+	//terrainMat.AddShader("terrain.tessevaluation");
 
-	PrimitiveFactory maker;
+	//PrimitiveFactory maker;
 
-	Mesh terrainMesh(maker.Plane(1500, 1500, 100, 100));
-	terrainMesh.SetMaterial(terrainMat);
+	//Mesh terrainMesh(maker.Plane(1500, 1500, 100, 100));
+	//terrainMesh.SetMaterial(terrainMat);
 
-	StaticObject* curr = new StaticObject();
-	curr->AttachMesh(terrainMesh);
-	curr->SetLocation(0,0,0);
-	renderer.AddToRenderer(*curr->GetMesh());
+	//StaticObject* curr = new StaticObject();
+	//curr->AttachMesh(terrainMesh);
+	//curr->SetLocation(0,0,0);
+	//renderer.AddToRenderer(*curr->GetMesh());
 
 
 	lastTime = time(NULL);
@@ -155,7 +155,7 @@ void Application::Initialize(HINSTANCE hInstance)
 
 void Application::MainLoop()
 {
-	if (input.GetTimeSinceLastFrame() >= 10) {
+	if (input.GetTimeSinceLastFrame() >= 0) {
 		Debug();
 		window.PrepareForDrawing();
 		player.InputUpdate();

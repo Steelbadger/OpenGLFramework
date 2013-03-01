@@ -768,19 +768,15 @@ void RenderManager::SetUniforms(Material m)
 	int textures = min(m.GetTextures().size(), MaxTextures);
 	float bumpMagnitude = 0.0;
 
-
 	for (int i = 0; i < textures; i++) {
-		glActiveTexture(GL_TEXTURE0+i);
 		TexStruct inTex = m.GetTextures()[i].GetTexture();
+		glActiveTexture(GL_TEXTURE0+i);
 		//  Put our texture into unit zero
 		glBindTexture(GL_TEXTURE_2D, inTex.tex);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, inTex.wrapping);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, inTex.wrapping);
-
-		if (inTex.type == Texture::DISPLACEMENT) {
-			glUniform1i(uniform.Magnitude, inTex.magnitude);
-		}
 	}
+	glUniform1i(uniform.Magnitude, 70.0);
 
 	// Set our texture variable in the shader to use unit zero
 	glUniform1i(uniform.Texture1, 0);
