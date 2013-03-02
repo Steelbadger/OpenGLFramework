@@ -168,7 +168,7 @@ void Application::Debug()
 
 
 	if (input.ReportKeyPress('N')) {
-		std::cout << "Last Frame Took: " << input.GetTimeForLastFrame() << "ms" << std::endl;
+		std::cout << "Last Frame Took: " << input.GetTimeForLastFrame() << "s" << std::endl;
 	}
 
 	if (input.ReportKeyPress('L')) {

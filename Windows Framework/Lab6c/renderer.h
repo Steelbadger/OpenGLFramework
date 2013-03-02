@@ -112,7 +112,6 @@ private:
 	float mapWidth;
 };
 
-
 struct UniformLocations
 {
 	GLuint ProjectionMatrix;
@@ -131,4 +130,3 @@ struct UniformLocations
 	GLuint MapWidth;
 	GLuint Magnitude;
 };
-

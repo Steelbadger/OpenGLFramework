@@ -27,6 +27,7 @@ void Texture::SetTexture(Type t, std::string p)
 	GLuint tex;
 	CreateGLTexture(p.c_str(), tex);
 	texRef = tex;
+	wrapping = GL_REPEAT;
 }
 
 void Texture::SetTexture(Type t, unsigned short* base, unsigned int length)
@@ -42,7 +43,19 @@ void Texture::SetTexture(Type t, unsigned short* base, unsigned int length)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, length, length, 0, GL_RGBA, GL_UNSIGNED_SHORT, base);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	if (base != NULL)
+	if (base != NULL) {
 		free(base);
+	}
 
+	texRef = TexID;
+	wrapping = GL_MIRRORED_REPEAT;
+}
+
+void Texture::Apply(int targetUnit, GLuint targetLoc)
+{
+	glActiveTexture(targetUnit+GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texRef);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapping);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapping);
+	glUniform1i(targetLoc, targetUnit);
 }

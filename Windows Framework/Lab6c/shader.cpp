@@ -1,6 +1,7 @@
 #include "shader.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 std::map<std::string, GLuint> Shader::ShaderLibrary;
 
@@ -120,4 +121,56 @@ void ShaderProgram::Compile()
 	glGetProgramInfoLog(programRef, logLength, NULL, &ProgramErrorMessage[0]);
 	std::string output(ProgramErrorMessage.begin(), ProgramErrorMessage.end());
 	std::cout << output << std::endl;
+
+	FindUniformLocations();
+}
+
+void ShaderProgram::FindUniformLocations()
+{
+	UniformLocations newLocations;
+
+	newLocations.ProjectionMatrix = glGetUniformLocation(programRef, "projectionMatrix");
+	newLocations.ViewMatrix = glGetUniformLocation(programRef, "viewMatrix");
+	newLocations.ModelMatrix = glGetUniformLocation(programRef, "modelMatrix");
+	newLocations.ModelViewMatrix = glGetUniformLocation(programRef, "modelViewMatrix");
+	newLocations.NormalMatrix = glGetUniformLocation(programRef, "normalMatrix");
+
+	newLocations.NumLights = glGetUniformLocation(programRef, "numLights");
+	newLocations.MapWidth = glGetUniformLocation(programRef, "mapWidth");
+	newLocations.Magnitude = glGetUniformLocation(programRef, "magnitude");
+
+	std::string nameString;
+	std::stringstream stream;
+
+	for (int i = 0; i < LightSource::MAXLIGHTS; i++) {
+		//  Create the string to search for; eg. lights[0].colour by combining the counter and string concatenation
+		stream << "lights[" << i << "].colour";
+
+		//  Get the created string out of the stringstream
+		nameString = stream.str();
+
+		//  Clear the stringstream for next usage
+		stream.str(std::string());
+
+		newLocations.LightColours[i] = glGetUniformLocation(programRef, nameString.c_str());
+
+		stream << "lights[" << i << "].position";
+		nameString = stream.str();
+		stream.str(std::string());
+
+		newLocations.LightPositions[i] = glGetUniformLocation(programRef, nameString.c_str());
+
+		stream << "lights[" << i << "].type";
+		nameString = stream.str();
+		stream.str(std::string());
+
+		newLocations.LightTypes[i] = glGetUniformLocation(programRef, nameString.c_str());
+	}
+
+	newLocations.Texture1 = glGetUniformLocation(programRef, "texture1");
+	newLocations.Texture2 = glGetUniformLocation(programRef, "texture2");
+	newLocations.Texture3 = glGetUniformLocation(programRef, "texture3");
+	newLocations.Texture4 = glGetUniformLocation(programRef, "texture4");
+		
+	uniforms = newLocations;
 }

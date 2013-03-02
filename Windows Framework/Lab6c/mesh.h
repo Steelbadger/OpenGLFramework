@@ -6,6 +6,7 @@
 #include "myvector2.h"
 #include <string>
 #include <map>
+#include "material.h"
 
 class GameObject;
 
@@ -21,6 +22,8 @@ public:
 	~Mesh(void);
 
 	void AttachShader(std::string shader);
+	void AttachMaterial(Material m){material = m;}
+	Material GetMaterial(){return material;}
 
 	int GetUniqueID(){return uniqueID;}
 	void GetNewUniqueID();
@@ -68,6 +71,8 @@ private:
 	std::string vertexShader;
 	std::string fragmentShader;
 	std::vector<std::string> shaders;
+
+	Material material;
 
 	bool successfullBuild;
 	bool transparency;
