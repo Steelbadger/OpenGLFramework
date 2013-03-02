@@ -12,6 +12,7 @@ public:
 	void Create(NoiseObject n);
 
 	float GetStep(){return step;}
+	float GetSize(){return squareSize;}
 
 private:
 

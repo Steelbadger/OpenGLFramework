@@ -29,12 +29,9 @@ public:
 	void RemoveFromRenderer(Mesh m);
 	void AddSkyBox(Mesh &m);
 	void AddTerrainToRenderer(Terrain &t);
-	void BuildDefaultShaderProgram();
 	void AddLight(LightSource &l);
-	void PassInHeights(GLuint h, float width, float magnitude){heights = h; mapWidth = width; terrainMagnitude = magnitude;}
 
 	void RenderAll();
-	void SetShaders(std::vector<std::string> shaders);
 	static bool MeshComparator(int rhs, int lhs);
 
 private:
@@ -44,9 +41,6 @@ private:
 	GLuint SetupVAO(Mesh &m);
 
 	void InitializeOpenGL();
-	bool LoadShader(std::string fileName);
-	GLuint CreateShaderProgram(std::vector<std::string> shaders);
-
 
 	Matrix4x4 BuildModelMatrix(GameObject g);
 	Matrix4x4 BuildViewMatrix();
@@ -78,18 +72,11 @@ private:
 
 	GLuint skyBox;
 	int sky;
-	GLuint skyBoxTexture;
 
 	GLuint terrain;
 	int terr;
-	GLuint terrainTexture;
-	GLuint terrainRock;
-	GLuint heights;
-
-
-	int terrainVerts;
 	float terrainStep;
-	float terrainMagnitude;
+	float terrainSize;
 
 	GameObject base;
 
@@ -99,17 +86,5 @@ private:
 	Light lights[MAXLIGHTS];
 
 	std::map<int, GLuint> VAOMap;
-	std::map<int, GLuint> UniqueIDToShaderMap;
-	std::map<std::string, GLuint> TextureMap;
-	std::map<std::string, GLuint> ShaderMap;
 	std::map<std::string, GLuint> MeshFileMap;
-	std::map<std::string, GLuint> ShaderProgramMap;
-	std::map<GLuint, UniformLocations> ProgramUniformLocationMap;
-
-	GLuint defaultShaderProgram;
-	GLuint currentShaderProgram;
-
-	GLuint skyboxShaderProgram;
-	GLuint terrainShaderProgram;
-	float mapWidth;
 };

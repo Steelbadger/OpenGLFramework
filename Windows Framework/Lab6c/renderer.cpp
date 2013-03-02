@@ -75,6 +75,7 @@ void RenderManager::AddTerrainToRenderer(Terrain &t)
 	terrainStep = t.GetStep();
 	terrain = SetupVAO(t);
 	terr = t.GetUniqueID();
+	terrainSize = t.GetSize();
 }
 
 void RenderManager::RemoveFromRenderer(Mesh m)
@@ -417,7 +418,7 @@ void RenderManager::SetUniforms(UniformLocations uniform)
 	glUniformMatrix4fv(uniform.ViewMatrix, 1, GL_FALSE, viewMatrix);
 	glUniformMatrix4fv(uniform.ModelViewMatrix, 1, GL_FALSE, modelViewMatrix);
 	glUniformMatrix4fv(uniform.NormalMatrix, 1, GL_FALSE, normalMatrix);
-	glUniform1f(uniform.MapWidth, 1500);
+	glUniform1f(uniform.MapWidth, terrainSize);
 	glUniform1f(uniform.Magnitude, 70);
 
 	for (int i = 0; i < lightObjects.size(); i++) {
