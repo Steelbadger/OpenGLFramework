@@ -1,9 +1,13 @@
 #pragma once
 #include "glew.h"
-#include "texture.h"
+#include "shader.h"
+#include "uniformlocations.h"
+
 #include <vector>
 #include <map>
-#include "shader.h"
+
+class Shader;
+class Texture;
 
 class Material
 {
@@ -18,11 +22,11 @@ public:
 	std::vector<Texture> GetTextures();
 	std::vector<Shader> GetShaders();
 	GLuint GetShaderProgram(){return shaderProgramRef;}
-	UniformLocations GetUniforms(){return uniforms;}
+	UniformLocations GetUniforms();
 
 
 	void Apply();
-	void Compile(){shaderProgram.Compile(); uniforms = shaderProgram.GetUniforms();}
+	void Compile();
 
 	void AddToMaterialLibrary(std::string name);
 	static Material FetchMaterial(std::string name);

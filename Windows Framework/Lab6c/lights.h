@@ -1,5 +1,6 @@
 #pragma once
 #include "gameobject.h"
+
 class Matrix4x4;
 class Vector4;
 class Vector3;
@@ -15,7 +16,6 @@ class LightSource : public GameObject
 {
 public:
 	enum Type{POINT, DIRECTIONAL, SPOT};
-	const static int MAXLIGHTS = 8;
 
 	LightSource(Type);
 	~LightSource(void);

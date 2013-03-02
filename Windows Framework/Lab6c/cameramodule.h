@@ -5,10 +5,11 @@
 //  for moving the camera, any movement on the camera is handled 
 //  by the parent GameObject.
 
-#include "mywindow.h"
-#include <windows.h>
 #include "myvector4.h"
+#include "mywindow.h"
 #include "my4x4matrix.h"
+
+#include <windows.h>
 
 class GameObject;
 

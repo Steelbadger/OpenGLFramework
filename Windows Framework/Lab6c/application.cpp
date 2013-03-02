@@ -1,15 +1,18 @@
 #include "application.h"
+
+#include "heightmap.h"
+#include "lights.h"
+#include "primitives.h"
+
 #include <iostream>
 #include <time.h>
-#include "lights.h"
-#include "heightmap.h"
-#include "primitives.h"
 
 
 Application::Application(void):
 	gridSize(1500.0f),
 	myNoise(12, 500.0f, 0.41f, 80.0f, -1563.155f),
-	ground(gridSize, myNoise, 15.0f, 0.0f, 0.0f)
+	ground(gridSize, myNoise, 15.0f),
+	skybox("inwardCube.obj")
 {
 }
 
@@ -44,31 +47,50 @@ void Application::Initialize(HINSTANCE hInstance)
 	renderer.AddLight(sunSource);
 	renderer.AddLight(playerLight);
 
+	Material skyMat;
+	skyMat.AddTexture(Texture(Texture::DIFFUSE, "skyboxseamless.tga"));
+	skyMat.AddShader("skybox.fragmentshader");
+	skyMat.AddShader("skybox.vertexshader");
 
-	Mesh skyBox("inwardCube.obj", "skyboxseamless.tga");
-	renderer.AddSkyBox(skyBox);
+	skybox.AttachMaterial(skyMat);
+	renderer.AddSkyBox(skybox);
+
+
+	Material crateMat;
+	crateMat.AddTexture(Texture(Texture::DIFFUSE, "crateDiffuse.tga"));
+	crateMat.AddShader("default.fragmentshader");
+	crateMat.AddShader("default.vertexshader");
+
+	Mesh crateMesh("crate.obj");
+	crateMesh.AttachMaterial(crateMat);
+
 	int num = 5;
 	for (int i = 0; i < num; i++) {
 		for (int j = 0; j < num; j++) {
 			for (int k = 0; k < num; k++) {
 				StaticObject* curr = new StaticObject();
-				curr->CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
+				curr->AttachMesh(crateMesh);
 				curr->SetLocation(i*3.0f, 20.0f+j*3.0f, k*3.0f);
 				renderer.AddToRenderer(*curr->GetMesh());
 			}
 		}
 	}
 
-	testObject.CreateAndAttachMesh("crate.obj", "crateDiffuse.tga");
+
+
+	testObject.AttachMesh(crateMesh);
 	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
-	ground.AttachShader("terrain.vertexshader");
-	ground.AttachShader("terrain.fragmentshader");
-	ground.AttachShader("terrain.tesscontrol");
-	ground.AttachShader("terrain.tessevaluation");
-	double myTimer = clock();
+	
+	Material groundMat;
+	groundMat.AddTexture(Texture(Texture::DIFFUSE, "grass.tga"));
+	groundMat.AddTexture(Texture(Texture::DIFFUSE, "rockTexture.tga"));
+	groundMat.AddShader("terrain.fragmentshader");
+	groundMat.AddShader("terrain.vertexshader");
+	groundMat.AddShader("terrain.tesscontrol");
+	groundMat.AddShader("terrain.tessevaluation");
 
-	renderer.AddTerrainToRenderer(ground);
+	double myTimer = clock();
 
 	myTimer = clock() - myTimer;
 	int numTextureUnits;
@@ -83,7 +105,10 @@ void Application::Initialize(HINSTANCE hInstance)
 	myTimer = clock();
 
 	Heightmap heights;
-	renderer.PassInHeights(heights.GenerateHeightmap(0, 0, myNoise, gridSize), gridSize, myNoise.amplitude);
+	groundMat.AddTexture(Texture(Texture::DISPLACEMENT, heights.GenerateHeightField(0, 0, myNoise, gridSize), 2048));
+	ground.AttachMaterial(groundMat);
+
+	renderer.AddTerrainToRenderer(ground);
 
 	myTimer = clock() - myTimer;
 
@@ -96,8 +121,6 @@ void Application::Initialize(HINSTANCE hInstance)
 	framerateLogging = false;
 	culling = false;
 	glCullFace(GL_BACK);
-
-	renderer.BuildDefaultShaderProgram();
 }
 
 void Application::MainLoop()

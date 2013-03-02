@@ -66,11 +66,6 @@ bool SphereCollider::IsColliding(OABBCollider &other)
 	return false;
 }
 
-bool SphereCollider::IsColliding(Terrain &other)
-{
-	return false;
-}
-
 
 AABBCollider::AABBCollider(float w, float h, float d, Vector4 &BasePosition):
 	Collider(BasePosition),
@@ -133,10 +128,6 @@ bool AABBCollider::IsColliding(OABBCollider &other)
 	return false;
 }
 
-bool AABBCollider::IsColliding (Terrain &other)
-{
-	return false;
-}
 
 
 OABBCollider::OABBCollider(Vector4 &BasePosition):
@@ -159,11 +150,6 @@ bool OABBCollider::IsColliding(AABBCollider &other)
 }
 
 bool OABBCollider::IsColliding(OABBCollider &other)
-{
-	return false;
-}
-
-bool OABBCollider::IsColliding(Terrain &other)
 {
 	return false;
 }

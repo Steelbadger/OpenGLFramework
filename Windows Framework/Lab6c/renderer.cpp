@@ -1,5 +1,7 @@
 #include "renderer.h"
+
 #include "gameobject.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -32,9 +34,7 @@ bool RenderManager::AddToRenderer(Mesh &m)
 //  Used before they will not be reimported/compiled and we will instead use
 //  the old versions
 {
-	std::string fn = m.GetTexturePath();
 	std::string meshModel = m.GetMeshSourceFilePath();
-	GLuint tex;
 
 	//  Only bother compiling a new Display List if one doesn't already exist for this object
 	if (!VAOMap.count(m.GetUniqueID())) {
@@ -45,22 +45,7 @@ bool RenderManager::AddToRenderer(Mesh &m)
 			}
 			VAOMap[m.GetUniqueID()] = MeshFileMap[meshModel];
 		}
-		//  Only bother importing the texture if this texture has not already been imported
-		if (!TextureMap.count(fn)) {
-			//  Check file extension, included for possible extension to other formats
-			if(fn.substr(fn.find_last_of(".") + 1) == "tga") {
-				//  Load the texture and put it in our temporary holder 'tex'
-				CreateGLTexture(fn.c_str(), tex);
-				//  Keep a note that this file has been imported to save repetitions
-				TextureMap[fn] = tex;
-			}
-		} else {
-			//  If the texture has been imported before then use that old version to save importing again
-			tex = TextureMap[fn];
-		}
 	}
-
-	SetShaders(m.GetShaders());
 
 	//  Add our new (or repeated) item to the render list
 	if(m.IsTransparent()) {
@@ -74,54 +59,22 @@ bool RenderManager::AddToRenderer(Mesh &m)
 
 void RenderManager::AddLight(LightSource &l)
 {
-	if (lightObjects.size() < LightSource::MAXLIGHTS) {
+	if (lightObjects.size() < MAXLIGHTS) {
 		lightObjects.push_back(l);
-	}
-}
-
-void RenderManager::BuildDefaultShaderProgram()
-{
-	if (glIsProgram(defaultShaderProgram) == GL_FALSE) {
-		std::vector<std::string> shaders;
-		shaders.push_back("default.vertexshader");
-		shaders.push_back("default.fragmentshader");
-
-		defaultShaderProgram = CreateShaderProgram(shaders);
 	}
 }
 
 void RenderManager::AddSkyBox(Mesh &m)
 {
-	std::string fn = m.GetTexturePath();
-	GLuint tex;
-
-	CreateGLTexture(fn.c_str(), tex);
-	skyBoxTexture = tex;
 	skyBox = SetupVAO(m);
-	std::vector<std::string> skyboxShaders;
-	skyboxShaders.push_back("skybox.vertexshader");
-	skyboxShaders.push_back("skybox.fragmentshader");
-
-	skyboxShaderProgram = CreateShaderProgram(skyboxShaders);
+	sky = m.GetUniqueID();
 }
 
 void RenderManager::AddTerrainToRenderer(Terrain &t)
 {
-	std::string fn = t.GetTexturePath();
-	GLuint tex;
-
-	CreateGLTexture(fn.c_str(), tex);
-	terrainTexture = tex;
-
-	fn = t.GetRockTexturePath();
-	CreateGLTexture(fn.c_str(), tex);
-	terrainRock = tex;
 	terrainStep = t.GetStep();
-
 	terrain = SetupVAO(t);
-
-	terrainVerts = t.GetIndexLength();
-	terrainShaderProgram = CreateShaderProgram(t.GetShaders());
+	terr = t.GetUniqueID();
 }
 
 void RenderManager::RemoveFromRenderer(Mesh m)
@@ -221,61 +174,6 @@ GLuint RenderManager::SetupVAO(Mesh &m)
 	glGenBuffers(1, &elementBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m.GetIndexLength()*sizeof(unsigned int), m.GetIndexArrayBase(), GL_STATIC_DRAW);
-
-	//  Unbind our VAO so we don't mess with it
-	glBindVertexArray(0);
-
-	//  Pass the reference out to be used later
-	return vao;
-}
-
-GLuint RenderManager::SetupVAO(Terrain &t)
-{
-
-	//  Create a VertexArrayObject (like a display list for buffer objects) and set it to current
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	//  Make our vertex buffer, pass in the vertex data
-	GLuint vertBuffer;
-	glGenBuffers(1, &vertBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertBuffer);
-	glBufferData(GL_ARRAY_BUFFER, t.GetNumberOfVerts()*sizeof(Vector3), t.GetVertexArrayBase(), GL_STATIC_DRAW);
-	
-
-	//  Make our normal buffer, pass in the normals
-	GLuint normalBuffer;
-	glGenBuffers(1, &normalBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-	glBufferData(GL_ARRAY_BUFFER, t.GetNumberOfVerts()*sizeof(Vector3), t.GetNormalArrayBase(), GL_STATIC_DRAW);
-
-	//  Make our UV buffer, pass in the UV coords
-	GLuint uvBuffer;
-	glGenBuffers(1, &uvBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
-	glBufferData(GL_ARRAY_BUFFER, t.GetNumberOfVerts()*sizeof(Vector2), t.GetUVArrayBase(), GL_STATIC_DRAW);
-
-	//  bind the vertex buffer to location 0 (layout(location = 0)) in the shaders
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vertBuffer);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-	//  bind the normal buffer to location 1 (layout(location = 1)) in the shaders
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-	//  bind the vertex buffer to location 2 (layout(location = 2)) in the shaders
-	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-	//  Bind our index array to it's own buffer.
-	GLuint elementBuffer;
-	glGenBuffers(1, &elementBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, t.GetIndexLength()*sizeof(unsigned int), t.GetIndexArrayBase(), GL_STATIC_DRAW);
 
 	//  Unbind our VAO so we don't mess with it
 	glBindVertexArray(0);
@@ -421,220 +319,54 @@ void RenderManager::ConvertToOpenGLMatrix(Matrix4x4 m, GLfloat* target)
 	target[15] = m.elem[3][3];
 }
 
-bool RenderManager::LoadShader(std::string fileName)
-{
-	std::string fn = fileName;
-	if (fn.empty()) {
-		return false;
-	}
-
-	//  Check we haven't already done this file
-	if (!ShaderMap.count(fn)) {
-		GLuint shader;
-
-		//  Get the file extension so that we know what kind of shader it is
-		std::string type = fn.substr(fn.find_last_of(".") + 1);
-
-		//  depending on extension, create a shader ref of the corresponding type
-		if (type == "vertexshader") {
-			shader = glCreateShader(GL_VERTEX_SHADER);
-		} else if (type == "fragmentshader") {
-			shader = glCreateShader(GL_FRAGMENT_SHADER);
-		} else if (type == "tesscontrol") {
-			shader = glCreateShader(GL_TESS_CONTROL_SHADER);
-		} else if (type == "tessevaluation") {
-			shader = glCreateShader(GL_TESS_EVALUATION_SHADER);
-		} else {
-			//  If the file extension is not correct then return an error and stop
-			std::cout << "Unrecognised Shader File Extension: " << type << std::endl;
-			return false;
-		}
-
-		std::string code;
-		std::ifstream fileStream(fn, std::ios::in);
-		if (!fileStream.is_open()) {
-			std::cout << "Could not open shader file : " << fileName << std::endl;
-			return false;
-		}
-		//  Load in the code to a stream
-		std::string line = "";
-		while(getline(fileStream, line)) {
-			code += "\n" + line;
-		}
-		fileStream.close();
-
-		//  compile that code
-		std::cout << "Compiling " << fn << std::endl;
-		char const * codePointer = code.c_str();
-		glShaderSource(shader, 1, &codePointer, NULL);
-		glCompileShader(shader);
-
-
-		//  Check GLSL compiler output for errors
-		GLint result = GL_FALSE;
-		int logLength;
-
-		// Check Vertex Shader
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
-		std::vector<char> ShaderErrorMessage(logLength);
-		glGetShaderInfoLog(shader, logLength, NULL, &ShaderErrorMessage[0]);
-		std::string output(ShaderErrorMessage.begin(), ShaderErrorMessage.end());
-		std::cout << output << std::endl;
-
-
-		//  If we failed to compile the shader quit without adding the the shadermap
-		if (result == GL_FALSE) {
-			return false;
-		}
-
-		ShaderMap[fn] = shader;
-	}
-	return true;
-}
-
-GLuint RenderManager::CreateShaderProgram(std::vector<std::string> shaders)
-{
-	for (int i = 0; i < shaders.size(); i++) {
-		if (!LoadShader(shaders[i])) {
-			BuildDefaultShaderProgram();
-			return defaultShaderProgram;
-		}		
-	}
-
-	//  Create a new program reference and attach our shaders
-	GLuint program = glCreateProgram();
-
-	for (int i = 0; i < shaders.size(); i++) {
-		glAttachShader(program, ShaderMap[shaders[i]]);
-	}
-
-	glLinkProgram(program);
-
-
-	//  Check the infolog for errors
-	GLint result = GL_FALSE;
-	int logLength;
-
-	glGetProgramiv(program, GL_LINK_STATUS, &result);
-	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
-	std::vector<char> ProgramErrorMessage(logLength);
-	glGetProgramInfoLog(program, logLength, NULL, &ProgramErrorMessage[0]);
-	std::string output(ProgramErrorMessage.begin(), ProgramErrorMessage.end());
-	std::cout << output << std::endl;
-
-	//  If we failed to link then quit and return the default shader
-	if (result == GL_FALSE) {
-		BuildDefaultShaderProgram();
-		return defaultShaderProgram;
-	}
-	return program;
-}
-
-void RenderManager::SetShaders(std::vector<std::string> shaders)
-{
-	std::stringstream stream;
-	std::string name;
-
-	if (shaders.size() < 2) {
-		BuildDefaultShaderProgram();
-		currentShaderProgram = defaultShaderProgram;
-	} else {
-
-		for (int i = 0; i < shaders.size(); i++) {
-			name = shaders[i].substr(0, shaders[i].find_last_of("."));
-			stream << name;
-		}
-
-		name = stream.str();
-
-		if (!ShaderProgramMap.count(name)) {
-			ShaderProgramMap[name] = CreateShaderProgram(shaders);
-		}
-
-		currentShaderProgram = ShaderProgramMap[name];
-	}
-}
-
 void RenderManager::DrawSkyBox()
 {
-	currentShaderProgram = skyboxShaderProgram;
+	Mesh* m = Mesh::GetMeshPointer(sky);
 
-	//  Use the default Shader (no lighting)
-	glUseProgram(currentShaderProgram);
+	Material mat = m->GetMaterial();
+	UniformLocations uniforms = mat.GetUniforms();
+	mat.Apply();
+
+	//  Build the modelview matrix for the mesh
 	BuildSkyBoxViewMatrix(*activeCamera->GetParent());
-	SetUniforms();
 
-	//  find the location in gfx card memory of the texture we wish to pass in
-	UniformLocations locations = ProgramUniformLocationMap[currentShaderProgram];
-	
-	//  We're using Texture unit Zero
-	glActiveTexture(GL_TEXTURE0);
-	//  Put our texture into unit zero
-	glBindTexture(GL_TEXTURE_2D, skyBoxTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//  Find the uniform locations for this program and put relevant data into said locations
+	SetUniforms(uniforms);
 
-	// Set our texture variable in the shader to use unit zero
-	glUniform1i(locations.Texture1, 0);
-
-	//  draw the skybox
-	glDisable(GL_DEPTH_TEST);
+	//  Bind the VAO and draw the array
 	glBindVertexArray(skyBox);
-//	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDisable(GL_DEPTH_TEST);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+	glEnable(GL_DEPTH_TEST);
 
 	//  unbind our shaders and arrays
 	glBindVertexArray(0);
-	glEnable(GL_DEPTH_TEST);
 	glUseProgram(0);
 }
 
 void RenderManager::DrawTerrain()
 {
-	currentShaderProgram = terrainShaderProgram;
-	glUseProgram(currentShaderProgram);
-//	base.SetLocation(int((activeCamera->GetParent()->GetPosition().x-mapWidth/2)/terrainStep)*terrainStep,
-//				0.0, int((activeCamera->GetParent()->GetPosition().z-mapWidth/2)/terrainStep)*terrainStep);
+	Mesh* m = Mesh::GetMeshPointer(terr);
+
+	Material mat = m->GetMaterial();
+	UniformLocations uniforms = mat.GetUniforms();
+	mat.Apply();
+
+	//  Build the modelview matrix for the mesh
 	BuildModelViewMatrix(base);
 
-	SetUniforms();
+	//  Find the uniform locations for this program and put relevant data into said locations
+	SetUniforms(uniforms);
 
-	//  find the location in gfx card memory of the texture we wish to pass in
-	UniformLocations locations = ProgramUniformLocationMap[currentShaderProgram];
-
-	//  We're using Texture unit Zero
-	glActiveTexture(GL_TEXTURE0);
-	//  Put our texture into unit zero
-	glBindTexture(GL_TEXTURE_2D, terrainTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// Set our texture variable in the shader to use unit zero
-	glUniform1i(locations.Texture1, 0);
-
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, terrainRock);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glUniform1i(locations.Texture2, 1);
-
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, heights);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glUniform1i(locations.Texture3, 2);
-
-	//  draw the terrain
+	//  Bind the VAO and draw the array
 	glBindVertexArray(terrain);
 
 	glPatchParameteri(GL_PATCH_VERTICES, 3);
-//	glDrawElements(GL_TRIANGLES, terrainVerts, GL_UNSIGNED_INT, (void*)0);
-	glDrawElements(GL_PATCHES, terrainVerts, GL_UNSIGNED_INT, (void*)0);
+	glDrawElements(GL_PATCHES, m->GetIndexLength(), GL_UNSIGNED_INT, (void*)0);
 
 	//  unbind our shaders and arrays
 	glBindVertexArray(0);
 	glUseProgram(0);
-
 }
 
 bool RenderManager::DrawMesh(int meshID)
@@ -642,33 +374,20 @@ bool RenderManager::DrawMesh(int meshID)
 	Mesh* m = Mesh::GetMeshPointer(meshID);
 
 	if (m != NULL) {
-		//  Use the shaders specified by the mesh in question
-		SetShaders(m->GetShaders());
+		Material mat = m->GetMaterial();
+		UniformLocations uniforms = mat.GetUniforms();
+		mat.Apply();
 
-		//  Tell OpenGL to use the program we just set to currentShaderProgram
-		glUseProgram(currentShaderProgram);
 		//  Build the modelview matrix for the mesh
 		BuildModelViewMatrix(*m->GetParentPointer());
 
 		//  Find the uniform locations for this program and put relevant data into said locations
-		SetUniforms();
-
-		//  Check our location map for the Uniform address tracker (UniformLocation object)
-		UniformLocations locations = ProgramUniformLocationMap[currentShaderProgram];
-
-		//  We're using Texture unit Zero
-		glActiveTexture(GL_TEXTURE0);
-		//  Put our texture into unit zero
-		glBindTexture(GL_TEXTURE_2D, TextureMap[m->GetTexturePath()]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		// Set our texture variable in the shader to use unit zero
-		glUniform1i(locations.Texture1, 0);
+		SetUniforms(uniforms);
 
 		//  Bind the VAO and draw the array
 		glBindVertexArray(VAOMap[meshID]);
-		glDrawArrays(GL_TRIANGLES, 0, m->GetNumberOfVerts());
-		//glDrawElements(GL_TRIANGLES, m->GetNumberOfVerts(), GL_UNSIGNED_INT, (void*)0);
+
+		glDrawElements(GL_TRIANGLES, m->GetNumberOfVerts(), GL_UNSIGNED_INT, (void*)0);
 
 		//  unbind our shaders and arrays
 		glBindVertexArray(0);
@@ -691,72 +410,15 @@ void RenderManager::PrepareLights()
 }
 
 
-void RenderManager::SetUniforms()
+void RenderManager::SetUniforms(UniformLocations uniform)
 {
-	if(ProgramUniformLocationMap.count(currentShaderProgram) == 0) {
-
-		UniformLocations newLocations;
-
-		newLocations.ProjectionMatrix = glGetUniformLocation(currentShaderProgram, "projectionMatrix");
-		newLocations.ViewMatrix = glGetUniformLocation(currentShaderProgram, "viewMatrix");
-		newLocations.ModelMatrix = glGetUniformLocation(currentShaderProgram, "modelMatrix");
-		newLocations.ModelViewMatrix = glGetUniformLocation(currentShaderProgram, "modelViewMatrix");
-		newLocations.NormalMatrix = glGetUniformLocation(currentShaderProgram, "normalMatrix");
-
-		newLocations.NumLights = glGetUniformLocation(currentShaderProgram, "numLights");
-		newLocations.MapWidth = glGetUniformLocation(currentShaderProgram, "mapWidth");
-		newLocations.Magnitude = glGetUniformLocation(currentShaderProgram, "magnitude");
-
-		std::vector<LightSource>::iterator it;
-		int i = 0;
-		std::string nameString;
-		std::stringstream stream;
-
-		for (it = lightObjects.begin(); it != lightObjects.end(); it++) {
-			lights[i] = it->GetLightAsStruct(BuildViewMatrix());
-
-			//  Create the string to search for; eg. lights[0].colour by combining the counter and string concatenation
-			stream << "lights[" << i << "].colour";
-
-			//  Get the created string out of the stringstream
-			nameString = stream.str();
-
-			//  Clear the stringstream for next usage
-			stream.str(std::string());
-
-			newLocations.LightColours[i] = glGetUniformLocation(currentShaderProgram, nameString.c_str());
-
-			stream << "lights[" << i << "].position";
-			nameString = stream.str();
-			stream.str(std::string());
-
-			newLocations.LightPositions[i] = glGetUniformLocation(currentShaderProgram, nameString.c_str());
-
-			stream << "lights[" << i << "].type";
-			nameString = stream.str();
-			stream.str(std::string());
-
-			newLocations.LightTypes[i] = glGetUniformLocation(currentShaderProgram, nameString.c_str());
-			i++;
-		}
-
-		newLocations.Texture1 = glGetUniformLocation(currentShaderProgram, "texture1");
-		newLocations.Texture2 = glGetUniformLocation(currentShaderProgram, "texture2");
-		newLocations.Texture3 = glGetUniformLocation(currentShaderProgram, "texture3");
-		newLocations.Texture4 = glGetUniformLocation(currentShaderProgram, "texture4");
-
-		ProgramUniformLocationMap[currentShaderProgram] = newLocations;
-	}
-
-	UniformLocations uniform = ProgramUniformLocationMap[currentShaderProgram];
-
 	glUniformMatrix4fv(uniform.ProjectionMatrix, 1, GL_FALSE, projectionMatrix);
 	glUniformMatrix4fv(uniform.ModelMatrix, 1, GL_FALSE, modelMatrix);
 	glUniformMatrix4fv(uniform.ViewMatrix, 1, GL_FALSE, viewMatrix);
 	glUniformMatrix4fv(uniform.ModelViewMatrix, 1, GL_FALSE, modelViewMatrix);
 	glUniformMatrix4fv(uniform.NormalMatrix, 1, GL_FALSE, normalMatrix);
-	glUniform1f(uniform.MapWidth, mapWidth);
-	glUniform1f(uniform.Magnitude, terrainMagnitude);
+	glUniform1f(uniform.MapWidth, 1500);
+	glUniform1f(uniform.Magnitude, 70);
 
 	for (int i = 0; i < lightObjects.size(); i++) {
 		glUniform4fv(uniform.LightColours[i], 1, lights[i].colour);

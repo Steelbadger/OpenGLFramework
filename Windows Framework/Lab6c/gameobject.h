@@ -1,14 +1,11 @@
 #pragma once
-#include "myvector4.h"
-#include "collider.h"
+
 #include "cameramodule.h"
-#include "rigidbodymodule.h"
-#include "Terrain.h"
+#include "collider.h"
 #include "controller.h"
 #include "mesh.h"
-#include "quaternion.h"
+#include "rigidbodymodule.h"
 
-class LightSource;
 
 class GameObject
 {

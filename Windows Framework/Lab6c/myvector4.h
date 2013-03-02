@@ -1,7 +1,8 @@
 #pragma once
+#include "myvector3.h"
+
 #include <math.h>
 #include <stdio.h>
-#include "myvector3.h"
 
 class Quaternion;
 

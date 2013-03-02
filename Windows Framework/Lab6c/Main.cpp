@@ -1,7 +1,8 @@
+#include "application.h"
+
 #include <windows.h>
 #include <stdio.h>
 #include <mmsystem.h>
-#include "application.h"
 
 int main (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     PSTR szCmdLine, int nCmdShow)			

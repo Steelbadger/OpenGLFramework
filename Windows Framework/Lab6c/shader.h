@@ -1,12 +1,11 @@
 #pragma once
 #include "glew.h"
+#include "texture.h"
+#include "uniformlocations.h"
+
 #include <string>
 #include <map>
 #include <vector>
-#include "lights.h"
-#include "texture.h"
-
-struct UniformLocations;
 
 class Shader
 {
@@ -37,25 +36,5 @@ private:
 	UniformLocations uniforms;
 
 	void FindUniformLocations();
-};
-
-struct UniformLocations
-{
-	GLuint ProjectionMatrix;
-	GLuint ViewMatrix;
-	GLuint ModelMatrix;
-	GLuint ModelViewMatrix;
-	GLuint NormalMatrix;
-	GLuint LightPositions[LightSource::MAXLIGHTS];
-	GLuint LightColours[LightSource::MAXLIGHTS];
-	GLuint NumLights;
-	GLuint LightTypes[LightSource::MAXLIGHTS];
-	GLuint Texture1;
-	GLuint Texture2;
-	GLuint Texture3;
-	GLuint Texture4;
-	GLuint Textures[Texture::MAX_TEXTURES];
-	GLuint MapWidth;
-	GLuint Magnitude;
 };
 

@@ -1,8 +1,10 @@
 #include "mesh.h"
+
+#include "gameobject.h"
+#include "tex.h"
+
 #include <string>
 #include <iostream>
-#include "tex.h"
-#include "gameobject.h"
 
 int Mesh::IDCOUNTER = 0;
 std::map<int, Mesh*> Mesh::IdToMeshMap;
@@ -25,7 +27,6 @@ Mesh::Mesh():
 Mesh::Mesh(const Mesh& m):
 	uniqueID(IDCOUNTER++),
 	meshPath(m.meshPath),
-	texturePath(m.texturePath),
 	parent(m.parent),
 	transparency(m.transparency),
 	verts(m.verts),
@@ -33,27 +34,26 @@ Mesh::Mesh(const Mesh& m):
 	uvs(m.uvs),
 	index(m.index),
 	numVerts(m.numVerts),
-	successfullBuild(m.successfullBuild)
+	successfullBuild(m.successfullBuild),
+	material(m.material)
 {
 	IdToMeshMap[uniqueID] = this;
 }
 
-Mesh::Mesh(const char* mPath, const char* tPath, GameObject* p):
+Mesh::Mesh(const char* mPath, GameObject* p):
 	uniqueID(IDCOUNTER++)
 {
 	meshPath = mPath;
-	texturePath = tPath;
 	parent = p;
 	IdToMeshMap[uniqueID] = this;
 	transparency = false;
 	LoadMesh(meshPath.c_str());
 }
 
-Mesh::Mesh(const char* mPath, const char* tPath):
+Mesh::Mesh(const char* mPath):
 	uniqueID(IDCOUNTER++)
 {
 	meshPath = mPath;
-	texturePath = tPath;
 	parent = NULL;
 	IdToMeshMap[uniqueID] = this;
 	transparency = false;
@@ -69,6 +69,10 @@ Mesh::Mesh(std::vector<Vector3> v, std::vector<Vector3> n, std::vector<Vector2> 
 	verts = v;
 	normals = n;
 	uvs = u;
+	for (int i = 0; i < verts.size(); i++) {
+		index.push_back(i);
+	}
+	numVerts = index.size();
 }
 
 
@@ -171,20 +175,6 @@ bool Mesh::LoadObj(const char* path)
 	numVerts = vertIndices.size();
 
 	return true;
-}
-
-void Mesh::AttachShader(std::string shader)
-{
-	std::string type = shader.substr(shader.find_last_of(".") + 1);
-
-	if (type == "vertexshader" || type == "fragmentshader" || type == "tesscontrol" || type == "tessevaluation") {
-		shaders.push_back(shader);
-	} else {
-		//  If the file extension is not correct then return an error and stop
-		std::cout << "Cannot Attach Shader, Unrecognised Shader File Extension: " << type << std::endl;
-		return;
-	}
-
 }
 
 void Mesh::DeleteVertexData()

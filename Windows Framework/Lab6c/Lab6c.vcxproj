@@ -42,6 +42,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -105,6 +106,7 @@
     <ClInclude Include="cameramodule.h" />
     <ClInclude Include="collider.h" />
     <ClInclude Include="controller.h" />
+    <ClInclude Include="defines.h" />
     <ClInclude Include="gameobject.h" />
     <ClInclude Include="glew.h" />
     <ClInclude Include="heightmap.h" />
@@ -130,6 +132,7 @@
     <ClInclude Include="singleton.h" />
     <ClInclude Include="tex.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="uniformlocations.h" />
     <ClInclude Include="water.h" />
     <ClInclude Include="wglew.h" />
   </ItemGroup>

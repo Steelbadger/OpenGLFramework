@@ -1,5 +1,9 @@
 #include "material.h"
 
+#include "shader.h"
+#include "texture.h"
+
+
 
 std::map<std::string, Material> Material::MaterialLibrary;
 
@@ -69,4 +73,16 @@ void Material::Apply()
 		textures[i].Apply(i, uniforms.Textures[i]);
 	}
 
+}
+
+UniformLocations Material::GetUniforms()
+{
+	return uniforms;
+}
+
+void Material::Compile()
+{
+	shaderProgram.Compile();
+	uniforms = shaderProgram.GetUniforms();
+	shaderProgramRef = shaderProgram.Reference();
 }

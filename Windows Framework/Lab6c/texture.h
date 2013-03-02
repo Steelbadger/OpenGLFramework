@@ -1,15 +1,16 @@
 #pragma once
+
 #include "glew.h"
+#include "tex.h"
+
 #include <string>
 #include <map>
-#include "tex.h"
 
 
 class Texture
 {
 public:
 	enum Type {DIFFUSE, BUMP, NORMAL, DISPLACEMENT};
-	const static int MAX_TEXTURES = 16;
 
 	Texture(void);
 	Texture(Type t, std::string path);

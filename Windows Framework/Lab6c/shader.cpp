@@ -1,4 +1,5 @@
 #include "shader.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -87,13 +88,14 @@ void Shader::Create(std::string fileName)
 
 		ShaderLibrary[fn] = shader;
 	}
+	shaderRef = ShaderLibrary[fn];
 }
 
 
 
 ShaderProgram::ShaderProgram()
 {
-	programRef = glCreateProgram();
+	programRef = 0;
 }
 
 
@@ -104,11 +106,16 @@ ShaderProgram::~ShaderProgram()
 void ShaderProgram::AddShader(Shader s)
 {
 	shaders.push_back(s);
-	glAttachShader(programRef, s.Reference());
 }
 
 void ShaderProgram::Compile()
 {
+	programRef = glCreateProgram();
+
+	for (int i = 0; i < shaders.size(); i++) {
+		glAttachShader(programRef, shaders[i].Reference());
+	}
+
 	glLinkProgram(programRef);
 
 	//  Check the infolog for errors
@@ -142,7 +149,7 @@ void ShaderProgram::FindUniformLocations()
 	std::string nameString;
 	std::stringstream stream;
 
-	for (int i = 0; i < LightSource::MAXLIGHTS; i++) {
+	for (int i = 0; i < MAXLIGHTS; i++) {
 		//  Create the string to search for; eg. lights[0].colour by combining the counter and string concatenation
 		stream << "lights[" << i << "].colour";
 
@@ -167,10 +174,18 @@ void ShaderProgram::FindUniformLocations()
 		newLocations.LightTypes[i] = glGetUniformLocation(programRef, nameString.c_str());
 	}
 
-	newLocations.Texture1 = glGetUniformLocation(programRef, "texture1");
-	newLocations.Texture2 = glGetUniformLocation(programRef, "texture2");
-	newLocations.Texture3 = glGetUniformLocation(programRef, "texture3");
-	newLocations.Texture4 = glGetUniformLocation(programRef, "texture4");
+	for (int i = 0; i < MAX_TEXTURES; i++) {
+		//  Create the string to search for; eg. lights[0].colour by combining the counter and string concatenation
+		stream << "texture" << i+1;
+
+		//  Get the created string out of the stringstream
+		nameString = stream.str();
+
+		//  Clear the stringstream for next usage
+		stream.str(std::string());
+
+		newLocations.Textures[i] = glGetUniformLocation(programRef, nameString.c_str());
+	}
 		
 	uniforms = newLocations;
 }

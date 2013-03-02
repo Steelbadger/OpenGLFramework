@@ -1,12 +1,14 @@
 #pragma once
+
+#include "material.h"
+#include "myvector3.h"
+#include "myvector2.h"
+
+#include <map>
 #include <vector>
 #include <windows.h>
 #include <stdio.h>
-#include "myvector3.h"
-#include "myvector2.h"
 #include <string>
-#include <map>
-#include "material.h"
 
 class GameObject;
 
@@ -14,21 +16,19 @@ class GameObject;
 class Mesh
 {
 public:
-	Mesh(const char* meshPath, const char* texturePath, GameObject* parent);
-	Mesh(const char* meshPath, const char* texturePath);
+	Mesh(const char* meshPath, GameObject* parent);
+	Mesh(const char* meshPath);
 	Mesh(std::vector<Vector3> verts, std::vector<Vector3> normals, std::vector<Vector2> uvs);
 	Mesh();
 	Mesh(const Mesh& mesh);
 	~Mesh(void);
 
-	void AttachShader(std::string shader);
-	void AttachMaterial(Material m){material = m;}
+	void AttachMaterial(Material m){material = m; material.Compile();}
 	Material GetMaterial(){return material;}
 
 	int GetUniqueID(){return uniqueID;}
 	void GetNewUniqueID();
 	void SetParent(GameObject* p) {parent = p;}
-	void SetTexture(const char* texPath) {texturePath = texPath;}
 	GameObject* GetParentPointer(){return parent;}
 	bool IsTransparent(){return transparency;}
 	void SetTransparent(bool t) {transparency = t;}
@@ -36,7 +36,6 @@ public:
 	Vector3* GetNormalArrayBase(){return &normals[0];}
 	Vector2* GetUVArrayBase(){return &uvs[0];}
 	unsigned int* GetIndexArrayBase(){return &index[0];}
-	std::string GetTexturePath(){return texturePath;}
 	std::string GetMeshSourceFilePath(){return meshPath;}
 	int GetNumberOfVerts(){return numVerts;}
 	int GetSizeOfVerts() {return verts.size()*sizeof(float)*3;}
@@ -46,31 +45,23 @@ public:
 
 	static Mesh* GetMeshPointer(int uniqueID);
 
-	std::string GetVertexShader(){return vertexShader;}
-	std::string GetFragmentShader(){return fragmentShader;}
-	std::vector<std::string> GetShaders(){return shaders;}
-
 	void DeleteVertexData();
 
-private:
-	bool LoadMesh(const char* path);
-	bool LoadObj(const char* path);
-
+protected:
 	std::vector<Vector3> verts;
 	std::vector<Vector3> normals;
 	std::vector<Vector2> uvs;
 	std::vector<unsigned int> index;
+
+private:
+	bool LoadMesh(const char* path);
+	bool LoadObj(const char* path);
 
 	int numVerts;
 	const int uniqueID;
 
 	GameObject* parent;
 	std::string meshPath;
-	std::string texturePath;
-
-	std::string vertexShader;
-	std::string fragmentShader;
-	std::vector<std::string> shaders;
 
 	Material material;
 

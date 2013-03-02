@@ -3,14 +3,16 @@
 //  This class creates a window and OpenGL render context
 //  Additional functions to retrieve details on the window
 
+#include "input.h"
 
-#include <Windows.h>
 #include "glew.h"
 #include <gl/gl.h>
 #include <gl/glu.h>
+
 #include <mmsystem.h>
-#include "input.h"
 #include <map>
+#include <Windows.h>
+
 
 
 class WindowWizard

@@ -1,8 +1,10 @@
 #pragma once
-#include <windows.h>
-#include <time.h>
 #include "mouse.h"
 #include "singleton.h"
+
+#include <windows.h>
+#include <time.h>
+
 #define input Input::GetSingleton()
 
 

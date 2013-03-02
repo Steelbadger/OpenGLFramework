@@ -1,4 +1,11 @@
 #include "gameobject.h"
+#include "myvector4.h"
+#include "collider.h"
+#include "cameramodule.h"
+#include "rigidbodymodule.h"
+#include "mesh.h"
+#include "controller.h"
+#include "quaternion.h"
 
 const Vector4 GameObject::GLOBALX(1.0f, 0.0f, 0.0f, 1.0f);
 const Vector4 GameObject::GLOBALY(0.0f, 1.0f, 0.0f, 1.0f);

@@ -1,14 +1,19 @@
 #pragma once
-#include <windows.h>
-#include <stdio.h>
-#include <mmsystem.h>
-#include "glew.h"
-#include "Terrain.h"
+
+
 #include "mywindow.h"
+#include "noisegenerator.h"
 #include "player.h"
 #include "renderer.h"
 #include "staticobject.h"
-#include "noisegenerator.h"
+#include "Terrain.h"
+
+
+
+#include <windows.h>
+#include <stdio.h>
+#include <mmsystem.h>
+
 
 class Application
 {
@@ -37,6 +42,7 @@ private:
 	Terrain ground;
 	RenderManager renderer;
 	GameObject sunParent;
+	Mesh skybox;
 
 	StaticObject testObject;
 };

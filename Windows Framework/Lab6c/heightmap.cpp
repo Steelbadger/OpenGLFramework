@@ -37,11 +37,8 @@ Heightmap::~Heightmap(void)
 {
 }
 
-
-unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n, float square)
+unsigned short* Heightmap::GenerateHeightField(float x, float y, NoiseObject n, float square)
 {
-
-	const int size = 2048;
 	const int subdivs = 1024;  //  256, 512, 1024
 	const int threads = size/subdivs;
 
@@ -72,6 +69,15 @@ unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n, float
 			WaitForMultipleObjects(threads*threads-i, &threadHandles[i], TRUE, INFINITE);
 		}
 	}
+
+	return map;
+}
+
+
+unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n, float square)
+{
+
+	GLushort* map = GenerateHeightField(x, y, n, square);
 
 	GLuint TexID;
 

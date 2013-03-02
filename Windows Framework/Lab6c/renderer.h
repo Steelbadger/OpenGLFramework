@@ -1,18 +1,19 @@
 #pragma once
+#include "cameramodule.h"
+#include "defines.h"
 #include "glew.h"
+#include "lights.h"
+#include "material.h"
+#include "mesh.h"
+#include "mywindow.h"
+#include "staticobject.h"
+#include "terrain.h"
+
 #include <vector>
 #include <list>
 #include <map>
 #include <string>
 #include <queue>
-#include "mesh.h"
-#include "terrain.h"
-#include "cameramodule.h"
-#include "staticobject.h"
-#include "mywindow.h"
-#include "lights.h"
-
-struct UniformLocations;
 
 class RenderManager
 {
@@ -41,7 +42,6 @@ private:
 	static CameraModule* activeCamera;
 
 	GLuint SetupVAO(Mesh &m);
-	GLuint SetupVAO(Terrain &t);
 
 	void InitializeOpenGL();
 	bool LoadShader(std::string fileName);
@@ -58,7 +58,7 @@ private:
 	bool lightsPrepared;
 
 	void PrepareLights();
-	void SetUniforms();
+	void SetUniforms(UniformLocations l);
 	
 	void DrawSkyBox();
 	void DrawTerrain();
@@ -77,9 +77,11 @@ private:
 	GLfloat normalMatrix[16];
 
 	GLuint skyBox;
+	int sky;
 	GLuint skyBoxTexture;
 
 	GLuint terrain;
+	int terr;
 	GLuint terrainTexture;
 	GLuint terrainRock;
 	GLuint heights;
@@ -94,7 +96,7 @@ private:
 	LightSource sun;
 	Light sunSource;
 	std::vector<LightSource> lightObjects;
-	Light lights[LightSource::MAXLIGHTS];
+	Light lights[MAXLIGHTS];
 
 	std::map<int, GLuint> VAOMap;
 	std::map<int, GLuint> UniqueIDToShaderMap;
@@ -110,23 +112,4 @@ private:
 	GLuint skyboxShaderProgram;
 	GLuint terrainShaderProgram;
 	float mapWidth;
-};
-
-struct UniformLocations
-{
-	GLuint ProjectionMatrix;
-	GLuint ViewMatrix;
-	GLuint ModelMatrix;
-	GLuint ModelViewMatrix;
-	GLuint NormalMatrix;
-	GLuint LightPositions[LightSource::MAXLIGHTS];
-	GLuint LightColours[LightSource::MAXLIGHTS];
-	GLuint NumLights;
-	GLuint LightTypes[LightSource::MAXLIGHTS];
-	GLuint Texture1;
-	GLuint Texture2;
-	GLuint Texture3;
-	GLuint Texture4;
-	GLuint MapWidth;
-	GLuint Magnitude;
 };
