@@ -1,14 +1,9 @@
 #include "water.h"
 
 
-Water::Water(float size, float xBase, float yBase):
-	baseX(xBase),
-		baseY(yBase),
+Water::Water(float size):
 		squareSize(size)
 {
-	Create();
-//	AttachShader("water.vertexshader");
-//	AttachShader("water.fragmentshader");
 }
 
 
@@ -23,7 +18,7 @@ void Water::Create()
 
 	for (float i = 0; i < size; i++) {
 		for (float j = 0; j < size; j++) {
-			verts.push_back(Vector3(i*step+baseX, 0, j*step+baseY));
+			verts.push_back(Vector3(i*step, 0, j*step));
 			Vector3 normalA = Vector3(0,1,0);
 			normals.push_back(normalA);
 		}

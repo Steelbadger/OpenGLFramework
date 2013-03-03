@@ -419,7 +419,7 @@ void RenderManager::SetUniforms(UniformLocations uniform)
 	glUniformMatrix4fv(uniform.ModelViewMatrix, 1, GL_FALSE, modelViewMatrix);
 	glUniformMatrix4fv(uniform.NormalMatrix, 1, GL_FALSE, normalMatrix);
 	glUniform1f(uniform.MapWidth, terrainSize);
-	glUniform1f(uniform.Magnitude, 70);
+	glUniform1f(uniform.Magnitude, 80);
 
 	for (int i = 0; i < lightObjects.size(); i++) {
 		glUniform4fv(uniform.LightColours[i], 1, lights[i].colour);
