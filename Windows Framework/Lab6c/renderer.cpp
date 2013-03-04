@@ -78,6 +78,12 @@ void RenderManager::AddTerrainToRenderer(Terrain &t)
 	terrainSize = t.GetSize();
 }
 
+void RenderManager::AddWater(Water &w)
+{
+	water = SetupVAO(w);
+	waterID = w.GetUniqueID();
+}
+
 void RenderManager::RemoveFromRenderer(Mesh m)
 //  This function removes a specified mesh from the scene
 //  It will not delete the associated texture or display list
@@ -118,6 +124,9 @@ void RenderManager::RenderAll()
 			}
 		}
 	}
+
+	DrawWater();
+
 	std::list<int>::iterator lit;
 	if (renderList.size() > 0) {
 		for (lit = renderList.begin(); lit != renderList.end(); lit++) {
@@ -370,6 +379,31 @@ void RenderManager::DrawTerrain()
 	glUseProgram(0);
 }
 
+void RenderManager::DrawWater()
+{
+	Mesh* m = Mesh::GetMeshPointer(waterID);
+
+	Material mat = m->GetMaterial();
+	UniformLocations uniforms = mat.GetUniforms();
+	mat.Apply();
+
+	//  Build the modelview matrix for the mesh
+	BuildModelViewMatrix(base);
+
+	//  Find the uniform locations for this program and put relevant data into said locations
+	SetUniforms(uniforms);
+
+	//  Bind the VAO and draw the array
+	glBindVertexArray(water);
+
+//	glPatchParameteri(GL_PATCH_VERTICES, 3);
+	glDrawElements(GL_TRIANGLES, m->GetIndexLength(), GL_UNSIGNED_INT, (void*)0);
+
+	//  unbind our shaders and arrays
+	glBindVertexArray(0);
+	glUseProgram(0);
+}
+
 bool RenderManager::DrawMesh(int meshID)
 {
 	Mesh* m = Mesh::GetMeshPointer(meshID);
@@ -380,8 +414,10 @@ bool RenderManager::DrawMesh(int meshID)
 		mat.Apply();
 
 		//  Build the modelview matrix for the mesh
-		BuildModelViewMatrix(*m->GetParentPointer());
+		GameObject* g = m->GetParentPointer();
 
+		BuildModelViewMatrix(*g);
+		
 		//  Find the uniform locations for this program and put relevant data into said locations
 		SetUniforms(uniforms);
 

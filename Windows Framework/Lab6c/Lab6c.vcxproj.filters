@@ -76,6 +76,9 @@
     <Filter Include="Source Files\General">
       <UniqueIdentifier>{dd086196-f8d0-4c2b-85b2-9c31641b6932}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Water">
+      <UniqueIdentifier>{b7a2d716-4ec2-4958-bde7-9dfee16de426}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -300,6 +303,12 @@
     </None>
     <None Include="terrain.tessevaluation">
       <Filter>Resource Files\Terrain</Filter>
+    </None>
+    <None Include="water.vertexshader">
+      <Filter>Resource Files\Water</Filter>
+    </None>
+    <None Include="water.fragmentshader">
+      <Filter>Resource Files\Water</Filter>
     </None>
   </ItemGroup>
 </Project>

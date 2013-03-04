@@ -2,7 +2,6 @@
 
 #include "heightmap.h"
 #include "lights.h"
-#include "primitives.h"
 #include "water.h"
 
 #include <iostream>
@@ -12,8 +11,9 @@
 Application::Application(void):
 	gridSize(1500.0f),
 	myNoise(12, 500.0f, 0.41f, 80.0f, -1563.155f),
-	ground(gridSize, myNoise, 15.0f),
-	skybox("inwardCube.obj")
+	ground(gridSize, 15.0f),
+	skybox("inwardCube.obj"),
+	water(gridSize)
 {
 }
 
@@ -29,6 +29,8 @@ void Application::Initialize(HINSTANCE hInstance)
 	window.WindowCreate("OpenGL Framework", 1000, 500, (WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN), 0, hInstance);
 	window.InitializeGraphics(45.0f);
 	window.SetCursorToCentre();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glewInit();
 	player.SetLocation(50.0f, 30.0f, 50.0f);
@@ -115,6 +117,13 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	std::cout << std::endl << "Time to Generate Heightmap: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
+	Material waterMat("waterMat");
+	waterMat.AddShader("water.vertexshader");
+	waterMat.AddShader("water.fragmentshader");
+	
+	water.AttachMaterial(waterMat);
+
+	renderer.AddWater(water);
 
 	lastTime = time(NULL);
 	nbFrames = 0;

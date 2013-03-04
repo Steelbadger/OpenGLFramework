@@ -1,15 +1,14 @@
 #version 330 core
 
-
 in vec2 UV;
 
 // Ouput data
-out vec3 color;
+out vec4 color;
 
 uniform sampler2D texture1;
 
 void main()
 {
 	// Output color = red 
-	color = texture2D( texture1, UV ).rgb;
+	color = vec4(texture2D( texture1, UV ).rgb, 1.0);
 }

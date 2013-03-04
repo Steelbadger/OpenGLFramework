@@ -53,6 +53,8 @@ protected:
 	std::vector<Vector2> uvs;
 	std::vector<unsigned int> index;
 
+	bool transparency;
+
 private:
 	bool LoadMesh(const char* path);
 	bool LoadObj(const char* path);
@@ -66,7 +68,6 @@ private:
 	Material material;
 
 	bool successfullBuild;
-	bool transparency;
 
 	static int IDCOUNTER;
 	static std::map<int, Mesh*> IdToMeshMap;

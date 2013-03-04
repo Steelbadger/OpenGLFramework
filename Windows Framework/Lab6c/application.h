@@ -4,6 +4,7 @@
 #include "mywindow.h"
 #include "noisegenerator.h"
 #include "player.h"
+#include "primitives.h"
 #include "renderer.h"
 #include "staticobject.h"
 #include "Terrain.h"
@@ -39,8 +40,9 @@ private:
 
 	const int gridSize;
 	NoiseObject myNoise;
+	PrimitiveFactory meshGenerator;
 	Terrain ground;
-//	Water water;
+	Water water;
 	RenderManager renderer;
 	GameObject sunParent;
 	Mesh skybox;

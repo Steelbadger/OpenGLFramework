@@ -27,6 +27,7 @@ public:
 	void Apply();
 	void Compile();
 
+	void AddToMaterialLibrary();
 	void AddToMaterialLibrary(std::string name);
 	static Material FetchMaterial(std::string name);
 

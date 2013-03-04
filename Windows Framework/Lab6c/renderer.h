@@ -8,6 +8,7 @@
 #include "mywindow.h"
 #include "staticobject.h"
 #include "terrain.h"
+#include "water.h"
 
 #include <vector>
 #include <list>
@@ -30,6 +31,7 @@ public:
 	void AddSkyBox(Mesh &m);
 	void AddTerrainToRenderer(Terrain &t);
 	void AddLight(LightSource &l);
+	void AddWater(Water &w);
 
 	void RenderAll();
 	static bool MeshComparator(int rhs, int lhs);
@@ -57,6 +59,7 @@ private:
 	void DrawSkyBox();
 	void DrawTerrain();
 	bool DrawMesh(int meshID);
+	void DrawWater();
 
 	void ConvertToOpenGLMatrix(Matrix4x4 m, GLfloat* target);
 
@@ -77,6 +80,9 @@ private:
 	int terr;
 	float terrainStep;
 	float terrainSize;
+
+	GLuint water;
+	int waterID;
 
 	GameObject base;
 

@@ -8,7 +8,7 @@ in vec3 vertNorm;
 in vec3 globalPos;
 
 // Ouput data
-out vec3 color;
+out vec4 color;
 
 uniform sampler2D texture1;
 uniform sampler2D texture2;
@@ -93,39 +93,5 @@ void main()
 		specular = specular + (texcolour * lightcolour * specularContribution * attenuation);
 	}
 
-	color = ambient + diffuse + specular;
-
-
-	//vec3 lightcolour = vec3(sun.colour);
-
-	//vec3 ambient = texcolour * lightcolour * sun.colour.w;
-	//vec3 direction = vec3(sun.position);
-
-	//vec3 fragToLight = normalize(direction);
-
-	//vec3 surfaceNormal = normalize(normal);
-	
-	//vec3 fragToView = normalize(-worldPosition);
-
-	//float diffuseContribution = max(0.0, dot(surfaceNormal, fragToLight));
-
-	//vec3 diffuse = texcolour * lightcolour * diffuseContribution * (1-sun.colour.w);
-
-	//fragToLight = normalize(-worldPosition);
-
-	//diffuseContribution = max(0.0, dot(surfaceNormal, fragToLight));
-
-	//float attenuation = (1/(1 + 0.01*distance + 0.0001 * distance * distance));
-
-	//diffuse = diffuse + (texcolour * lightcolour * diffuseContribution * attenuation);
-
-	//vec3 lightReflection = reflect(fragToLight, surfaceNormal);
-
-	//float specularContribution = max(0.0, dot(-lightReflection, fragToView));
-	//specularContribution = pow(specularContribution, shininess);
-
-	//vec3 specular = texcolour * lightcolour * specularContribution * attenuation;
-
-	//color = ambient + diffuse + specular;
-	//color = vec3(1.0, 1.0, 1.0);
+	color = vec4(ambient + diffuse + specular, 1.0);
 }

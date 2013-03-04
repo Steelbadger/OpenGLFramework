@@ -54,6 +54,12 @@ void Material::AddToMaterialLibrary(std::string n)
 		MaterialLibrary[name] = *this;
 	}
 }
+void Material::AddToMaterialLibrary()
+{
+	if (!MaterialLibrary.count(name)) {
+		MaterialLibrary[name] = *this;
+	}
+}
 
 Material Material::FetchMaterial(std::string name)
 {

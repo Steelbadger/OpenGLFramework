@@ -7,7 +7,7 @@ in vec3 normal;
 in vec3 vertNorm;
 
 // Ouput data
-out vec3 color;
+out vec4 color;
 
 uniform sampler2D texture1;
 
@@ -70,7 +70,7 @@ void main()
 		specular = specular + (texcolour * lightcolour * specularContribution * attenuation);
 	}
 
-	color = ambient + diffuse + specular;
+	color = vec4(ambient + diffuse + specular, 1.0);
 
 
 }

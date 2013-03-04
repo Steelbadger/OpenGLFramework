@@ -10,11 +10,27 @@
 #include <iostream>
 
 
-Terrain::Terrain(float s, NoiseObject n, float r):
+Terrain::Terrain(float s, float r):
 		squareSize(s),
 			resolution(r)
 {
-	Create(n);
+	Create();
+}
+
+Terrain::Terrain(Mesh &m) :
+	Mesh(m)
+{
+
+	std::vector<unsigned int>::iterator it1 = index.begin();
+	std::vector<unsigned int>::iterator it2 = index.end();
+	it2--;
+	unsigned int lower = *it1;
+	unsigned int higher = *it2;
+
+	squareSize = verts[higher-2].x - verts[lower].x;
+	float size = sqrt(float(verts.size()));
+	step = squareSize/(size - 1);
+	resolution = squareSize / size;
 }
 
 
@@ -22,17 +38,15 @@ Terrain::~Terrain(void)
 {
 }
 
-void Terrain::Create(NoiseObject n)
+void Terrain::Create()
 {
 
 	float height = 0;
 
-	NoiseGenerator noise;
-	noise.Seed(n.seed);
 	int size = squareSize/resolution;
 	step = squareSize/(size-1);
 
-	double myTime = clock();
+//	double myTime = clock();
 
 	for (float i = 0; i < size; i++) {
 		for (float j = 0; j < size; j++) {
@@ -54,8 +68,8 @@ void Terrain::Create(NoiseObject n)
 		}
 	}
 
-	myTime = clock()-myTime;
+//	myTime = clock()-myTime;
 
-	std::cout << "Number of Triangles in Terrain Mesh: " << index.size()/3 << std::endl;
-	std::cout << "Generation Time: " << myTime/CLOCKS_PER_SEC << "s" << std::endl;
+//	std::cout << "Number of Triangles in Terrain Mesh: " << index.size()/3 << std::endl;
+//	std::cout << "Generation Time: " << myTime/CLOCKS_PER_SEC << "s" << std::endl;
 }
