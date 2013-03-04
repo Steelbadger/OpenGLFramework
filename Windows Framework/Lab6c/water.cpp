@@ -6,6 +6,12 @@ Water::Water(float size):
 {
 }
 
+Water::Water(Mesh &mesh):
+	Mesh(mesh)
+{
+}
+
+
 
 Water::~Water(void)
 {

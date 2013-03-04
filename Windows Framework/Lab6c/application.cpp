@@ -3,6 +3,7 @@
 #include "heightmap.h"
 #include "lights.h"
 #include "primitives.h"
+#include "water.h"
 
 #include <iostream>
 #include <time.h>

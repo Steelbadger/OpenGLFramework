@@ -7,6 +7,8 @@ class Water : public Mesh
 {
 public:
 	Water(float size);
+	Water(Mesh &mesh);
+
 	~Water(void);
 	void Create();
 private:

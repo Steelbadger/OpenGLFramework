@@ -40,6 +40,7 @@ private:
 	const int gridSize;
 	NoiseObject myNoise;
 	Terrain ground;
+//	Water water;
 	RenderManager renderer;
 	GameObject sunParent;
 	Mesh skybox;
