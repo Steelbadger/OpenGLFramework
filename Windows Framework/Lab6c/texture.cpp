@@ -28,6 +28,7 @@ void Texture::SetTexture(Type t, std::string p)
 	CreateGLTexture(p.c_str(), tex);
 	texRef = tex;
 	wrapping = GL_REPEAT;
+	magnitude = 0;
 }
 
 void Texture::SetTexture(Type t, unsigned short* base, unsigned int length)
@@ -49,6 +50,12 @@ void Texture::SetTexture(Type t, unsigned short* base, unsigned int length)
 
 	texRef = TexID;
 	wrapping = GL_MIRRORED_REPEAT;
+}
+
+void Texture::SetDisplacementMap(unsigned short* base, unsigned int length, float m)
+{
+	SetTexture(Type::DISPLACEMENT, base, length);
+	magnitude = m;
 }
 
 void Texture::Apply(int targetUnit, GLuint targetLoc)

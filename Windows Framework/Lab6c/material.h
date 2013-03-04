@@ -24,7 +24,6 @@ public:
 	GLuint GetShaderProgram(){return shaderProgramRef;}
 	UniformLocations GetUniforms();
 
-
 	void Apply();
 	void Compile();
 
@@ -42,6 +41,8 @@ private:
 	ShaderProgram shaderProgram;
 	GLuint shaderProgramRef;
 	std::string name;
+
+	float displacementMapMagnitude;
 
 	static std::map<std::string, Material> MaterialLibrary;
 };

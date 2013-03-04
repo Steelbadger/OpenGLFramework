@@ -18,12 +18,14 @@ public:
 	~Texture(void);
 	void SetTexture(Type t, std::string path);
 	void SetTexture(Type t, unsigned short* base, unsigned int length);
+	void SetDisplacementMap(unsigned short* base, unsigned int length, float magnitude);
 	void Apply(int texUnit, GLuint target);
 	GLuint Reference(){return texRef;}
 private:
 	Type type;
 	std::string path;
 	GLuint texRef;
+	float magnitude;
 
 	GLenum wrapping;
 
