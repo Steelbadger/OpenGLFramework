@@ -310,5 +310,11 @@
     <None Include="water.fragmentshader">
       <Filter>Resource Files\Water</Filter>
     </None>
+    <None Include="water.tesscontrol">
+      <Filter>Resource Files\Water</Filter>
+    </None>
+    <None Include="water.tessevaluation">
+      <Filter>Resource Files\Water</Filter>
+    </None>
   </ItemGroup>
 </Project>

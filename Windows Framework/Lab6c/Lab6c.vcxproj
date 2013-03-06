@@ -146,6 +146,8 @@
     <None Include="terrain.tessevaluation" />
     <None Include="terrain.vertexshader" />
     <None Include="water.fragmentshader" />
+    <None Include="water.tesscontrol" />
+    <None Include="water.tessevaluation" />
     <None Include="water.vertexshader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

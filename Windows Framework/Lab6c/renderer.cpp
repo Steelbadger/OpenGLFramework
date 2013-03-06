@@ -15,6 +15,7 @@ RenderManager::RenderManager():
 	sun.SetAmbient(0.15f);
 	sun.SetColour(0.7f, 0.7f, 0.7f);
 	sun.RotateDeltaX(90);
+	elapsed = 0.0f;
 }
 
 RenderManager::~RenderManager(void)
@@ -392,12 +393,14 @@ void RenderManager::DrawWater()
 
 	//  Find the uniform locations for this program and put relevant data into said locations
 	SetUniforms(uniforms);
+	glUniform1f(uniforms.Time, elapsed);
+	elapsed += 0.1f;
 
 	//  Bind the VAO and draw the array
 	glBindVertexArray(water);
 
-//	glPatchParameteri(GL_PATCH_VERTICES, 3);
-	glDrawElements(GL_TRIANGLES, m->GetIndexLength(), GL_UNSIGNED_INT, (void*)0);
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
+	glDrawElements(GL_PATCHES, m->GetIndexLength(), GL_UNSIGNED_INT, (void*)0);
 
 	//  unbind our shaders and arrays
 	glBindVertexArray(0);

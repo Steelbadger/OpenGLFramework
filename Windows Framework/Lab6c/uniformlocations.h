@@ -17,4 +17,5 @@ struct UniformLocations
 	GLuint Textures[MAX_TEXTURES];
 	GLuint MapWidth;
 	GLuint Magnitude;
+	GLuint Time;
 };

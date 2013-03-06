@@ -60,6 +60,7 @@ private:
 	void DrawTerrain();
 	bool DrawMesh(int meshID);
 	void DrawWater();
+	float elapsed;
 
 	void ConvertToOpenGLMatrix(Matrix4x4 m, GLfloat* target);
 

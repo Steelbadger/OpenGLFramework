@@ -18,10 +18,10 @@ uniform int numLights;
 void main()
 {
 	//  hardcoded shininess
-	float shininess = 200;
+	float shininess = 50;
 
 	//  Blue!
-	vec3 texcolour = vec3(0.2, 0.2, 0.8);
+	vec3 texcolour = vec3(0.4, 0.4, 1.0);
 
 
 	//  Initialise lighting components
@@ -35,7 +35,7 @@ void main()
 	vec3 surfaceNormal = normalize(normal);
 
 	//  Change transparency based on viewing angle
-	float transparency = 1.0 - max(0.0, dot(surfaceNormal, fragToView));
+	float transparency = 1.0 - clamp(abs(dot(surfaceNormal, fragToView)), 0.2, 0.8);
 
 	for (int i = 0; i <= numLights; i++) {
 
@@ -67,8 +67,8 @@ void main()
 		float specularContribution = max(0.0, dot(-lightReflection, fragToView));
 		specularContribution = pow(specularContribution, shininess);
 
-		specular = specular + (texcolour * lightcolour * specularContribution * attenuation);
+		specular = specular + (lightcolour * specularContribution * attenuation);
 	}
 
-	color = vec4(ambient + diffuse + specular, transparency) + vec4(0.6, 0.6, 0.6, 1)*(1-transparency)/10;
+	color = vec4(ambient + diffuse, transparency) + vec4(specular, (specular.r+specular.b+specular.g)/4) + vec4(0.6, 0.6, 0.6, 1)*(1-transparency)/10;
 }

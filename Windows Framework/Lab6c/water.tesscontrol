@@ -2,13 +2,11 @@
 
 layout(vertices = 3) out;
 
-in vec2 vUV[];
 in vec3 vworldPosition[];
 in vec3 vnormal[];
 in vec3 vvertNorm[];
 in vec3 vglobalPos[];
 
-out vec2 tcUV[];
 out vec3 tcworldPosition[];
 out vec3 tcnormal[];
 out vec3 tcvertNorm[];
@@ -19,7 +17,6 @@ out vec3 tcglobalPos[];
 void main()
 {
 	gl_out[ID].gl_Position = gl_in[ID].gl_Position;
-	tcUV[ID] = vUV[ID];
 	tcworldPosition[ID] = vworldPosition[ID];
 	tcnormal[ID] = vnormal[ID];
 	tcvertNorm[ID] = vvertNorm[ID];
@@ -49,11 +46,11 @@ void main()
 			float dist3 = distance(vec3(0,0,0),edge3);
 
 			//  Set the tessellation level for this edge based on this distance
-			float tess0 = 4000/(1+dist3*0.05 + dist3 * dist3 *0.005);
+			float tess0 = 1000/(1+dist3*0.05 + dist3 * dist3 *0.005);
 			tess0 = int(clamp(tess0, 1, 32));
-			float tess1 = 4000/(1+dist2*0.05 + dist2 * dist2 *0.005);
+			float tess1 = 1000/(1+dist2*0.05 + dist2 * dist2 *0.005);
 			tess1 = int(clamp(tess1, 1, 32));
-			float tess2 = 4000/(1+dist1*0.05 + dist1 * dist1 *0.005);
+			float tess2 = 1000/(1+dist1*0.05 + dist1 * dist1 *0.005);
 			tess2 = int(clamp(tess2, 1, 32));
 			float tessm = (tess0 + tess1 + tess2)/3;
 

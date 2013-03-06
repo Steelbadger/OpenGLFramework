@@ -32,7 +32,8 @@ void main()
 	baseline = normalize(baseline);
 	vec3 vn = normalize(vertNorm);
 
-	float angle = abs(dot(vn, baseline));
+	float ang = dot(vn, baseline);
+	float angle = abs(ang);
 
 	float grassThresh = 0.45;
 	float rockThresh = 0.55;
@@ -43,13 +44,13 @@ void main()
 	float alt = globalPos.y;
 	float diff = 1.0;
 	float start = -15.0;
+	alt = alt + (abs(ang)-0.5)*7;
 	alt = min(start+diff, alt);
 	alt = max(start, alt);
 	alt = alt-start;
 
 	float portion = (angle-grassThresh)/(rockThresh-grassThresh);
 	texcolour = portion*texture(texture2, UV/4).rgb + (1-portion)*texture(texture1, UV).rgb;
-
 	texcolour = (alt/diff) * texcolour + (1-(alt/diff)) * (texture(texture2, UV/4).rgb * vec3(0.543, 0.36, 0.36));
 
 	vec3 diffuse = vec3(0.0, 0.0, 0.0);

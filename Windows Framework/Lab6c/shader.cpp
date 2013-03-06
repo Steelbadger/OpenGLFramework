@@ -145,6 +145,7 @@ void ShaderProgram::FindUniformLocations()
 	newLocations.NumLights = glGetUniformLocation(programRef, "numLights");
 	newLocations.MapWidth = glGetUniformLocation(programRef, "mapWidth");
 	newLocations.Magnitude = glGetUniformLocation(programRef, "magnitude");
+	newLocations.Time = glGetUniformLocation(programRef, "time");
 
 	std::string nameString;
 	std::stringstream stream;

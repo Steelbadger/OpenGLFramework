@@ -120,6 +120,8 @@ void Application::Initialize(HINSTANCE hInstance)
 	Material waterMat("waterMat");
 	waterMat.AddShader("water.vertexshader");
 	waterMat.AddShader("water.fragmentshader");
+	waterMat.AddShader("water.tesscontrol");
+	waterMat.AddShader("water.tessevaluation");
 	
 	water.AttachMaterial(waterMat);
 
@@ -161,7 +163,13 @@ void Application::MainLoop()
 			window.SetMouseLockedCentre();
 		}
 
-		sunParent.RotateDeltaX(0.001f);
+		if(input.ReportKeyState(VK_LEFT)) {
+			sunParent.RotateDeltaX(0.01f);
+		}
+
+		if (input.ReportKeyState(VK_RIGHT)) {
+			sunParent.RotateDeltaX(-0.01f);
+		}
 
 		if (input.ReportKeyPress(VK_ESCAPE))
 			exit(0);
