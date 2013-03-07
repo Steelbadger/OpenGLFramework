@@ -11,6 +11,11 @@ out vec3 tcworldPosition[];
 out vec3 tcnormal[];
 out vec3 tcvertNorm[];
 out vec3 tcglobalPos[];
+out float tcdepth[];
+
+uniform sampler2D texture2;
+uniform float magnitude;
+uniform float mapWidth;
 
 #define ID gl_InvocationID
 
@@ -21,10 +26,32 @@ void main()
 	tcnormal[ID] = vnormal[ID];
 	tcvertNorm[ID] = vvertNorm[ID];
 	tcglobalPos[ID] = vglobalPos[ID];
-	
-	//  Once set tessellation levels once per patch
-	if (ID == 0) {
 
+	float depth[3];
+	depth[0] = (texture(texture2, vglobalPos[0].xz/mapWidth).a-0.5)*magnitude*2;
+	depth[1] = (texture(texture2, vglobalPos[1].xz/mapWidth).a-0.5)*magnitude*2;
+	depth[2] = (texture(texture2, vglobalPos[2].xz/mapWidth).a-0.5)*magnitude*2;
+
+	depth[0] = depth[0] + 16;
+	depth[1] = depth[1] + 16;
+	depth[2] = depth[2] + 16;
+
+	depth[0] = depth[0]/(magnitude/16);
+	depth[1] = depth[1]/(magnitude/16);
+	depth[2] = depth[2]/(magnitude/16);
+	
+	depth[0] = clamp(depth[0], -1.0, 0.0);
+	depth[1] = clamp(depth[1], -1.0, 0.0);
+	depth[2] = clamp(depth[2], -1.0, 0.0);
+
+	depth[0] = abs(depth[0]);
+	depth[1] = abs(depth[1]);
+	depth[2] = abs(depth[2]);
+
+	tcdepth[ID] = depth[ID];
+	
+	//  Set tessellation levels once per patch
+	if (ID == 0) {
 	//  If the patch is wholly offscreen then don't try to tessellate
 		if (gl_in[0].gl_Position.z < -0.5 && 
 			gl_in[1].gl_Position.z < -0.5 &&
@@ -35,6 +62,15 @@ void main()
 			gl_TessLevelOuter[1] = 0.0;
 			gl_TessLevelOuter[2] = 0.0;
 		} else {
+
+			float depthMult[3];
+			depthMult[0] = ceil(depth[0]);
+			depthMult[1] = ceil(depth[1]);
+			depthMult[2] = ceil(depth[2]);
+
+			float depthMultFace = max(depthMult[0], depthMult[1]);
+			depthMultFace = max(depthMultFace, depthMult[2]);
+
 
 			//  find the distance of the mid-point of each edge from the camera
 			vec3 edge1 = (vworldPosition[0] + vworldPosition[1])/2;
@@ -54,10 +90,10 @@ void main()
 			tess2 = int(clamp(tess2, 1, 32));
 			float tessm = (tess0 + tess1 + tess2)/3;
 
-			gl_TessLevelInner[0] = tessm;
-			gl_TessLevelOuter[1] = tess0;
-			gl_TessLevelOuter[0] = tess1;
-			gl_TessLevelOuter[2] = tess2;
+			gl_TessLevelInner[0] = tessm*depthMultFace;
+			gl_TessLevelOuter[1] = tess0*depthMultFace;
+			gl_TessLevelOuter[0] = tess1*depthMultFace;
+			gl_TessLevelOuter[2] = tess2*depthMultFace;
 
 			//  This method ensures that there will be no gaps when tesselation levels change across patches, as each edge has a
 			//  a specific level, regardless of the patch it is in.

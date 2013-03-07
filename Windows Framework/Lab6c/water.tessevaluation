@@ -5,10 +5,12 @@ in vec3 tcworldPosition[];
 in vec3 tcnormal[];
 in vec3 tcvertNorm[];
 in vec3 tcglobalPos[];
+in float tcdepth[];
 
 out vec3 worldPosition;
 out vec3 normal;
 out vec3 vertNorm;
+out vec3 globalPos;
 
 uniform mat4 projectionMatrix;
 uniform mat4 modelViewMatrix;
@@ -30,6 +32,13 @@ void main()
 
 	vec3 gp = gp0 + gp1 + gp2;
 
+	float d1 = gl_TessCoord.x * tcdepth[0];
+	float d2 = gl_TessCoord.y * tcdepth[1];
+	float d3 = gl_TessCoord.z * tcdepth[2];
+
+	float depth = d1 + d2 + d3;
+	float depthCoeff = 2;
+
 	float xCoeff = 0.2;
 	float zCoeff = 0.33;
 
@@ -44,11 +53,11 @@ void main()
 
 	float xcalc = gp.x + time;
 
-	float comp1 = comp1Coeff * sin((gp.x + time) * xCoeff * comp1SinCoeff);
-	float comp2 = comp2Coeff * sin(((gp.x + time*5.2) * xCoeff + 3 * gp.z * zCoeff)*comp2SinCoeff);
-	float comp3 = comp3Coeff * sin(((gp.x + time*8.3) * xCoeff - gp.z * zCoeff)*comp3SinCoeff);
+	float comp1 = depth * comp1Coeff * sin((gp.x + time) * xCoeff * comp1SinCoeff);
+	float comp2 = depth * comp2Coeff * sin(((gp.x + time*5.2) * xCoeff + 3 * gp.z * zCoeff)*comp2SinCoeff);
+	float comp3 = depth * comp3Coeff * sin(((gp.x + time*8.3) * xCoeff - gp.z * zCoeff)*comp3SinCoeff);
 
-	pos.y  = (comp1 + comp2 + comp3)-16.0;
+	pos.y  = ((comp1 + comp2 + comp3)-16.0);
 
     gl_Position = projectionMatrix * modelViewMatrix * pos;
 
@@ -58,9 +67,9 @@ void main()
     vec3 n1 = gl_TessCoord.y * tcnormal[1];
     vec3 n2 = gl_TessCoord.z * tcnormal[2];
 
-	float normComp1 = comp1Coeff * xCoeff * comp1SinCoeff * cos((gp.x + time) * xCoeff * comp1SinCoeff);
-	float normComp2 = comp2Coeff * comp2SinCoeff * cos(((gp.x + time*5.2) * xCoeff + 3 * gp.z * zCoeff)*comp2SinCoeff);
-	float normComp3 = comp3Coeff * comp3SinCoeff * cos(((gp.x + time*8.3) * xCoeff + gp.z * zCoeff)*comp3SinCoeff);
+	float normComp1 = depth * comp1Coeff * xCoeff * comp1SinCoeff * cos((gp.x + time) * xCoeff * comp1SinCoeff);
+	float normComp2 = depth * comp2Coeff * comp2SinCoeff * cos(((gp.x + time*5.2) * xCoeff + 3 * gp.z * zCoeff)*comp2SinCoeff);
+	float normComp3 = depth * comp3Coeff * comp3SinCoeff * cos(((gp.x + time*8.3) * xCoeff + gp.z * zCoeff)*comp3SinCoeff);
 
 	vec3 norm = vec3(normComp1 + xCoeff * normComp2 + xCoeff * normComp3
 					, 1,
@@ -69,4 +78,5 @@ void main()
 	normal = vec3(normalMatrix * vec4(norm, 1.0));
 
 	vertNorm = norm;
+	globalPos = pos.xyz;
 }

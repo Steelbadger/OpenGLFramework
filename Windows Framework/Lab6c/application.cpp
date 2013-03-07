@@ -65,7 +65,10 @@ void Application::Initialize(HINSTANCE hInstance)
 	crateMat.AddShader("default.vertexshader");
 
 	Mesh crateMesh("crate.obj");
+
+
 	crateMesh.AttachMaterial(crateMat);
+//	crateMesh.AttachMaterial(waterMat);
 
 	int num = 5;
 	for (int i = 0; i < num; i++) {
@@ -108,7 +111,8 @@ void Application::Initialize(HINSTANCE hInstance)
 	myTimer = clock();
 
 	Heightmap heights;
-	groundMat.AddTexture(Texture(Texture::DISPLACEMENT, heights.GenerateHeightField(0, 0, myNoise, gridSize), 2048));
+	Texture heightMap(Texture::DISPLACEMENT, heights.GenerateHeightField(0, 0, myNoise, gridSize), 2048);
+	groundMat.AddTexture(heightMap);
 	ground.AttachMaterial(groundMat);
 
 	renderer.AddTerrainToRenderer(ground);
@@ -122,6 +126,8 @@ void Application::Initialize(HINSTANCE hInstance)
 	waterMat.AddShader("water.fragmentshader");
 	waterMat.AddShader("water.tesscontrol");
 	waterMat.AddShader("water.tessevaluation");
+	waterMat.AddTexture(Texture(Texture::DIFFUSE, "seamlessWater.tga"));
+	waterMat.AddTexture(heightMap);
 	
 	water.AttachMaterial(waterMat);
 
