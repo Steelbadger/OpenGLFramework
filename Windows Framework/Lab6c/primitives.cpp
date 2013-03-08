@@ -17,8 +17,8 @@ Mesh PrimitiveFactory::Plane(float width, float height, int widthSubDivs, int he
 	std::vector<Vector2> texCoords;
 	std::vector<unsigned int> index;
 
-	float widthStep = width/widthSubDivs;
-	float heightStep = height/heightSubDivs;
+	float widthStep = width/(widthSubDivs-1);
+	float heightStep = height/(heightSubDivs-1);
 
 	for (int i = 0; i < heightSubDivs; i++) {
 		for (int j = 0; j < widthSubDivs; j++) {
@@ -40,7 +40,7 @@ Mesh PrimitiveFactory::Plane(float width, float height, int widthSubDivs, int he
 		}
 	}
 
-	return Mesh(verts, normals, texCoords);
+	return Mesh(verts, normals, texCoords, index);
 }
 
 Mesh PrimitiveFactory::SimpleInnerBox()

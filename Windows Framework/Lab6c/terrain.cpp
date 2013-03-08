@@ -8,7 +8,12 @@
 #include <time.h>
 #include <string>
 #include <iostream>
+#include <algorithm>
 
+
+Terrain::Terrain()
+{
+}
 
 Terrain::Terrain(float s, float r):
 		squareSize(s),
@@ -21,13 +26,14 @@ Terrain::Terrain(Mesh &m) :
 	Mesh(m)
 {
 
-	std::vector<unsigned int>::iterator it1 = index.begin();
-	std::vector<unsigned int>::iterator it2 = index.end();
-	it2--;
-	unsigned int lower = *it1;
-	unsigned int higher = *it2;
+	std::vector<Vector3>::iterator it1 = verts.begin();
+	std::vector<Vector3>::iterator it2 = verts.end();
 
-	squareSize = verts[higher-2].x - verts[lower].x;
+	it2--;
+	float lower = (*it1).x;
+	float higher = (*it2).x;
+
+	squareSize = higher - lower;
 	float size = sqrt(float(verts.size()));
 	step = squareSize/(size - 1);
 	resolution = squareSize / size;

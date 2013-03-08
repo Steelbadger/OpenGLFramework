@@ -19,6 +19,7 @@ public:
 	Mesh(const char* meshPath, GameObject* parent);
 	Mesh(const char* meshPath);
 	Mesh(std::vector<Vector3> verts, std::vector<Vector3> normals, std::vector<Vector2> uvs);
+	Mesh(std::vector<Vector3> verts, std::vector<Vector3> normals, std::vector<Vector2> uvs, std::vector<unsigned int> index);
 	Mesh();
 	Mesh(const Mesh& mesh);
 	~Mesh(void);

@@ -58,6 +58,9 @@ void Application::Initialize(HINSTANCE hInstance)
 	skybox.AttachMaterial(skyMat);
 	renderer.AddSkyBox(skybox);
 
+	PrimitiveFactory prims;
+
+	Terrain dummy(prims.Plane(1500.0f, 1500.0f, 100, 100));
 
 	Material crateMat;
 	crateMat.AddTexture(Texture(Texture::DIFFUSE, "crateDiffuse.tga"));

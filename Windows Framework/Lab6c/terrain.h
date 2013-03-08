@@ -9,6 +9,7 @@ class Terrain : public Mesh
 public:
 	Terrain(float size, float resolution);
 	Terrain(Mesh &mesh);
+	Terrain();
 	~Terrain(void);
 
 	void Create();

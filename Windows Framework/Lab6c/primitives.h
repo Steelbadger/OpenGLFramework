@@ -8,6 +8,7 @@ public:
 	~PrimitiveFactory(void);
 
 	Mesh Plane(float width, float height, int widthSubDivs, int heightSubDivs);
+
 	Mesh SimpleInnerBox();
 
 

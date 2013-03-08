@@ -75,6 +75,18 @@ Mesh::Mesh(std::vector<Vector3> v, std::vector<Vector3> n, std::vector<Vector2> 
 	numVerts = index.size();
 }
 
+Mesh::Mesh(std::vector<Vector3> v, std::vector<Vector3> n, std::vector<Vector2> u, std::vector<unsigned int> i):
+	uniqueID(IDCOUNTER++)
+{
+	parent = NULL;
+	IdToMeshMap[uniqueID] = this;
+	transparency = false;
+	verts = v;
+	normals = n;
+	uvs = u;
+	index = i;
+	numVerts = index.size();
+}
 
 Mesh::~Mesh(void)
 {
