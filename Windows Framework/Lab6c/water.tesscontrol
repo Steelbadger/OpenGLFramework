@@ -12,6 +12,7 @@ out vec3 tcnormal[];
 out vec3 tcvertNorm[];
 out vec3 tcglobalPos[];
 out float tcdepth[];
+out vec3 tcshoreDir[];
 
 uniform sampler2D texture2;
 uniform float magnitude;
@@ -26,6 +27,8 @@ void main()
 	tcnormal[ID] = vnormal[ID];
 	tcvertNorm[ID] = vvertNorm[ID];
 	tcglobalPos[ID] = vglobalPos[ID];
+	vec3 tShoreDir = texture(texture2, vglobalPos[ID].xz/mapWidth).xyz;
+	tcshoreDir[ID] = tShoreDir/tShoreDir.y;
 
 	float depth[3];
 	depth[0] = (texture(texture2, vglobalPos[0].xz/mapWidth).a-0.5)*magnitude*2;
