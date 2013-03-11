@@ -10,6 +10,8 @@ public:
 	Mesh Plane(float width, float height, int widthSubDivs, int heightSubDivs);
 
 	Mesh SimpleInnerBox();
+	Mesh UnitCube();
+	Mesh LSphere(int lats, int longs);
 
 
 };

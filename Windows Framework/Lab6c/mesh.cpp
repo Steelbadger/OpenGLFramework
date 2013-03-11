@@ -196,3 +196,10 @@ void Mesh::DeleteVertexData()
 	uvs.clear();
 	index.clear();
 }
+
+void Mesh::ReverseNormals()
+{
+	for (int i = 0; i < normals.size(); i++) {
+		normals[i] = normals[i]*-1;
+	}
+}

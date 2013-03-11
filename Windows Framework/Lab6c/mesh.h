@@ -43,6 +43,7 @@ public:
 	int GetSizeOfNormals() {return normals.size()*sizeof(float)*3;}
 	int GetSizeOfUVs() {return uvs.size()*sizeof(float)*2;}
 	int GetIndexLength(){return index.size();}
+	void ReverseNormals();
 
 	static Mesh* GetMeshPointer(int uniqueID);
 
