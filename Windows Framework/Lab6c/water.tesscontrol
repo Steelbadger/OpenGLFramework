@@ -12,7 +12,6 @@ out vec3 tcnormal[];
 out vec3 tcvertNorm[];
 out vec3 tcglobalPos[];
 out float tcdepth[];
-out vec3 tcshoreDir[];
 
 uniform sampler2D texture2;
 uniform float magnitude;
@@ -27,8 +26,6 @@ void main()
 	tcnormal[ID] = vnormal[ID];
 	tcvertNorm[ID] = vvertNorm[ID];
 	tcglobalPos[ID] = vglobalPos[ID];
-	vec3 tShoreDir = texture(texture2, vglobalPos[ID].xz/mapWidth).xyz;
-	tcshoreDir[ID] = tShoreDir/tShoreDir.y;
 
 	float depth[3];
 	depth[0] = (texture(texture2, vglobalPos[0].xz/mapWidth).a-0.5)*magnitude*2;
@@ -39,19 +36,32 @@ void main()
 	depth[1] = depth[1] + 16;
 	depth[2] = depth[2] + 16;
 
-	depth[0] = depth[0]/(magnitude/16);
-	depth[1] = depth[1]/(magnitude/16);
-	depth[2] = depth[2]/(magnitude/16);
+	depth[0] = depth[0]/(magnitude/16)-1;
+	depth[1] = depth[1]/(magnitude/16)-1;
+	depth[2] = depth[2]/(magnitude/16)-1;
+
+	float corrDepth[3];
+	corrDepth[0] = depth[0] + 1;
+	corrDepth[1] = depth[1] + 1;
+	corrDepth[2] = depth[2] + 1;
 	
 	depth[0] = clamp(depth[0], -1.0, 0.0);
 	depth[1] = clamp(depth[1], -1.0, 0.0);
 	depth[2] = clamp(depth[2], -1.0, 0.0);
 
+	corrDepth[0] = clamp(corrDepth[0], -1.0, 0.0);
+	corrDepth[1] = clamp(corrDepth[1], -1.0, 0.0);
+	corrDepth[2] = clamp(corrDepth[2], -1.0, 0.0);
+
 	depth[0] = abs(depth[0]);
 	depth[1] = abs(depth[1]);
 	depth[2] = abs(depth[2]);
 
-	tcdepth[ID] = depth[ID];
+	corrDepth[0] = abs(corrDepth[0]);
+	corrDepth[1] = abs(corrDepth[1]);
+	corrDepth[2] = abs(corrDepth[2]);
+
+	tcdepth[ID] = corrDepth[ID];
 	
 	//  Set tessellation levels once per patch
 	if (ID == 0) {
