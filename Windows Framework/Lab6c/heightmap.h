@@ -12,6 +12,7 @@ public:
 	
 private:
 	void write_tga(const char *filename, int size, unsigned char* base);
+	void write_tga(const char *filename, int size, unsigned short* base);
 	static unsigned __stdcall GenerateSection(void *data);
 
 	static const int size = 2048;

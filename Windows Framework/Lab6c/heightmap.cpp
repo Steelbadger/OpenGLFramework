@@ -70,6 +70,8 @@ unsigned short* Heightmap::GenerateHeightField(float x, float y, NoiseObject n, 
 		}
 	}
 
+	write_tga("output.tga", size, map);
+
 	return map;
 }
 
@@ -117,6 +119,8 @@ unsigned __stdcall Heightmap::GenerateSection(void *data)
 		for (float i = 0; i < args.sectionSize; i++) {
 			height = noise.FractalSimplex(i*step + x, j*step + y, args.n);
 			normal = noise.FractalSimplexNormal(i*step + x, j*step + y, args.n, step);
+			//height = noise.HaxFractalSimplex(i*step + x, j*step + y, args.n);
+			//normal = noise.HaxFractalSimplexNormal(i*step + x, j*step + y, args.n, step);
 
 			//  Convert the numbers to short int
 			args.start[currentpixel] = GLushort((normal.x+1)/2 * 65535);			//  R
@@ -160,6 +164,39 @@ void Heightmap::write_tga(const char *filename, int size, unsigned char* base)
 		o.put(base[i*4+1]);
 		o.put(base[i*4+2]);
 		o.put(base[i*4+3]);
+	}   
+	
+	//close the file
+	o.close();
+
+}
+
+void Heightmap::write_tga(const char *filename, int size, unsigned short* base)
+{
+	std::ofstream o(filename, std::ios::out | std::ios::binary);
+
+	//Write the header
+	o.put(0);
+   	o.put(0);
+   	o.put(2);					/* uncompressed RGB */
+   	o.put(0);	o.put(0);
+   	o.put(0); 	o.put(0);
+   	o.put(0);
+   	o.put(0); 	o.put(0);		/* X origin */
+   	o.put(0); 	o.put(0);		/* y origin */
+   	o.put((size & 0x00FF));
+   	o.put((size & 0xFF00) / 256);
+   	o.put((size & 0x00FF));
+   	o.put((size & 0xFF00) / 256);
+   	o.put(32);					/* 32 bit bitmap */
+   	o.put(0);
+   	
+	//Write the pixel data
+	for (int i=0;i<size*size;i++) {
+		o.put(char(base[i*4]/256));
+		o.put(char(base[i*4+1]/256));
+		o.put(char(base[i*4+2]/256));
+		o.put(char(base[i*4+3]/256));
 	}   
 	
 	//close the file

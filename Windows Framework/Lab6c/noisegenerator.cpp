@@ -3,6 +3,8 @@
 #include "myvector4.h"
 #include "my4x4matrix.h"
 #include <stdlib.h>
+#include <algorithm>
+#include <mmintrin.h>
 
 unsigned char NoiseGenerator::permutation[SIZE];
 unsigned char NoiseGenerator::perm[SIZE*2];
@@ -316,27 +318,29 @@ float NoiseGenerator::NonCoherentNoise2D(float x, float y)
 float NoiseGenerator::Simplex(float x, float y)
 {
 	float root3 = 1.73205080757;
-	double n1, n2, n3; // Noise contributions from the three corners
+	float n1, n2, n3;		// Noise contributions from the three corners
 
 	// Skew the input space to determine which simplex cell we're in
-	double skewFactor = 0.5*(root3-1.0);
-	double s = (x+y)*skewFactor;			// Hairy factor for 2D
+	float skewFactor = 0.5*(root3-1.0);
+	float s = (x+y)*skewFactor;			// Hairy factor for 2D
 
 	int i = int(x+s);
 	int j = int(y+s);
 
-	double unskewFactor = (3.0-root3)/6.0;
-	double t = (i+j)*unskewFactor;
+	float unskewFactor = (3.0-root3)/6.0;
+	float t = (i+j)*unskewFactor;
 
-	double X0 = i-t;		// Unskew the cell origin back to (x,y) space
-	double Y0 = j-t;
-	double dx = x-X0;		// The x,y distances from the cell origin
-	double dy = y-Y0;
+	float X0 = i-t;		// Unskew the cell origin back to (x,y) space
+	float Y0 = j-t;
+	float dx = x-X0;		// The x,y distances from the cell origin
+	float dy = y-Y0;
 
 	// For the 2D case, the simplex shape is an equilateral triangle.
 	// Determine which simplex we are in.
 
 	int i1, j1;		// Offsets for second (middle) corner of simplex in (i,j) coords
+
+	int check = dy-dx;
 
 	if(dx>dy) {		// lower triangle, XY order: (0,0)->(1,0)->(1,1)
 		i1=1;
@@ -348,10 +352,10 @@ float NoiseGenerator::Simplex(float x, float y)
 	}				
 
 
-	double x2 = dx - i1 + unskewFactor;				// Offsets for middle corner in (x,y) unskewed coords
-	double y2 = dy - j1 + unskewFactor;
-	double x3 = dx - 1.0 + 2.0 * unskewFactor;		// Offsets for last corner in (x,y) unskewed coords
-	double y3 = dy - 1.0 + 2.0 * unskewFactor;
+	float x2 = dx - i1 + unskewFactor;				// Offsets for middle corner in (x,y) unskewed coords
+	float y2 = dy - j1 + unskewFactor;
+	float x3 = dx - 1.0 + 2.0 * unskewFactor;		// Offsets for last corner in (x,y) unskewed coords
+	float y3 = dy - 1.0 + 2.0 * unskewFactor;
 
 	// Work out the hashed gradient indices of the three simplex corners
 
@@ -364,6 +368,27 @@ float NoiseGenerator::Simplex(float x, float y)
 
 
 	// Calculate the contribution from the three corners
+	//  This method is slower than the second method, but has no branching.
+//
+	//float t1 = 0.5 - dx*dx-dy*dy;
+
+	//t1 = std::max(0.0f, t1);
+	//t1 *= t1;
+	//n1 = t1 * t1 * (grads[grad1][0] * dx + grads[grad1][1] * dy);		// (x,y) of grad3 used for 2D gradient
+
+
+	//float t2 = 0.5 - x2*x2-y2*y2;
+
+	//t2 = std::max(0.0f, t2);
+	//t2 *= t2;
+	//n2 = t2 * t2 * (grads[grad2][0] * x2 + grads[grad2][1] * y2);		// (x,y) of grad3 used for 2D gradient
+
+	//float t3 = 0.5 - x3*x3-y3*y3;
+
+	//t3 = std::max(0.0f, t3);
+	//t3 *= t3;
+	//n3 = t3 * t3 * (grads[grad3][0] * x3 + grads[grad3][1] * y3);		// (x,y) of grad3 used for 2D gradient
+//
 	double t1 = 0.5 - dx*dx-dy*dy;
 	if (t1<0) {
 		n1 = 0.0;
@@ -392,7 +417,7 @@ float NoiseGenerator::Simplex(float x, float y)
 
 
 	// Add contributions from each corner to get the final noise value.
-	// The result is scaled to return values in the interval [-1,1].
+	// The result is scaled to return values in the interval [-1,1] (ish).
 	return 70.0 * (n1 + n2 + n3);
 
 }
@@ -430,3 +455,254 @@ Vector3 NoiseGenerator::FractalSimplexNormal(float x, float y, NoiseObject n, fl
 	Vector3 output(Normal);
 	return output;
 }
+
+float NoiseGenerator::FourOctaveSimplex(float x, float y, NoiseObject n, int iteration)
+{
+	float root3 = 1.73205080757;
+
+	__m128 n1;
+	__m128 n2;
+	__m128 n3;
+
+	__declspec(align(16)) float frequency[4];
+	for (int i = 0; i < 4; i++) {
+		frequency[i] = pow(2.0f, iteration + i);
+	}
+
+
+	//  Put our zoom level and frequency into 4-float-wide sse variables
+	__m128 zoom = _mm_set1_ps(n.zoom);
+	__m128 freq = _mm_load_ps(frequency);
+
+	_mm_store_ps(frequency, freq);
+
+	//  Put the x position of interest into a 4-float-wide sse variable
+	__m128 xb = _mm_set1_ps(x);
+	__m128 yb = _mm_set1_ps(y);
+
+	//  
+	__m128 scaleFactor = _mm_div_ps(freq, zoom);
+
+	__m128 xa = _mm_mul_ps(xb, scaleFactor);
+	__m128 ya = _mm_mul_ps(yb, scaleFactor);
+
+
+
+	float skewFact = 0.5*(root3-1.0);
+	float unskewFact = (3.0-root3)/6.0;
+
+	__m128 skewFactor = _mm_set1_ps(skewFact);
+	__m128 unskewFactor = _mm_set1_ps(unskewFact);
+
+	//float s = (x+y)*skewFactor;			// Hairy factor for 2D	
+	__m128 hairy = _mm_mul_ps(_mm_add_ps(xa, ya), skewFactor);
+
+
+	//int i = int(x+s)
+	//int j = int(y+s)
+	__m128 fi = _mm_add_ps(xa, hairy);
+	__m128 fj = _mm_add_ps(ya, hairy);
+
+	//float t = (i+j)*unskewFactor;
+	__m128 t = _mm_mul_ps(_mm_add_ps(fi, fj), skewFactor);
+
+	//float X0 = i-t;		// Unskew the cell origin back to (x,y) space
+	//float Y0 = j-t;
+
+	__m128 X0 = _mm_sub_ps(fi, t);
+	__m128 Y0 = _mm_sub_ps(fj, t);
+
+	//float dx = x-X0;		// The x,y distances from the cell origin
+	//float dy = y-Y0;
+
+	__m128 dx = _mm_sub_ps(xa, X0);
+	__m128 dy = _mm_sub_ps(ya, Y0);
+
+
+	//  Make some 4 repeat versions of numbers we'll use
+	__m128 Zero =  _mm_set1_ps(0.0f);
+	__m128 One =  _mm_set1_ps(1.0f);
+	__m128 Two =  _mm_set1_ps(2.0f);
+
+
+	//int check = dy-dx;
+
+	//if(dx>dy) {		// lower triangle, XY order: (0,0)->(1,0)->(1,1)
+	//	i1=1;
+	//	j1=0;
+	//}
+	//else {			// upper triangle, YX order: (0,0)->(0,1)->(1,1)
+	//	i1=0;
+	//	j1=1;
+	//}			
+
+	//  check = 0xffffffff if dx > dy else 0x0
+	__m128 check = _mm_cmpgt_ps(dx, dy);
+
+	//if check is 0xffffffff then i1 is 1.0, else it's zero
+	__m128 i1 = _mm_and_ps(check, One);
+	//  j1 has 1 is i1 is 0 and 0 if i1 is 1;
+	__m128 j1 = _mm_sub_ps(One, i1);
+
+	//float x2 = dx - i1 + unskewFactor;				// Offsets for middle corner in (x,y) unskewed coords
+	//float y2 = dy - j1 + unskewFactor;
+
+	__m128 x2 = _mm_add_ps(_mm_sub_ps(dx, i1), unskewFactor);
+	__m128 y2 = _mm_add_ps(_mm_sub_ps(dy, j1), unskewFactor);
+
+	//float x3 = dx - 1.0 + 2.0 * unskewFactor;		// Offsets for last corner in (x,y) unskewed coords
+	//float y3 = dy - 1.0 + 2.0 * unskewFactor;
+
+	//  Calculation reordered to dx - (1-2*unskew) = dx - 1 + 2*unskew
+	__m128 fac3 = _mm_sub_ps(One, _mm_mul_ps(unskewFactor, Two));
+
+	__m128 x3 = _mm_sub_ps(dx, fac3);
+	__m128 y3 = _mm_sub_ps(dy, fac3);
+
+	
+	//int ii = i & 255;
+	//int jj = j & 255;
+
+	//int grad1 = perm[ii+perm[jj]] % 12;
+	//int grad2 = perm[ii+i1+perm[jj+j1]] % 12;
+	//int grad3 = perm[ii+1+perm[jj+1]] % 12;
+
+	__m128i MASK =  _mm_set1_epi32(255);
+
+	//  ii = i & 255
+	__m128i ii = _mm_and_si128(_mm_cvtps_epi32(fi), MASK);
+	__m128i jj = _mm_and_si128(_mm_cvtps_epi32(fj), MASK);
+
+
+	//  Get ii and jj out and cast to int arrays;
+	__m128i iiout, jjout;
+	_mm_store_si128(&iiout, ii);
+	_mm_store_si128(&jjout, jj);
+	int* iip = (int*)&iiout;
+	int* jjp = (int*)&jjout;
+
+	__declspec(align(16)) float i1f[4];
+	__declspec(align(16)) float j1f[4];
+
+	_mm_store_ps(i1f,i1);
+	_mm_store_ps(j1f,j1);
+
+	int i1_index[4] = {i1f[0], i1f[1], i1f[2], i1f[3]};
+	int j1_index[4] = {j1f[0], j1f[1], j1f[2], j1f[3]};
+
+
+
+	// Work out the hashed gradient indices of the three simplex corners
+	__declspec(align(16)) int grad1[4];
+	__declspec(align(16)) int grad2[4];
+	__declspec(align(16)) int grad3[4];
+
+	for (int c = 0; c < 4; c++) {
+		grad1[c] = perm[iip[c] + perm[jjp[c]]]%12;
+		grad2[c] = perm[iip[c] + i1_index[c] + perm[jjp[c] + j1_index[c]]]%12;
+		grad3[c] = perm[iip[c] + 1 + perm[jjp[c] + 1]]%12;
+	}
+
+	// Calculate the contribution from the three corners
+	//  This method is slower than the second method, but has no branching.
+
+	__m128 PointFive = _mm_set_ps1(0.5f);
+
+	__declspec(align(16)) float xGrads1[4] = {grads[grad1[0]][0], grads[grad1[1]][0], grads[grad1[2]][0], grads[grad1[2]][0]};
+	__declspec(align(16)) float yGrads1[4] = {grads[grad1[0]][1], grads[grad1[1]][1], grads[grad1[2]][1], grads[grad1[2]][1]};
+
+	__declspec(align(16)) float xGrads2[4] = {grads[grad2[0]][0], grads[grad2[1]][0], grads[grad2[2]][0], grads[grad2[2]][0]};
+	__declspec(align(16)) float yGrads2[4] = {grads[grad2[0]][1], grads[grad2[1]][1], grads[grad2[2]][1], grads[grad2[2]][1]};
+
+	__declspec(align(16)) float xGrads3[4] = {grads[grad3[0]][0], grads[grad3[1]][0], grads[grad3[2]][0], grads[grad3[2]][0]};
+	__declspec(align(16)) float yGrads3[4] = {grads[grad3[0]][1], grads[grad3[1]][1], grads[grad3[2]][1], grads[grad3[2]][1]};
+
+	__m128 gradsx1 = _mm_load_ps(xGrads1);
+	__m128 gradsy1 = _mm_load_ps(yGrads1);
+	__m128 gradsx2 = _mm_load_ps(xGrads2);
+	__m128 gradsy2 = _mm_load_ps(yGrads2);
+	__m128 gradsx3 = _mm_load_ps(xGrads3);
+	__m128 gradsy3 = _mm_load_ps(yGrads3);
+
+	__m128 t1 = _mm_sub_ps(PointFive, _mm_add_ps(_mm_mul_ps(dx, dx), _mm_mul_ps(dy, dy)));
+
+	t1 = _mm_max_ps(Zero, t1);
+	t1 = _mm_mul_ps(t1, t1);
+	t1 = _mm_mul_ps(t1, t1);
+	n1 = _mm_mul_ps(t1, _mm_add_ps(_mm_mul_ps(gradsx1, dx), _mm_mul_ps(gradsy1, dy)));
+
+
+	__m128 t2 = _mm_sub_ps(PointFive, _mm_add_ps(_mm_mul_ps(x2, x2), _mm_mul_ps(y2, y2)));
+
+	t2 = _mm_max_ps(Zero, t2);
+	t2 = _mm_mul_ps(t2, t2);
+	t2 = _mm_mul_ps(t2, t2);
+	n2 = _mm_mul_ps(t2, _mm_add_ps(_mm_mul_ps(gradsx2, x2), _mm_mul_ps(gradsy2, y2)));
+
+	__m128 t3 = _mm_sub_ps(PointFive, _mm_add_ps(_mm_mul_ps(x3, x3), _mm_mul_ps(y3, y3)));
+
+	t3 = _mm_max_ps(Zero, t3);
+	t3 = _mm_mul_ps(t3, t3);
+	t3 = _mm_mul_ps(t3, t3);
+	n3 = _mm_mul_ps(t3, _mm_add_ps(_mm_mul_ps(gradsx3, x3), _mm_mul_ps(gradsy3, y3)));
+	
+
+	__declspec(align(16)) float n1Out[4];
+	__declspec(align(16)) float n2Out[4];
+	__declspec(align(16)) float n3Out[4];
+
+	_mm_store_ps(n1Out, n1);
+	_mm_store_ps(n2Out, n2);
+	_mm_store_ps(n3Out, n3);
+
+	float sum = 0;
+	float amplitude = 0;
+
+	for (int i = 0; i < 4; i++) {
+		amplitude = pow(n.persistance, i+iteration);
+		sum += (n1Out[i] + n2Out[i] + n3Out[i])*70.0f*amplitude;
+	}
+
+	// Add contributions from each corner to get the final noise value.
+	return sum;
+}
+
+float NoiseGenerator::HaxFractalSimplex(float x, float y, NoiseObject n)
+{
+	float noise = 0;
+	float maxamp = 0;
+	for(int i = 0; i < n.octaves; i++) {
+		float frequency = pow(2.0f,i);//This increases the frequency with every loop of the octave.
+		float amplitude = pow(n.persistance,i);//This decreases the amplitude with every loop of the octave.
+		maxamp += amplitude;
+//		Simplex(x*frequency/n.zoom, y/n.zoom*frequency)*amplitude;
+	}
+
+	for(int i = 0; i < n.octaves; i+=4) {
+		noise += FourOctaveSimplex(x, y, n, i);	
+	}
+	noise /= maxamp;
+
+	return noise*n.amplitude;	
+}
+
+Vector3 NoiseGenerator::HaxFractalSimplexNormal(float x, float y, NoiseObject n, float step)
+{
+	float offs = step;
+	float xtrioffs = offs * 0.86602540378;
+	float ytrioffs = offs * 0.5;
+	Vector4 A(x, HaxFractalSimplex(x,y+xtrioffs,n), y+xtrioffs, 1.0f);
+	Vector4 B(x-xtrioffs, HaxFractalSimplex(x-xtrioffs,y-ytrioffs,n), y-ytrioffs, 1.0f);
+	Vector4 C(x+xtrioffs, HaxFractalSimplex(x+xtrioffs,y-ytrioffs,n), y-ytrioffs, 1.0f);
+
+	Vector4 AB = B - A;
+	Vector4 AC = C - A;
+
+	Vector4 Normal = AC.Cross(AB);
+	Normal.NormaliseSelf();
+	Vector3 output(Normal);
+	return output;
+}
+
+
+
