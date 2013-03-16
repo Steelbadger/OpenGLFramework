@@ -54,6 +54,7 @@ unsigned short* Heightmap::GenerateHeightField(float x, float y, NoiseObject n, 
 	ThreadData dataArray[threads][threads];
 	HANDLE threadHandles[threads*threads];
 	
+//	noise.FourOctaveSimplex(12, 13, n, 0);
 	
 	for(int i = 0; i < threads; i++) {
 		for(int j = 0; j < threads; j++) {
@@ -70,7 +71,8 @@ unsigned short* Heightmap::GenerateHeightField(float x, float y, NoiseObject n, 
 		}
 	}
 
-	write_tga("output.tga", size, map);
+//	write_tga("output.tga", size, map);
+
 
 	return map;
 }
@@ -119,8 +121,6 @@ unsigned __stdcall Heightmap::GenerateSection(void *data)
 		for (float i = 0; i < args.sectionSize; i++) {
 			height = noise.FractalSimplex(i*step + x, j*step + y, args.n);
 			normal = noise.FractalSimplexNormal(i*step + x, j*step + y, args.n, step);
-			//height = noise.HaxFractalSimplex(i*step + x, j*step + y, args.n);
-			//normal = noise.HaxFractalSimplexNormal(i*step + x, j*step + y, args.n, step);
 
 			//  Convert the numbers to short int
 			args.start[currentpixel] = GLushort((normal.x+1)/2 * 65535);			//  R
