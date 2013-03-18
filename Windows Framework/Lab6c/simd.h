@@ -45,6 +45,11 @@ namespace SIMD
 		return _mm_add_ps(left, right);
 	}
 
+	inline __m128& operator +(const __m128 &left, const float &right)
+	{
+		return _mm_add_ps(left, _mm_set1_ps(right));
+	}
+
 	inline __m128& operator -(const __m128 &left, const __m128 &right)
 	{
 		return _mm_sub_ps(left, right);
@@ -106,6 +111,12 @@ namespace SIMD
 		return _mm_cvtepi32_ps(val);
 	}
 
+	inline __m128& Floor(const __m128 val)
+	{
+		__m128i tmp = _mm_cvttps_epi32(val);
+		return _mm_cvtepi32_ps(tmp);
+	}
+
 
 	inline void Return(float * target, __m128 val)
 	{
@@ -129,7 +140,14 @@ namespace SIMD
 
 	inline __m128i& operator &(const __m128i lhs, const int rhs)
 	{
-		return _mm_and_si128(lhs, _mm_set1_epi32(rhs));
+		__m128i tmp = _mm_set1_epi32(rhs);
+		return _mm_and_si128(lhs, tmp);
+	}
+
+	inline __m128& operator &(const __m128 lhs, const int rhs)
+	{
+		__m128 r = _mm_set1_ps(rhs);
+		return _mm_and_ps(lhs, r);
 	}
 
 	inline __m128i& operator ^(const __m128i lhs, const __m128i rhs)
@@ -139,7 +157,24 @@ namespace SIMD
 
 	inline __m128i& operator ^(const __m128i lhs, const int rhs)
 	{
-		return _mm_xor_si128(lhs, _mm_set1_epi32(rhs));
+		__m128i tmp = _mm_set1_epi32(rhs);
+		return _mm_xor_si128(lhs, tmp);
+	}
+
+	inline __m128& operator >(const __m128 &lhs, const __m128 &rhs)
+	{
+		return _mm_cmpgt_ps(lhs, rhs);
+	}
+
+	inline __m128& Max(const __m128 &lhs, const __m128 &rhs)
+	{
+		return _mm_max_ps(lhs, rhs);
+	}
+
+	inline __m128& Max(const float &lhs, const __m128 &rhs)
+	{
+		__m128 tmp = _mm_set1_ps(lhs);
+		return _mm_max_ps(tmp, rhs);
 	}
 
 };

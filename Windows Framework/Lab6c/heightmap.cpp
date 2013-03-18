@@ -39,7 +39,7 @@ Heightmap::~Heightmap(void)
 
 unsigned short* Heightmap::GenerateHeightField(float x, float y, NoiseObject n, float square)
 {
-	const int subdivs = 512;  //  256, 512, 1024
+	const int subdivs = 1024;  //  256, 512, 1024
 	const int threads = size/subdivs;
 
 
@@ -71,7 +71,7 @@ unsigned short* Heightmap::GenerateHeightField(float x, float y, NoiseObject n, 
 		}
 	}
 
-//	write_tga("output.tga", size, map);
+	write_tga("noiseFunc.tga", size, map);
 
 
 	return map;
@@ -121,6 +121,7 @@ unsigned __stdcall Heightmap::GenerateSection(void *data)
 		for (float i = 0; i < args.sectionSize; i++) {
 			height = noise.FractalSimplex(i*step + x, j*step + y, args.n);
 			normal = noise.FractalSimplexNormal(i*step + x, j*step + y, args.n, step);
+//			height = noise.NonCoherentNoise2D(i*step + x, j*step + y)*args.n.amplitude;
 
 			//  Convert the numbers to short int
 			args.start[currentpixel] = GLushort((normal.x+1)/2 * 65535);			//  R

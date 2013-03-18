@@ -164,11 +164,12 @@ __m128 NoiseGenerator::Cosine(__m128 a)
 	static const float TWOPI = PI*2;
     static const float B = 4/PI;
     static const float C = -4/(PI*PI);
-
+	
+	using namespace SIMD;
 
 	//  Method courtesy of Nick (http://devmaster.net/forums/topic/4648-fast-and-accurate-sinecosine/)
 
-	__m128 arg = _mm_add_ps(a, _mm_set1_ps(PI2));
+	__m128 arg = a + PI2;
 	__m128 mask = _mm_cmpnlt_ps(_mm_set1_ps(PI), arg); 
 	arg = _mm_sub_ps(arg, _mm_and_ps(_mm_set1_ps(TWOPI), mask));
 	__m128 absx = _mm_mul_ps((_mm_and_ps(_mm_cmpgt_ps(arg, _mm_set1_ps(0.0f)), _mm_set1_ps(-1.0f))), arg);
@@ -452,12 +453,24 @@ __m128 NoiseGenerator::AltNonCoherentNoise2D(__m128 x, __m128 y)
 	using namespace SIMD;
 	x = x * seed;
 	y = y * seed;
-	__m128i n = Assign(x) + Assign(y * 57);
+	__m128i n;
+	__m128i val1 = Assign(x);
+	__m128i val2 = Assign(y * 57);
+	n = val1 + val2;
 
 	n = (n<<13)^n;
-	__m128i nn = (n * (n * n * 604893 + 19990303) + 1376312589) & 0x7fffffff;
+	__m128i m = n * n;
+	m = m * 604893;
+	m = m + 19990303;
+	m = n * m;
+	m = m + 1376312589;
+	m = m & 0x7fffffff;
 
-	return (1.0f - (Assign(nn)/1073741824.0));
+	__m128 p = Assign(m);
+	p = p / 1073741824.0f;
+	p = 1.0f - p;
+
+	return p;
 }
 
 float NoiseGenerator::Simplex(float x, float y)
@@ -547,10 +560,13 @@ float NoiseGenerator::Simplex(float x, float y)
 
 float NoiseGenerator::FractalSimplex(float x, float y, NoiseObject n)
 {
-	__m128 xl = SIMD::Assign(x);
-	__m128 yl = SIMD::Assign(y);
-	__m128 out1 = AltNonCoherentNoise2D(xl, yl);
-	float out2 = NonCoherentNoise2D(x, y);
+	//__m128 xl = SIMD::Assign(x);
+	//__m128 yl = SIMD::Assign(y);
+	//__m128 out1 = AltNonCoherentNoise2D(xl, yl);
+	//float out2 = NonCoherentNoise2D(x, y);
+
+//	FourOctaveSimplex(x, y, n, 0);
+
 	float noise = 0;
 	float maxamp = 0;
 	for(int i = 0; i < n.octaves; i++) {
@@ -586,64 +602,80 @@ float NoiseGenerator::FourOctaveSimplex(float x, float y, NoiseObject n, int ite
 {
 	float root3 = 1.73205080757;
 
+	using namespace SIMD;
+
 	__declspec(align(16)) float frequency[4];
 	for (int i = 0; i < 4; i++) {
 		frequency[i] = pow(2.0f, iteration + i);
 	}
 
 	//  Put our zoom level and frequency into 4-float-wide sse variables
-	__m128 zoom = _mm_set1_ps(n.zoom);
-	__m128 freq = _mm_load_ps(frequency);
-	__m128 blah = _mm_set1_ps(123.4);
+//	__m128 zoom = _mm_set1_ps(n.zoom);
+	__m128 zoom = Assign(n.zoom);
+//	__m128 freq = _mm_load_ps(frequency);
+	__m128 freq = Assign(frequency);
 
 	//  Put the x position of interest into a 4-float-wide sse variable
-	__m128 xb = _mm_set1_ps(x);
-	__m128 yb = _mm_set1_ps(y);
+//	__m128 xb = _mm_set1_ps(x);
+	__m128 xb = Assign(x);
+//	__m128 yb = _mm_set1_ps(y);
+	__m128 yb = Assign(y);
 
 	  
-	__m128 scaleFactor = _mm_div_ps(freq, zoom);
+//	__m128 scaleFactor = _mm_div_ps(freq, zoom);
+	__m128 scaleFactor = freq / zoom;
 
-	__m128 xa = _mm_mul_ps(xb, scaleFactor);
-	__m128 ya = _mm_mul_ps(yb, scaleFactor);
+//	__m128 xa = _mm_mul_ps(xb, scaleFactor);
+	__m128 xa = xb * scaleFactor;
+//	__m128 ya = _mm_mul_ps(yb, scaleFactor);
+	__m128 ya = yb * scaleFactor;
 
 
 
 	float skewFact = 0.5*(root3-1.0);
 	float unskewFact = (3.0-root3)/6.0;
 
-	__m128 skewFactor = _mm_set1_ps(skewFact);
-	__m128 unskewFactor = _mm_set1_ps(unskewFact);
+	__m128 skewFactor = Assign(skewFact);
+	__m128 unskewFactor = Assign(unskewFact);
 
 	//float s = (x+y)*skewFactor;			// Hairy factor for 2D	
-	__m128 hairy = _mm_mul_ps(_mm_add_ps(xa, ya), skewFactor);
+	__m128 xy = xa + ya;
+
+	__m128 hairy = xy * skewFactor;
 
 
 	//int i = int(x+s)
 	//int j = int(y+s)
-	__m128 fi = _mm_cvtepi32_ps(_mm_cvtps_epi32(_mm_add_ps(xa, hairy)));
-	__m128 fj = _mm_cvtepi32_ps(_mm_cvtps_epi32(_mm_add_ps(ya, hairy)));
+
+	__m128 fi = xa + hairy;
+	fi = Floor(fi);
+//	__m128 fj = _mm_cvtepi32_ps(_mm_cvtps_epi32(_mm_add_ps(ya, hairy)));
+	__m128 fj = ya + hairy;
+	fj = Floor(fj);
 
 	//float t = (i+j)*unskewFactor;
-	__m128 t = _mm_mul_ps(_mm_add_ps(fi, fj), skewFactor);
+//	__m128 t = _mm_mul_ps(_mm_add_ps(fi, fj), skewFactor);
+	__m128 t = fi+fj;
+	t = t * unskewFactor;
 
 	//float X0 = i-t;		// Unskew the cell origin back to (x,y) space
 	//float Y0 = j-t;
 
-	__m128 X0 = _mm_sub_ps(fi, t);
-	__m128 Y0 = _mm_sub_ps(fj, t);
+//	__m128 X0 = _mm_sub_ps(fi, t);
+//	__m128 Y0 = _mm_sub_ps(fj, t);
+	__m128 X0 = fi - t;
+	__m128 Y0 = fj - t;
+
 
 	//float dx = x-X0;		// The x,y distances from the cell origin
 	//float dy = y-Y0;
 
-	__m128 dx = _mm_sub_ps(xa, X0);
-	__m128 dy = _mm_sub_ps(ya, Y0);
+//	__m128 dx = _mm_sub_ps(xa, X0);
+//	__m128 dy = _mm_sub_ps(ya, Y0);
 
-
-	//  Make some 4 repeat versions of numbers we'll use
-	__m128 Zero =  _mm_set1_ps(0.0f);
-	__m128 One =  _mm_set1_ps(1.0f);
-	__m128 Two =  _mm_set1_ps(2.0f);
-
+	__m128 dx = xa - X0;
+	__m128 dy = ya - Y0;
+	
 
 	//int check = dy-dx;
 
@@ -657,27 +689,39 @@ float NoiseGenerator::FourOctaveSimplex(float x, float y, NoiseObject n, int ite
 	//}			
 
 	//  check = 0xffffffff if dx > dy else 0x0
-	__m128 check = _mm_cmpgt_ps(dx, dy);
+//	__m128 check = _mm_cmpgt_ps(dx, dy);
+	__m128 check = dx > dy;
 
 	//if check is 0xffffffff then i1 is 1.0, else it's zero
-	__m128 i1 = _mm_and_ps(check, One);
+//	__m128 i1 = _mm_and_ps(check, One);
+	__m128 i1 = check & 1;
 	//  j1 has 1 is i1 is 0 and 0 if i1 is 1;
-	__m128 j1 = _mm_sub_ps(One, i1);
+//	__m128 j1 = _mm_sub_ps(One, i1);
+	__m128 j1 = 1 - i1;
 
 	//float x2 = dx - i1 + unskewFactor;				// Offsets for middle corner in (x,y) unskewed coords
 	//float y2 = dy - j1 + unskewFactor;
 
-	__m128 x2 = _mm_add_ps(_mm_sub_ps(dx, i1), unskewFactor);
-	__m128 y2 = _mm_add_ps(_mm_sub_ps(dy, j1), unskewFactor);
-
+//	__m128 x2 = _mm_add_ps(_mm_sub_ps(dx, i1), unskewFactor);
+//	__m128 y2 = _mm_add_ps(_mm_sub_ps(dy, j1), unskewFactor);
+	__m128 x2 = dx - i1;
+	__m128 y2 = dy - j1;
+	x2 = x2 + unskewFactor;
+	y2 = y2 + unskewFactor;
+	
 	//float x3 = dx - 1.0 + 2.0 * unskewFactor;		// Offsets for last corner in (x,y) unskewed coords
 	//float y3 = dy - 1.0 + 2.0 * unskewFactor;
 
 	//  Calculation reordered to dx - (1-2*unskew) = dx - 1 + 2*unskew
-	__m128 fac3 = _mm_sub_ps(One, _mm_mul_ps(unskewFactor, Two));
+//	__m128 fac3 = _mm_sub_ps(One, _mm_mul_ps(unskewFactor, Two));
+	__m128 fac3 = unskewFactor * 2;
+	fac3 = 1 - fac3;
 
-	__m128 x3 = _mm_sub_ps(dx, fac3);
-	__m128 y3 = _mm_sub_ps(dy, fac3);
+//	__m128 x3 = _mm_sub_ps(dx, fac3);
+//	__m128 y3 = _mm_sub_ps(dy, fac3);
+	__m128 x3 = dx - fac3;
+	__m128 y3 = dy - fac3;
+
 
 	
 	//int ii = i & 255;
@@ -687,88 +731,116 @@ float NoiseGenerator::FourOctaveSimplex(float x, float y, NoiseObject n, int ite
 	//int grad2 = perm[ii+i1+perm[jj+j1]] % 12;
 	//int grad3 = perm[ii+1+perm[jj+1]] % 12;
 
-	__m128i MASK =  _mm_set1_epi32(255);
+	//__m128i MASK =  _mm_set1_epi32(255);
 
-	//  ii = i & 255
-	__m128i ii = _mm_and_si128(_mm_cvtps_epi32(fi), MASK);
-	__m128i jj = _mm_and_si128(_mm_cvtps_epi32(fj), MASK);
+	////  ii = i & 255
+	//__m128i ii = _mm_and_si128(_mm_cvtps_epi32(fi), MASK);
+	//__m128i jj = _mm_and_si128(_mm_cvtps_epi32(fj), MASK);
 
 
-	//  Get ii and jj out and cast to int arrays;
-	__m128i iiout, jjout;
+	////  Get ii and jj out and cast to int arrays;
+	//__m128i iiout, jjout;
 
-	int* iitest = reinterpret_cast<int*>(&ii);
+	//int* iitest = reinterpret_cast<int*>(&ii);
 
-	_mm_store_si128(&iiout, ii);
-	_mm_store_si128(&jjout, jj);
-	int* iip = (int*)&iiout;
-	int* jjp = (int*)&jjout;
+	//_mm_store_si128(&iiout, ii);
+	//_mm_store_si128(&jjout, jj);
+	//int* iip = (int*)&iiout;
+	//int* jjp = (int*)&jjout;
 
-	__declspec(align(16)) float i1f[4];
-	__declspec(align(16)) float j1f[4];
+	//__declspec(align(16)) float i1f[4];
+	//__declspec(align(16)) float j1f[4];
 
-	_mm_store_ps(i1f,i1);
-	_mm_store_ps(j1f,j1);
+	//_mm_store_ps(i1f,i1);
+	//_mm_store_ps(j1f,j1);
 
-	int i1_index[4] = {i1f[0], i1f[1], i1f[2], i1f[3]};
-	int j1_index[4] = {j1f[0], j1f[1], j1f[2], j1f[3]};
+	//int i1_index[4] = {i1f[0], i1f[1], i1f[2], i1f[3]};
+	//int j1_index[4] = {j1f[0], j1f[1], j1f[2], j1f[3]};
 
 
 
 	// Work out the hashed gradient indices of the three simplex corners
-	__declspec(align(16)) int grad1[4];
-	__declspec(align(16)) int grad2[4];
-	__declspec(align(16)) int grad3[4];
+	//__declspec(align(16)) int grad1[4];
+	//__declspec(align(16)) int grad2[4];
+	//__declspec(align(16)) int grad3[4];
 
-	for (int c = 0; c < 4; c++) {
-		grad1[c] = perm[iip[c] + perm[jjp[c]]]%12;
-		grad2[c] = perm[iip[c] + i1_index[c] + perm[jjp[c] + j1_index[c]]]%12;
-		grad3[c] = perm[iip[c] + 1 + perm[jjp[c] + 1]]%12;
-	}
+	//for (int c = 0; c < 4; c++) {
+	//	grad1[c] = perm[iip[c] + perm[jjp[c]]]%12;
+	//	grad2[c] = perm[iip[c] + i1_index[c] + perm[jjp[c] + j1_index[c]]]%12;
+	//	grad3[c] = perm[iip[c] + 1 + perm[jjp[c] + 1]]%12;
+	//}
 
 	// Calculate the contribution from the three corners
 	//  This method is slower than the second method, but has no branching.
 
-	__m128 PointFive = _mm_set_ps1(0.5f);
+	//__m128 PointFive = _mm_set_ps1(0.5f);
 
-	__declspec(align(16)) float xGrads1[4] = {grads[grad1[0]][0], grads[grad1[1]][0], grads[grad1[2]][0], grads[grad1[2]][0]};
-	__declspec(align(16)) float yGrads1[4] = {grads[grad1[0]][1], grads[grad1[1]][1], grads[grad1[2]][1], grads[grad1[2]][1]};
+	//__declspec(align(16)) float xGrads1[4] = {grads[grad1[0]][0], grads[grad1[1]][0], grads[grad1[2]][0], grads[grad1[2]][0]};
+	//__declspec(align(16)) float yGrads1[4] = {grads[grad1[0]][1], grads[grad1[1]][1], grads[grad1[2]][1], grads[grad1[2]][1]};
 
-	__declspec(align(16)) float xGrads2[4] = {grads[grad2[0]][0], grads[grad2[1]][0], grads[grad2[2]][0], grads[grad2[2]][0]};
-	__declspec(align(16)) float yGrads2[4] = {grads[grad2[0]][1], grads[grad2[1]][1], grads[grad2[2]][1], grads[grad2[2]][1]};
+	//__declspec(align(16)) float xGrads2[4] = {grads[grad2[0]][0], grads[grad2[1]][0], grads[grad2[2]][0], grads[grad2[2]][0]};
+	//__declspec(align(16)) float yGrads2[4] = {grads[grad2[0]][1], grads[grad2[1]][1], grads[grad2[2]][1], grads[grad2[2]][1]};
 
-	__declspec(align(16)) float xGrads3[4] = {grads[grad3[0]][0], grads[grad3[1]][0], grads[grad3[2]][0], grads[grad3[2]][0]};
-	__declspec(align(16)) float yGrads3[4] = {grads[grad3[0]][1], grads[grad3[1]][1], grads[grad3[2]][1], grads[grad3[2]][1]};
+	//__declspec(align(16)) float xGrads3[4] = {grads[grad3[0]][0], grads[grad3[1]][0], grads[grad3[2]][0], grads[grad3[2]][0]};
+	//__declspec(align(16)) float yGrads3[4] = {grads[grad3[0]][1], grads[grad3[1]][1], grads[grad3[2]][1], grads[grad3[2]][1]};
 
-	__m128 gradsx1 = _mm_load_ps(xGrads1);
-	__m128 gradsy1 = _mm_load_ps(yGrads1);
-	__m128 gradsx2 = _mm_load_ps(xGrads2);
-	__m128 gradsy2 = _mm_load_ps(yGrads2);
-	__m128 gradsx3 = _mm_load_ps(xGrads3);
-	__m128 gradsy3 = _mm_load_ps(yGrads3);
+	__m128 gradsx1 = AltNonCoherentNoise2D(dx, dy);
+	__m128 gradsy1 = AltNonCoherentNoise2D(dy*31, dx*27);
+	__m128 gradsx2 = AltNonCoherentNoise2D(x2, y2);
+	__m128 gradsy2 = AltNonCoherentNoise2D(y2*31, x2*27);
+	__m128 gradsx3 = AltNonCoherentNoise2D(x3, y3);
+	__m128 gradsy3 = AltNonCoherentNoise2D(y3*37, x3*27);
 
-	__m128 t1 = _mm_sub_ps(PointFive, _mm_add_ps(_mm_mul_ps(dx, dx), _mm_mul_ps(dy, dy)));
+//	__m128 t1 = _mm_sub_ps(PointFive, _mm_add_ps(_mm_mul_ps(dx, dx), _mm_mul_ps(dy, dy)));
+	__m128 xsq = dx * dx;
+	__m128 ysq = dy * dy;
+	__m128 t1 = xsq + ysq;
+	t1 = 0.5 - t1;
 
-	t1 = _mm_max_ps(Zero, t1);
-	t1 = _mm_mul_ps(t1, t1);
-	t1 = _mm_mul_ps(t1, t1);
-	__m128 n1 = _mm_mul_ps(t1, _mm_add_ps(_mm_mul_ps(gradsx1, dx), _mm_mul_ps(gradsy1, dy)));
+
+	t1 = Max(0, t1);
+	t1 = t1 * t1;
+	t1 = t1 * t1;
+//	__m128 n1 = _mm_mul_ps(t1, _mm_add_ps(_mm_mul_ps(gradsx1, dx), _mm_mul_ps(gradsy1, dy)));
+	__m128 tmp1 = gradsx1 * dx;
+	__m128 tmp2 = gradsy1 * dy;
+	__m128 n1 = tmp1 + tmp2;
+	n1 = t1 * n1;
 
 
-	__m128 t2 = _mm_sub_ps(PointFive, _mm_add_ps(_mm_mul_ps(x2, x2), _mm_mul_ps(y2, y2)));
 
-	t2 = _mm_max_ps(Zero, t2);
-	t2 = _mm_mul_ps(t2, t2);
-	t2 = _mm_mul_ps(t2, t2);
-	__m128 n2 = _mm_mul_ps(t2, _mm_add_ps(_mm_mul_ps(gradsx2, x2), _mm_mul_ps(gradsy2, y2)));
 
-	__m128 t3 = _mm_sub_ps(PointFive, _mm_add_ps(_mm_mul_ps(x3, x3), _mm_mul_ps(y3, y3)));
+//	__m128 t2 = _mm_sub_ps(PointFive, _mm_add_ps(_mm_mul_ps(x2, x2), _mm_mul_ps(y2, y2)));
+	xsq = x2 * x2;
+	ysq = y2 * y2;
+	__m128 t2 = xsq + ysq;
+	t2 = 0.5 - t2;
 
-	t3 = _mm_max_ps(Zero, t3);
-	t3 = _mm_mul_ps(t3, t3);
-	t3 = _mm_mul_ps(t3, t3);
-	__m128 n3 = _mm_mul_ps(t3, _mm_add_ps(_mm_mul_ps(gradsx3, x3), _mm_mul_ps(gradsy3, y3)));
-	
+	t2 = Max(0, t2);
+	t2 = t2 * t2;
+	t2 = t2 * t2;
+//	__m128 n2 = _mm_mul_ps(t2, _mm_add_ps(_mm_mul_ps(gradsx2, x2), _mm_mul_ps(gradsy2, y2)));
+	tmp1 = gradsx2 * x2;
+	tmp2 = gradsy2 * y2;
+	__m128 n2 = tmp1 + tmp2;
+	n2 = t2 * n2;
+
+
+//	__m128 t3 = _mm_sub_ps(PointFive, _mm_add_ps(_mm_mul_ps(x3, x3), _mm_mul_ps(y3, y3)));
+	xsq = x3 * x3;
+	ysq = y3 * y3;
+	__m128 t3 = xsq + ysq;
+	t3 = 0.5 - t3;
+
+
+	t3 = Max(0, t3);
+	t3 = t3 * t3;
+	t3 = t3 * t3;
+//	__m128 n3 = _mm_mul_ps(t3, _mm_add_ps(_mm_mul_ps(gradsx3, x3), _mm_mul_ps(gradsy3, y3)));
+	tmp1 = gradsx3 * x3;
+	tmp2 = gradsy3 * y3;
+	__m128 n3 = tmp1 + tmp2;
+	n3 = t3 * n3;	
 
 	__declspec(align(16)) float n1Out[4];
 	__declspec(align(16)) float n2Out[4];
