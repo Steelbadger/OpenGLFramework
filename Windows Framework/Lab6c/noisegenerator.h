@@ -43,10 +43,11 @@ public:
 	Vector3 FastNormalToPerlin2D(float x, float y, NoiseObject n);
 	static void GeneratePermutationTable();
 	void Seed(float s){seed = s; seedSSE = _mm_set1_ps(seed);}
+	__m128 AltNonCoherentNoise2D(__m128 x, __m128 y);
+	float NonCoherentNoise2D(float x, float y);
 
 private:
 	float NonCoherentNoise1D(float x);
-	float NonCoherentNoise2D(float x, float y);
 	__m128 SSENonCoherentNoise2D(__m128 x, __m128 y);
 	float Interpolate(float a, float b, float x);
 	__m128 NoiseGenerator::Interpolate(__m128 a, __m128 b, __m128 x);

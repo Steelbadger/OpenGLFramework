@@ -4,6 +4,7 @@
 #include "my4x4matrix.h"
 #include <stdlib.h>
 #include <algorithm>
+#include "simd.h"
 
 
 unsigned char NoiseGenerator::permutation[SIZE];
@@ -445,6 +446,20 @@ float NoiseGenerator::NonCoherentNoise2D(float x, float y)
 	int nn = (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
 	return 1.0-((float)nn/1073741824.0);
 }
+
+__m128 NoiseGenerator::AltNonCoherentNoise2D(__m128 x, __m128 y)
+{
+	using namespace SIMD;
+	x = x * seed;
+	y = y * seed;
+	__m128i n = Assign(x) + Assign(y * 57);
+
+	n = (n<<13)^n;
+	__m128i nn = (n * (n * n * 604893 + 19990303) + 1376312589) & 0x7fffffff;
+
+	return (1.0f - (Assign(nn)/1073741824.0));
+}
+
 float NoiseGenerator::Simplex(float x, float y)
 {
 	float root3 = 1.73205080757;
@@ -496,7 +511,7 @@ float NoiseGenerator::Simplex(float x, float y)
 	int grad2 = perm[ii+i1+perm[jj+j1]] % 12;
 	int grad3 = perm[ii+1+perm[jj+1]] % 12;
 
-	double t1 = 0.5 - dx*dx-dy*dy;
+	float t1 = 0.5 - dx*dx-dy*dy;
 	if (t1<0) {
 		n1 = 0.0;
 	} else {
@@ -505,7 +520,7 @@ float NoiseGenerator::Simplex(float x, float y)
 	}
 
 
-	double t2 = 0.5 - x2*x2-y2*y2;
+	float t2 = 0.5 - x2*x2-y2*y2;
 	if (t2<0) {
 		n2 = 0.0;
 	} else {
@@ -514,7 +529,7 @@ float NoiseGenerator::Simplex(float x, float y)
 	}
 
 
-	double t3 = 0.5 - x3*x3-y3*y3;
+	float t3 = 0.5 - x3*x3-y3*y3;
 	if (t3<0) {
 		n3 = 0.0;
 	} else {
@@ -532,6 +547,10 @@ float NoiseGenerator::Simplex(float x, float y)
 
 float NoiseGenerator::FractalSimplex(float x, float y, NoiseObject n)
 {
+	__m128 xl = SIMD::Assign(x);
+	__m128 yl = SIMD::Assign(y);
+	__m128 out1 = AltNonCoherentNoise2D(xl, yl);
+	float out2 = NonCoherentNoise2D(x, y);
 	float noise = 0;
 	float maxamp = 0;
 	for(int i = 0; i < n.octaves; i++) {
