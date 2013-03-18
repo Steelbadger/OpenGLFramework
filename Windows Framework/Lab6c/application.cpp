@@ -116,7 +116,7 @@ void Application::Initialize(HINSTANCE hInstance)
 
 
 	Heightmap heights;
-	Texture heightMap(Texture::DISPLACEMENT, heights.GenerateHeightField(0, 0, myNoise, gridSize), 512);
+	Texture heightMap(Texture::DISPLACEMENT, heights.GenerateHeightField(0, 0, myNoise, gridSize), 2048);
 	groundMat.AddTexture(heightMap);
 	ground.AttachMaterial(groundMat);
 

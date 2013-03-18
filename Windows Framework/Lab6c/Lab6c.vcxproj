@@ -64,7 +64,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <AdditionalDependencies>Opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -120,6 +120,7 @@
     <ClInclude Include="primitives.h" />
     <ClInclude Include="quaternion.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="simd.h" />
     <ClInclude Include="staticobject.h" />
     <ClInclude Include="terrain.h" />
     <ClInclude Include="mouse.h" />

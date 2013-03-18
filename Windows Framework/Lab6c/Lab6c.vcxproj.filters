@@ -278,6 +278,9 @@
     <ClInclude Include="shader.h">
       <Filter>Header Files\Material</Filter>
     </ClInclude>
+    <ClInclude Include="simd.h">
+      <Filter>Header Files\Maths</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.fragmentshader">
