@@ -39,7 +39,7 @@ Heightmap::~Heightmap(void)
 
 unsigned short* Heightmap::GenerateHeightField(float x, float y, NoiseObject n, float square)
 {
-	const int subdivs = 1024;  //  256, 512, 1024
+	const int subdivs = 256;  //  256, 512, 1024
 	const int threads = size/subdivs;
 
 
@@ -119,7 +119,7 @@ unsigned __stdcall Heightmap::GenerateSection(void *data)
 		counter = (j+args.imageBaseY) * args.imageSize + args.imageBaseX;
 		currentpixel = counter*4;
 		for (float i = 0; i < args.sectionSize; i++) {
-			height = noise.FractalSimplex(i*step + x, j*step + y, args.n);
+			height = noise.HaxFractalSimplex(i*step + x, j*step + y, args.n);
 			normal = noise.FractalSimplexNormal(i*step + x, j*step + y, args.n, step);
 
 			//  Convert the numbers to short int

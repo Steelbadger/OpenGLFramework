@@ -575,7 +575,7 @@ float NoiseGenerator::FourOctaveSimplex(float x, float y, NoiseObject n, int ite
 	//  Put our zoom level and frequency into 4-float-wide sse variables
 	__m128 zoom = _mm_set1_ps(n.zoom);
 	__m128 freq = _mm_load_ps(frequency);
-
+	__m128 blah = _mm_set1_ps(123.4);
 
 	//  Put the x position of interest into a 4-float-wide sse variable
 	__m128 xb = _mm_set1_ps(x);

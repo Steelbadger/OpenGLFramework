@@ -33,6 +33,21 @@ void Application::Initialize(HINSTANCE hInstance)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glewInit();
+
+	double myTimer = clock();
+
+	myTimer = clock() - myTimer;
+	int numTextureUnits;
+
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &numTextureUnits);
+
+	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
+	std::cout << "OpenGL 4.2 Initialized: " << 	GLEW_VERSION_4_2 << std::endl;
+	std::cout << "Number of Texture Units: " << numTextureUnits << std::endl;
+	std::cout << std::endl << "Time to Add Terrain To Renderer: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+
+	myTimer = clock();
+
 	player.SetLocation(50.0f, 30.0f, 50.0f);
 	LightSource playerLight(LightSource::POINT);
 	playerLight.SetColour(0.7f, 0.7f, 0.7f);
@@ -99,22 +114,9 @@ void Application::Initialize(HINSTANCE hInstance)
 	groundMat.AddShader("terrain.tesscontrol");
 	groundMat.AddShader("terrain.tessevaluation");
 
-	double myTimer = clock();
-
-	myTimer = clock() - myTimer;
-	int numTextureUnits;
-
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &numTextureUnits);
-
-	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-	std::cout << "OpenGL 4.2 Initialized: " << 	GLEW_VERSION_4_2 << std::endl;
-	std::cout << "Number of Texture Units: " << numTextureUnits << std::endl;
-	std::cout << std::endl << "Time to Add Terrain To Renderer: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
-
-	myTimer = clock();
 
 	Heightmap heights;
-	Texture heightMap(Texture::DISPLACEMENT, heights.GenerateHeightField(0, 0, myNoise, gridSize), 2048);
+	Texture heightMap(Texture::DISPLACEMENT, heights.GenerateHeightField(0, 0, myNoise, gridSize), 512);
 	groundMat.AddTexture(heightMap);
 	ground.AttachMaterial(groundMat);
 
