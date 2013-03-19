@@ -453,6 +453,10 @@ __m128 NoiseGenerator::AltNonCoherentNoise2D(__m128 x, __m128 y)
 	using namespace SIMD;
 	x = x * seed;
 	y = y * seed;
+
+	__m128i thingy = Assign(x) + Assign(y * 57);
+
+
 	__m128i n;
 	__m128i val1 = Assign(x);
 	__m128i val2 = Assign(y * 57);
@@ -560,10 +564,10 @@ float NoiseGenerator::Simplex(float x, float y)
 
 float NoiseGenerator::FractalSimplex(float x, float y, NoiseObject n)
 {
-	//__m128 xl = SIMD::Assign(x);
-	//__m128 yl = SIMD::Assign(y);
-	//__m128 out1 = AltNonCoherentNoise2D(xl, yl);
-	//float out2 = NonCoherentNoise2D(x, y);
+	__m128 xl = SIMD::Assign(x);
+	__m128 yl = SIMD::Assign(y);
+	__m128 out1 = AltNonCoherentNoise2D(xl, yl);
+	float out2 = NonCoherentNoise2D(x, y);
 
 //	FourOctaveSimplex(x, y, n, 0);
 
