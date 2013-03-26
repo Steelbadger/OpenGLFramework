@@ -1,25 +1,42 @@
 #include "mythread.h"
 
 
-MyThread::MyThread(void)
+MyThread::MyThread(void):
+	threadActive(true),
+	taskComplete(false),
+	taskAssigned(false),
+	inProcess(false)
 {
+	handle = (HANDLE) _beginthreadex(NULL,0,&MyThread::ThreadFunc,(void*)this,CREATE_SUSPENDED,NULL);
+	taskSem = CreateSemaphore(NULL, 0, 1, NULL);
+	deathSem = CreateSemaphore(NULL, 0, 1, NULL);
+	threadCompleteSem = CreateSemaphore(NULL, 0, 1, NULL);
 }
 
-MyThread::MyThread(BaseTask* t)
+MyThread::MyThread(BaseTask* t):
+	threadActive(true),
+	taskComplete(false),
+	taskAssigned(false),
+	inProcess(false)
 {
 	AssignTask(t);
+	handle = (HANDLE) _beginthreadex(NULL,0,&MyThread::ThreadFunc,(void*)this,CREATE_SUSPENDED,NULL);
+	taskSem = CreateSemaphore(NULL, 0, 1, NULL);
+	deathSem = CreateSemaphore(NULL, 0, 1, NULL);
+	threadCompleteSem = CreateSemaphore(NULL, 0, 1, NULL);
 }
 
 
 
 MyThread::~MyThread(void)
 {
+	ReleaseSemaphore(deathSem, 1, NULL);
+	WaitForSingleObject(threadCompleteSem, INFINITE);
 }
 
 void MyThread::AssignTask(BaseTask* task)
 {
 	currentTask = task;
-	handle = (HANDLE) _beginthreadex(NULL,0,&MyThread::ThreadFunc,(void*)this,CREATE_SUSPENDED,NULL);
 	taskComplete = false;
 	taskAssigned = true;
 	inProcess = false;
@@ -31,8 +48,7 @@ void MyThread::BeginTask()
 		taskComplete = false;
 		inProcess = true;
 		ResumeThread(handle);
-		inProcess = false;
-		taskComplete = true;
+		ReleaseSemaphore(taskSem, 1, NULL);
 	}
 }
 
@@ -46,9 +62,27 @@ unsigned __stdcall MyThread::ThreadFunc(void* args)
 	//  Retrieve the thread-object from the argument
 	MyThread* p = (MyThread*) args;
 
-	//  Execute the current task for that thread object
-	p->currentTask->Execute();
+	HANDLE deathSem = p->deathSem;
+	DWORD deathCheckResult;
 
+	while(p->threadActive) {
+		WaitForSingleObject(p->taskSem, INFINITE);
+		BaseTask* currentTask = p->currentTask;
+		bool taskComplete = p->taskComplete;
+		bool inProcess = p->inProcess;
+
+		//  Execute the current task for that thread object
+		p->currentTask->Execute();
+
+		p->taskComplete = true;
+		p->inProcess = false;
+
+		deathCheckResult = WaitForSingleObject(p->deathSem, 0L);
+		if (deathCheckResult == WAIT_TIMEOUT) {
+			p->threadActive = false;
+		}
+	}
+	ReleaseSemaphore(p->threadCompleteSem, 1, NULL);
 	//  Once done return 0
 	return 0;
 }

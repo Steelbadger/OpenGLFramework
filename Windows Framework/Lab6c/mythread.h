@@ -16,10 +16,14 @@ public:
 
 private:
 	HANDLE handle;
+	HANDLE taskSem;
+	HANDLE deathSem;
+	HANDLE threadCompleteSem;
 	BaseTask* currentTask;
 	bool taskAssigned;
 	bool taskComplete;
 	bool inProcess;
+	bool threadActive;
 	static unsigned __stdcall ThreadFunc(void* args);
 };
 
