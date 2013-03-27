@@ -45,6 +45,11 @@ public:
 	int GetIndexLength(){return index.size();}
 	void ReverseNormals();
 
+	std::vector<Vector3> GetVerts(){return verts;}
+	std::vector<Vector3> GetNormals(){return normals;}
+	std::vector<Vector2> GetUVs(){return uvs;}
+	std::vector<unsigned int> GetIndex(){return index;}
+
 	static Mesh* GetMeshPointer(int uniqueID);
 
 	void DeleteVertexData();

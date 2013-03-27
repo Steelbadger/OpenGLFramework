@@ -12,6 +12,7 @@ public:
 
 	void AssignTask(BaseTask* t);
 	void BeginTask();
+	void WaitForTask();
 	bool TaskComplete();
 
 private:
@@ -19,6 +20,7 @@ private:
 	HANDLE taskSem;
 	HANDLE deathSem;
 	HANDLE threadCompleteSem;
+	HANDLE taskCompleteSem;
 	BaseTask* currentTask;
 	bool taskAssigned;
 	bool taskComplete;

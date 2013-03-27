@@ -45,6 +45,8 @@ bool RenderManager::AddToRenderer(Mesh &m)
 				MeshFileMap[meshModel] = SetupVAO(m);
 			}
 			VAOMap[m.GetUniqueID()] = MeshFileMap[meshModel];
+		} else {
+			VAOMap[m.GetUniqueID()] = SetupVAO(m);
 		}
 	}
 

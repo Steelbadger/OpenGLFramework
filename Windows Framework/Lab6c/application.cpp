@@ -77,15 +77,24 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	Terrain dummy(prims.Plane(1500.0f, 1500.0f, 100, 100));
 
+	Material crateMatProc;
+	crateMatProc.AddTexture(Texture(Texture::DIFFUSE, "crateDiffuseProc.tga"));
+	crateMatProc.AddShader("default.fragmentshader");
+	crateMatProc.AddShader("default.vertexshader");
+
 	Material crateMat;
 	crateMat.AddTexture(Texture(Texture::DIFFUSE, "crateDiffuse.tga"));
 	crateMat.AddShader("default.fragmentshader");
 	crateMat.AddShader("default.vertexshader");
 
 	Mesh crateMesh("crate.obj");
+	Mesh altCrate(meshGenerator.UnitCube());
+	Mesh sphere(meshGenerator.LSphere(10, 10));
 
-
+	altCrate.AttachMaterial(crateMatProc);
+	sphere.AttachMaterial(crateMatProc);
 	crateMesh.AttachMaterial(crateMat);
+
 //	crateMesh.AttachMaterial(waterMat);
 
 	int num = 5;
@@ -93,7 +102,9 @@ void Application::Initialize(HINSTANCE hInstance)
 		for (int j = 0; j < num; j++) {
 			for (int k = 0; k < num; k++) {
 				StaticObject* curr = new StaticObject();
-				curr->AttachMesh(crateMesh);
+//				curr->AttachMesh(crateMesh);
+//				curr->AttachMesh(sphere);
+				curr->AttachMesh(altCrate);
 				curr->SetLocation(i*3.0f, 20.0f+j*3.0f, k*3.0f);
 				renderer.AddToRenderer(*curr->GetMesh());
 			}
@@ -101,8 +112,8 @@ void Application::Initialize(HINSTANCE hInstance)
 	}
 
 
-
-	testObject.AttachMesh(crateMesh);
+//	testObject.AttachMesh(crateMesh);
+	testObject.AttachMesh(altCrate);
 	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
 	

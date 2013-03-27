@@ -11,6 +11,7 @@ MyThread::MyThread(void):
 	taskSem = CreateSemaphore(NULL, 0, 1, NULL);
 	deathSem = CreateSemaphore(NULL, 0, 1, NULL);
 	threadCompleteSem = CreateSemaphore(NULL, 0, 1, NULL);
+	taskCompleteSem = CreateSemaphore(NULL, 0, 1, NULL);
 }
 
 MyThread::MyThread(BaseTask* t):
@@ -24,6 +25,7 @@ MyThread::MyThread(BaseTask* t):
 	taskSem = CreateSemaphore(NULL, 0, 1, NULL);
 	deathSem = CreateSemaphore(NULL, 0, 1, NULL);
 	threadCompleteSem = CreateSemaphore(NULL, 0, 1, NULL);
+	taskCompleteSem = CreateSemaphore(NULL, 0, 1, NULL);
 }
 
 
@@ -57,6 +59,12 @@ bool MyThread::TaskComplete()
 	return taskComplete;
 }
 
+void MyThread::WaitForTask()
+{
+	WaitForSingleObject(taskCompleteSem, INFINITE);
+	ReleaseSemaphore(taskCompleteSem, 1, NULL);
+}
+
 unsigned __stdcall MyThread::ThreadFunc(void* args)
 {
 	//  Retrieve the thread-object from the argument
@@ -67,6 +75,7 @@ unsigned __stdcall MyThread::ThreadFunc(void* args)
 
 	while(p->threadActive) {
 		WaitForSingleObject(p->taskSem, INFINITE);
+		WaitForSingleObject(p->taskCompleteSem, 0L);
 		BaseTask* currentTask = p->currentTask;
 		bool taskComplete = p->taskComplete;
 		bool inProcess = p->inProcess;
@@ -81,6 +90,7 @@ unsigned __stdcall MyThread::ThreadFunc(void* args)
 		if (deathCheckResult == WAIT_TIMEOUT) {
 			p->threadActive = false;
 		}
+		ReleaseSemaphore(p->taskCompleteSem, 1, NULL);
 	}
 	ReleaseSemaphore(p->threadCompleteSem, 1, NULL);
 	//  Once done return 0

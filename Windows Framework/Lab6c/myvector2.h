@@ -9,3 +9,40 @@ public:
 	float u, v;
 };
 
+inline Vector2 operator * (const Vector2 &v,
+						   const float &s)
+{
+	return Vector2(v.u * s, v.v * s);
+}
+
+inline Vector2 operator / (const Vector2 &v,
+						   const float &s)
+{
+	return Vector2(v.u / s, v.v / s);
+}
+
+inline Vector2 operator + (const Vector2 &v,
+						   const float &s)
+{
+	return Vector2(v.u + s, v.v + s);
+}
+
+inline Vector2 operator - (const Vector2 &v,
+						   const float &s)
+{
+	return Vector2(v.u - s, v.v - s);
+}
+
+inline Vector2 operator - (const Vector2 &v,
+						   const Vector2 &s)
+{
+	return Vector2(v.u - s.u, v.v - s.v);
+}
+
+
+inline Vector2 operator + (const Vector2 &v,
+						   const Vector2 &s)
+{
+	return Vector2(v.u + s.u, v.v + s.v);
+}
+
