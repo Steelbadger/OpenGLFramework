@@ -6,6 +6,8 @@ public:
 	Vector2(float _u, float _v);
 	~Vector2(void);
 
+	bool operator==(const Vector2 & rhs) const;
+
 	float u, v;
 };
 

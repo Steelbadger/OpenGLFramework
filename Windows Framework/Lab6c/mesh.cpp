@@ -203,3 +203,19 @@ void Mesh::ReverseNormals()
 		normals[i] = normals[i]*-1;
 	}
 }
+
+Mesh& Mesh::operator = (const Mesh& m)
+{
+	meshPath = m.meshPath;
+	parent = m.parent;
+	transparency = m.transparency;
+	verts = m.verts;
+	normals = m.normals;
+	uvs = m.uvs;
+	index = m.index;
+	numVerts = m.numVerts;
+	successfullBuild = m.successfullBuild;
+	material = m.material;
+
+	return *this;
+}

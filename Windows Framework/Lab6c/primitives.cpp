@@ -483,110 +483,78 @@ Mesh PrimitiveFactory::LSphere(int lats, int longs)
 
 Mesh PrimitiveFactory::SubDivide(Mesh m)
 {
+	//  First turn into a non indexed vertex array
+	std::vector<Point> points;
 
-	//std::map<Point, unsigned int> indexMap;
-	//
-	//std::map<unsigned int, Point> pointMap;
+	std::vector<unsigned int>::iterator indexIt;
+	std::vector<unsigned int> index = m.GetIndex();
 
-	//std::vector<Vector3> oldVerts = m.GetVerts();
-	//std::vector<Vector3> oldNormals = m.GetNormals();
-	//std::vector<Vector2> oldUVs = m.GetUVs();
-	//std::vector<unsigned int> oldIndex = m.GetIndex();
+	std::vector<Vector3> verts = m.GetVerts();
+	std::vector<Vector3> normals = m.GetNormals();
+	std::vector<Vector2> uvs = m.GetUVs();
 
-	//std::vector<Vector3> newVerts;
-	//std::vector<Vector3> newNormals;
-	//std::vector<Vector2> newUVs;
-	//std::vector<unsigned int> newIndex;
+	for(indexIt = index.begin(); indexIt != index.end(); indexIt++) {
+		Point temp;
+		temp.p = verts[*indexIt];
+		temp.n = normals[*indexIt];
+		temp.u = uvs[*indexIt];
+		points.push_back(temp);
+	}
 
-	//std::vector<unsigned int>::iterator it;
+	//  Now create a bunch of new faces (non indexed)
+	std::vector<Point> newPoints;
 
-	////  Map out the index array to the vertex array;
-	//for (it = oldIndex.begin(); it != oldIndex.end(); it++) {
-	//	Point temp;
-	//	temp.p = oldVerts[*it];
-	//	temp.n = oldNormals[*it];
-	//	temp.u = oldUVs[*it];
-	//	indexMap[temp] = *it;
-	//	pointMap[*it] = temp;
-	//}
-	//int indexcounter = 0;
-	//for (int i = 0; i < oldIndex.size(); i+=3) {
-	//	Point p1 = pointMap.at(oldIndex[i]);
-	//	Point p2 = pointMap.at(oldIndex[i+1]);
-	//	Point p3 = pointMap.at(oldIndex[i+2]);
+	for(int i = 0; i < points.size(); i+=3) {
+		Point p1 = points[i];
+		Point p2 = points[i+1];
+		Point p3 = points[i+2];
+		Point p12 = AveragePoints(p1, p2);
+		Point p13 = AveragePoints(p1, p3);
+		Point p23 = AveragePoints(p2, p3);
 
-	//	Point p12 = AveragePoints(p1, p2);
-	//	Point p13 = AveragePoints(p1, p3);
-	//	Point p23 = AveragePoints(p2, p3);
+		//  Push four new triangles to the newPoints array
 
-	//	if (indexMap.count(p1) == 0) {
-	//		newIndex.push_back(indexcounter);
-	//		indexMap[p1] = indexcounter;
-	//		indexcounter++;
-	//	} else {
-	//		newIndex.push_back(indexMap[p1]);
-	//	}
+		newPoints.push_back(p1);
+		newPoints.push_back(p12);
+		newPoints.push_back(p13);
 
-	//	if (indexMap.count(p12) == 0) {
-	//		newIndex.push_back(indexcounter);
-	//		indexMap[p12] = indexcounter;
-	//		indexcounter++;
-	//	} else {
-	//		newIndex.push_back(indexMap[p12]);
-	//	}
+		newPoints.push_back(p2);
+		newPoints.push_back(p23);
+		newPoints.push_back(p12);
 
-	//	if (indexMap.count(p13) == 0) {
-	//		newIndex.push_back(indexcounter);
-	//		indexMap[p13] = indexcounter;
-	//		indexcounter++;
-	//	} else {
-	//		newIndex.push_back(indexMap[p13]);
-	//	}
+		newPoints.push_back(p12);
+		newPoints.push_back(p23);
+		newPoints.push_back(p13);
 
-	//	newIndex.push_back(indexMap[p12]);
+		newPoints.push_back(p13);
+		newPoints.push_back(p23);
+		newPoints.push_back(p3);
+	}
 
-	//	if (indexMap.count(p2) == 0) {
-	//		newIndex.push_back(indexcounter);
-	//		indexMap[p2] = indexcounter;
-	//		indexcounter++;
-	//	} else {
-	//		newIndex.push_back(indexMap[p2]);
-	//	}
+	//  Now pull the data out into the 3 arrays needed for the mesh constructor
 
-	//	if (indexMap.count(p23) == 0) {
-	//		newIndex.push_back(indexcounter);
-	//		indexMap[p23] = indexcounter;
-	//		indexcounter++;
-	//	} else {
-	//		newIndex.push_back(indexMap[p23]);
-	//	}
+	std::vector<Point>::iterator pointIt;
 
-	//	newIndex.push_back(indexMap[p12]);
+	verts.clear();
+	normals.clear();
+	uvs.clear();
+	
+	for(pointIt = newPoints.begin(); pointIt != newPoints.end(); pointIt++) {
+		verts.push_back((*pointIt).p);
+		normals.push_back((*pointIt).n);
+		uvs.push_back((*pointIt).u);		
+	}
 
-	//	newIndex.push_back(indexMap[p23]);
+	return Mesh(verts, normals, uvs);
+}
 
-	//	newIndex.push_back(indexMap[p13]);
-
-	//	newIndex.push_back(indexMap[p13]);
-
-	//	newIndex.push_back(indexMap[p23]);
-
-	//	if (indexMap.count(p3) == 0) {
-	//		newIndex.push_back(indexcounter);
-	//		indexMap[p3] = indexcounter;
-	//		indexcounter++;
-	//	} else {
-	//		newIndex.push_back(indexMap[p3]);
-	//	}
-
-	//}
-
-	////  Now pull the data out into usable vectors
-
-	//for (it = newIndex.begin(); it != newIndex.end(); it++) {
-	//}
-
-	return Mesh();
+Mesh PrimitiveFactory::SubDivide(Mesh m, int count)
+{
+	if (count == 0) {
+		return m;
+	} else {
+		return SubDivide(SubDivide(m), --count);
+	}
 }
 
 Point PrimitiveFactory::AveragePoints(Point p1, Point p2)
@@ -597,4 +565,54 @@ Point PrimitiveFactory::AveragePoints(Point p1, Point p2)
 	out.u = (p1.u+p2.u)/2;
 
 	return out;
+}
+
+Mesh PrimitiveFactory::Spherize(Mesh m)
+{
+	//  First turn into a non indexed vertex array
+	std::vector<Point> points;
+
+	std::vector<unsigned int>::iterator indexIt;
+	std::vector<unsigned int> index = m.GetIndex();
+
+	std::vector<Vector3> verts = m.GetVerts();
+	std::vector<Vector3> normals = m.GetNormals();
+	std::vector<Vector2> uvs = m.GetUVs();
+
+	for(indexIt = index.begin(); indexIt != index.end(); indexIt++) {
+		Point temp;
+		temp.p = verts[*indexIt];
+		temp.n = normals[*indexIt];
+		temp.u = uvs[*indexIt];
+		points.push_back(temp);
+	}
+
+	std::vector<Point>::iterator pointIt;
+
+	verts.clear();
+	normals.clear();
+	uvs.clear();
+	
+	for(pointIt = points.begin(); pointIt != points.end(); pointIt++) {
+		verts.push_back((*pointIt).p.Normalize());
+		normals.push_back((*pointIt).p.Normalize());
+		uvs.push_back((*pointIt).u);		
+	}
+
+	return Mesh(verts, normals, uvs);
+}
+
+Mesh PrimitiveFactory::CubeSphere(int resolution)
+{
+	Mesh m(SubDivide(UnitCube(), resolution));
+
+	return Mesh(Spherize(m));
+}
+
+Mesh PrimitiveFactory::InwardCubeSphere(int resolution)
+{
+	Mesh m(Spherize(SubDivide(SimpleInnerBox(), resolution)));
+	m.ReverseNormals();
+
+	return Mesh(m);
 }

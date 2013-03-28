@@ -15,6 +15,9 @@ public:
 	bool operator==(const Vector3 & rhs) const;
 	Vector3 & operator+=(const Vector3 & rhs);
 
+	Vector3 Normalize();
+	float Length();
+
 	float x, y, z;
 };
 

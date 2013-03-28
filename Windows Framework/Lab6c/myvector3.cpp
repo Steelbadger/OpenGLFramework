@@ -26,6 +26,7 @@ bool Vector3::operator ==(const Vector3 & rhs) const
 	return ((x == rhs.x) && (y == rhs.y) && (z == rhs.z));
 }
 
+
 Vector3 & Vector3::operator +=(const Vector3 &rhs)
 {
 	x += rhs.x;
@@ -37,4 +38,14 @@ Vector3 & Vector3::operator +=(const Vector3 &rhs)
 
 Vector3::~Vector3(void)
 {
+}
+
+float Vector3::Length()
+{
+	return sqrt(x * x + y * y + z * z);
+}
+
+Vector3 Vector3::Normalize()
+{
+	return (*this/Length());
 }

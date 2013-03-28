@@ -70,6 +70,8 @@ void Application::Initialize(HINSTANCE hInstance)
 	skyMat.AddShader("skybox.fragmentshader");
 	skyMat.AddShader("skybox.vertexshader");
 
+	skybox = meshGenerator.InwardCubeSphere(5);
+
 	skybox.AttachMaterial(skyMat);
 	renderer.AddSkyBox(skybox);
 
@@ -88,7 +90,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	crateMat.AddShader("default.vertexshader");
 
 	Mesh crateMesh("crate.obj");
-	Mesh altCrate(meshGenerator.UnitCube());
+	Mesh altCrate(meshGenerator.SubDivide(meshGenerator.UnitCube()));
 	Mesh sphere(meshGenerator.LSphere(10, 10));
 
 	altCrate.AttachMaterial(crateMatProc);
@@ -110,10 +112,10 @@ void Application::Initialize(HINSTANCE hInstance)
 			}
 		}
 	}
-
-
+	Mesh newAlt(meshGenerator.CubeSphere(1));
+	newAlt.AttachMaterial(crateMatProc);
 //	testObject.AttachMesh(crateMesh);
-	testObject.AttachMesh(altCrate);
+	testObject.AttachMesh(newAlt);
 	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
 	

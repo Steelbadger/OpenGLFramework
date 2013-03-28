@@ -349,7 +349,7 @@ void RenderManager::DrawSkyBox()
 	//  Bind the VAO and draw the array
 	glBindVertexArray(skyBox);
 	glDisable(GL_DEPTH_TEST);
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+	glDrawElements(GL_TRIANGLES,  m->GetNumberOfVerts(), GL_UNSIGNED_INT, (void*)0);
 	glEnable(GL_DEPTH_TEST);
 
 	//  unbind our shaders and arrays

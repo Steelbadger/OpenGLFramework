@@ -54,6 +54,8 @@ public:
 
 	void DeleteVertexData();
 
+	Mesh& operator=(const Mesh& m);
+
 protected:
 	std::vector<Vector3> verts;
 	std::vector<Vector3> normals;
