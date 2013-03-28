@@ -45,7 +45,10 @@ void main()
 
 		lightcolour = lights[i].colour.rgb;
 
-		ambient = ambient + (texcolour * lightcolour * lights[i].colour.w);
+		float fac = ((lights[i].colour.a)/0.1);
+		fac = max(fac, 0.1);
+		fac = min(fac, 0.2);
+		ambient = ambient + (texcolour * lightcolour * 	fac);
 		vec3 fragToLight;
 
 		float dist;

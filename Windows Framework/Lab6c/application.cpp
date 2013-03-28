@@ -55,7 +55,7 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	LightSource sunSource(LightSource::DIRECTIONAL);
 	sunSource.SetColour(0.7f, 0.7f, 0.7f);
-	sunSource.SetAmbient(0.2f);
+	sunSource.SetAmbient(0.1f);
 
 	sunSource.SetParent(sunParent);
 	player.SetCameraTargetWindow(&window);
@@ -66,11 +66,11 @@ void Application::Initialize(HINSTANCE hInstance)
 	renderer.AddLight(playerLight);
 
 	Material skyMat;
-	skyMat.AddTexture(Texture(Texture::DIFFUSE, "skyboxseamless.tga"));
+	skyMat.AddTexture(Texture(Texture::DIFFUSE, "stars.tga"));
 	skyMat.AddShader("skybox.fragmentshader");
 	skyMat.AddShader("skybox.vertexshader");
 
-	skybox = meshGenerator.InwardCubeSphere(5);
+	skybox = meshGenerator.InwardCubeSphere(4);
 
 	skybox.AttachMaterial(skyMat);
 	renderer.AddSkyBox(skybox);
@@ -112,7 +112,7 @@ void Application::Initialize(HINSTANCE hInstance)
 			}
 		}
 	}
-	Mesh newAlt(meshGenerator.CubeSphere(1));
+	Mesh newAlt(meshGenerator.CubeSphere(4));
 	newAlt.AttachMaterial(crateMatProc);
 //	testObject.AttachMesh(crateMesh);
 	testObject.AttachMesh(newAlt);
@@ -190,6 +190,7 @@ void Application::MainLoop()
 		if(input.ReportKeyState(VK_LEFT)) {
 			sunParent.RotateDeltaX(0.01f);
 		}
+		sunParent.RotateDeltaX(-0.001f);
 
 		if (input.ReportKeyState(VK_RIGHT)) {
 			sunParent.RotateDeltaX(-0.01f);

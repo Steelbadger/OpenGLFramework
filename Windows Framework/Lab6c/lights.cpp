@@ -60,13 +60,17 @@ void LightSource::CalculateDirectional(Matrix4x4 view, Light &out)
 		}
 	}
 	Vector4 pos = GetLocalZ();
+	float mul = pos.y + 0.1;
+	mul = max(mul, 0.0);
+	mul = min(ambient, mul);
+
 	pos = transform * pos;
 
 	out.position[0] = pos.x;
 	out.position[1] = pos.y;
 	out.position[2] = pos.z;
 	out.position[3] = 0.0f;
-	out.colour[3] = ambient;
+	out.colour[3] = mul;
 	out.type = 1;
 }
 
