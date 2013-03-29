@@ -66,7 +66,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	renderer.AddLight(playerLight);
 
 	Material skyMat;
-	skyMat.AddTexture(Texture(Texture::DIFFUSE, "stars.tga"));
+	skyMat.AddTexture(Texture(Texture::DIFFUSE, "stars2.tga"));
 	skyMat.AddShader("skybox.fragmentshader");
 	skyMat.AddShader("skybox.vertexshader");
 

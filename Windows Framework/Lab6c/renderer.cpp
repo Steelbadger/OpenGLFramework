@@ -300,9 +300,11 @@ void RenderManager::BuildModelViewMatrix(GameObject g)
 void RenderManager::BuildSkyBoxViewMatrix(GameObject g)
 {
 	g.SetRotate(0.0f, 0.0f, 0.0f);
+//	g.RotateDeltaX(elapsed/10.0f);
 	Matrix4x4 mat;
 	mat = BuildModelMatrix(g) * BuildViewMatrix();
 	ConvertToOpenGLMatrix(mat, modelViewMatrix);
+	viewMatrixMade = false;
 }
 
 void RenderManager::BuildProjectionMatrix()
