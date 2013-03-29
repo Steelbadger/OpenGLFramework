@@ -304,7 +304,6 @@ void RenderManager::BuildSkyBoxViewMatrix(GameObject g)
 	Matrix4x4 mat;
 	mat = BuildModelMatrix(g) * BuildViewMatrix();
 	ConvertToOpenGLMatrix(mat, modelViewMatrix);
-	viewMatrixMade = false;
 }
 
 void RenderManager::BuildProjectionMatrix()

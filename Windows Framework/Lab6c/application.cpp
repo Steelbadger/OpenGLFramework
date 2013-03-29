@@ -46,8 +46,6 @@ void Application::Initialize(HINSTANCE hInstance)
 	std::cout << "Number of Texture Units: " << numTextureUnits << std::endl;
 	std::cout << std::endl << "Time to Add Terrain To Renderer: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
-	myTimer = clock();
-
 	player.SetLocation(50.0f, 30.0f, 50.0f);
 	LightSource playerLight(LightSource::POINT);
 	playerLight.SetColour(0.7f, 0.7f, 0.7f);
@@ -129,15 +127,20 @@ void Application::Initialize(HINSTANCE hInstance)
 
 
 	Heightmap heights;
-	Texture heightMap(Texture::DISPLACEMENT, heights.GenerateHeightField(0, 0, myNoise, gridSize), 2048);
+
+	myTimer = clock();
+	Texture heightMap(Texture::DISPLACEMENT, heights.TBBGenerateHeightField(0, 0, myNoise, gridSize), 2048);
+	myTimer = clock() - myTimer;
+
 	groundMat.AddTexture(heightMap);
 	ground.AttachMaterial(groundMat);
 
 	renderer.AddTerrainToRenderer(ground);
 
-	myTimer = clock() - myTimer;
+
 
 	std::cout << std::endl << "Time to Generate Heightmap: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	std::cout << std::endl << "Number of Available Processors: " << GetActiveProcessorCount(ALL_PROCESSOR_GROUPS) << std::endl;
 
 	Material waterMat("waterMat");
 	waterMat.AddShader("water.vertexshader");

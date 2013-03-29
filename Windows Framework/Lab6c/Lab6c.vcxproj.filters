@@ -87,9 +87,6 @@
     <ClCompile Include="application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="glew.c">
-      <Filter>Source Files\GLEW</Filter>
-    </ClCompile>
     <ClCompile Include="my4x4matrix.cpp">
       <Filter>Source Files\Maths</Filter>
     </ClCompile>
@@ -179,6 +176,9 @@
     </ClCompile>
     <ClCompile Include="mythread.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glew.c">
+      <Filter>Source Files\GLEW</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
