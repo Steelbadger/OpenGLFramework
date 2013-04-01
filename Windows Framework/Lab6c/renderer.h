@@ -25,6 +25,7 @@ public:
 	void MaintainRenderList();
 
 	void SetActiveCamera(CameraModule& cam){activeCamera = &cam;}
+	GameObject* GetCameraParent(){return activeCamera->GetParent();}
 
 	bool AddToRenderer(Mesh &m);
 	void RemoveFromRenderer(Mesh m);

@@ -1,5 +1,6 @@
 #pragma once
 #include "myvector3.h"
+#include "myvector2.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -21,6 +22,9 @@ public:
 	// Operations with other vectors
 	Vector4 & operator+=(const Vector4 & rhs);
 	Vector4 & operator-=(const Vector4 & rhs);
+	Vector2 xy(){return Vector2(x, y);}
+	Vector2 xz(){return Vector2(x, z);}
+	Vector2 yz(){return Vector2(y, z);}
 
 	// Special arithmetic
 	float Dot3(const Vector4 & rhs) const;

@@ -7,6 +7,7 @@ public:
 	~Vector2(void);
 
 	bool operator==(const Vector2 & rhs) const;
+	void Floor();
 
 	float u, v;
 };

@@ -7,9 +7,9 @@
 #include <process.h>
 #include <iostream>
 #include "mythread.h"
-#include "TBB\parallel_for.h"
-#include "TBB\blocked_range.h"
-#include "TBB\partitioner.h"
+#include "parallel_for.h"
+#include "blocked_range.h"
+#include "partitioner.h"
 
 
 
@@ -23,7 +23,7 @@ struct Generator
 		for (int j = range.begin(); j != range.end(); j++) {
 			int counter = j*size;
 			int currentpixel = counter*4;
-			for (float i = 0; i < sq; i++) {
+			for (float i = 0; i < size; i++) {
 				float height = noise.FractalSimplex(i*step + xb, j*step + yb, no);
 				Vector3 normal = noise.FractalSimplexNormal(i*step + xb, j*step + yb, no, step);
 

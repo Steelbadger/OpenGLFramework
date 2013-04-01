@@ -18,3 +18,9 @@ bool Vector2::operator==(const Vector2 &rhs) const
 {
 	return ((u==rhs.u)&&(v==rhs.v));
 }
+
+void Vector2::Floor()
+{
+	u = float(int(u));
+	v = float(int(v));
+}

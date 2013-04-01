@@ -180,6 +180,9 @@
     <ClCompile Include="glew.c">
       <Filter>Source Files\GLEW</Filter>
     </ClCompile>
+    <ClCompile Include="terrainmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -291,6 +294,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mythread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="terrainmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

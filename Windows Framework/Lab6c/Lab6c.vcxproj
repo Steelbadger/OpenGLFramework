@@ -37,7 +37,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Users\Ross\Documents\GitHub\OpenGLFramework\Windows Framework\Lab6c\TBB\include\tbb;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\Users\Ross\Documents\GitHub\OpenGLFramework\Windows Framework\Lab6c\TBB\include\tbb;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -51,7 +56,7 @@
       <AdditionalDependencies>tbb.lib;Opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalLibraryDirectories>M:\Graphics Programming\OpenGLFramework\Windows Framework\Lab6c\TBB\lib\intel64\vc10;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Ross\Documents\GitHub\OpenGLFramework\Windows Framework\Lab6c\TBB\lib\ia32\vc10</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -70,7 +75,7 @@
       <SubSystem>Console</SubSystem>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <AdditionalDependencies>tbb.lib;Opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>M:\Graphics Programming\OpenGLFramework\Windows Framework\Lab6c\TBB\lib\ia32\vc10;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Ross\Documents\GitHub\OpenGLFramework\Windows Framework\Lab6c\TBB\lib\ia32\vc10</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -104,6 +109,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="rigidbodymodule.cpp" />
+    <ClCompile Include="terrainmanager.cpp" />
     <ClCompile Include="tex.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="water.cpp" />
@@ -141,6 +147,7 @@
     <ClInclude Include="renderer.h" />
     <ClInclude Include="rigidbodymodule.h" />
     <ClInclude Include="singleton.h" />
+    <ClInclude Include="terrainmanager.h" />
     <ClInclude Include="tex.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="uniformlocations.h" />
