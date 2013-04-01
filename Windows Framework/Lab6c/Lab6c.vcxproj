@@ -39,9 +39,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>C:\Users\Ross\Documents\GitHub\OpenGLFramework\Windows Framework\Lab6c\TBB\include\tbb;$(IncludePath)</IncludePath>
+    <LibraryPath>M:\Graphics Programming\OpenGLFramework\Windows Framework\Lab6c\TBB\lib\ia32\vc10;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\Users\Ross\Documents\GitHub\OpenGLFramework\Windows Framework\Lab6c\TBB\include\tbb;$(IncludePath)</IncludePath>
+    <LibraryPath>M:\Graphics Programming\OpenGLFramework\Windows Framework\Lab6c\TBB\lib\ia32\vc10;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

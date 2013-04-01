@@ -10,12 +10,14 @@ std::map<std::string, Material> Material::MaterialLibrary;
 Material::Material(void)
 {
 	shaderProgramRef = shaderProgram.Reference();
+	compiled = false;
 }
 
 Material::Material(std::string n):
 	name(n)
 {
 	shaderProgramRef = shaderProgram.Reference();
+	compiled = false;
 }
 
 
@@ -28,6 +30,26 @@ void Material::AddTexture(Texture t)
 {
 	textures.push_back(t);
 	texRefs.push_back(t.Reference());
+}
+
+void Material::ReplaceTexture(Texture oldTex, Texture newTex)
+{
+	Texture defTex;
+	if (oldTex.Reference() != defTex.Reference()) {
+		std::vector<Texture>::iterator it;
+		int i = 0;
+		for (it = textures.begin(); it != textures.end(); it++) {
+			if ((*it).Reference() == oldTex.Reference()) {
+				*it = newTex;
+				texRefs[i] = newTex.Reference();
+				break;
+			}
+			i++;
+		}
+	}
+
+	textures.push_back(newTex);
+	texRefs.push_back(newTex.Reference());
 }
 
 void Material::AddShader(std::string shader)
@@ -88,7 +110,10 @@ UniformLocations Material::GetUniforms()
 
 void Material::Compile()
 {
-	shaderProgram.Compile();
-	uniforms = shaderProgram.GetUniforms();
-	shaderProgramRef = shaderProgram.Reference();
+	if(compiled == false) {
+		shaderProgram.Compile();
+		uniforms = shaderProgram.GetUniforms();
+		shaderProgramRef = shaderProgram.Reference();
+		compiled = true;
+	}
 }

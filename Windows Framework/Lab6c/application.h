@@ -8,6 +8,7 @@
 #include "renderer.h"
 #include "staticobject.h"
 #include "Terrain.h"
+#include "terrainmanager.h"
 
 
 
@@ -44,6 +45,7 @@ private:
 	Terrain ground;
 	Water water;
 	RenderManager renderer;
+	TerrainManager testTerrain;
 	GameObject sunParent;
 	Mesh skybox;
 

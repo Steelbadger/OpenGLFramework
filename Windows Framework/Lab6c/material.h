@@ -18,6 +18,7 @@ public:
 
 	void AddTexture(Texture t);
 	void AddShader(std::string shader);
+	void ReplaceTexture(Texture oldTex, Texture newTex);
 	
 	std::vector<Texture> GetTextures();
 	std::vector<Shader> GetShaders();
@@ -44,6 +45,7 @@ private:
 	std::string name;
 
 	float displacementMapMagnitude;
+	bool compiled;
 
 	static std::map<std::string, Material> MaterialLibrary;
 };

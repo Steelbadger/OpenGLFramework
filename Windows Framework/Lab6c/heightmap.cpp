@@ -7,9 +7,9 @@
 #include <process.h>
 #include <iostream>
 #include "mythread.h"
-#include "parallel_for.h"
-#include "blocked_range.h"
-#include "partitioner.h"
+#include "tbb/parallel_for.h"
+#include "tbb/blocked_range.h"
+#include "tbb/partitioner.h"
 
 
 
@@ -61,7 +61,7 @@ Heightmap::~Heightmap(void)
 
 unsigned short* Heightmap::GenerateHeightField(float x, float y, NoiseObject n, float square)
 {
-	const int subdivs = 1024;  //  256, 512, 1024
+	const int subdivs = 64;  //  256, 512, 1024
 	const int threads = size/subdivs;
 
 
@@ -101,10 +101,9 @@ unsigned short* Heightmap::TBBGenerateHeightField(float x, float y, NoiseObject 
 {
 	GLushort* map = (GLushort*)malloc(size*size*4*sizeof(GLushort));
 
-	NoiseGenerator noise;
 	float step = float(square/size);
 
-	tbb::parallel_for(tbb::blocked_range<int>(0, size, 1),Generator(x, y, n, square, step, map, size), tbb::simple_partitioner());
+	tbb::parallel_for(tbb::blocked_range<int>(0, size, size/4),Generator(x, y, n, square, step, map, size), tbb::simple_partitioner());
 
 //	write_tga("TBBSimplex.tga", size, map);
 

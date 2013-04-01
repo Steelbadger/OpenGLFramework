@@ -1,6 +1,7 @@
 #include "renderer.h"
 
 #include "gameobject.h"
+#include "terrainmanager.h"
 
 #include <iostream>
 #include <fstream>
@@ -81,6 +82,16 @@ void RenderManager::AddTerrainToRenderer(Terrain &t)
 	terrainSize = t.GetSize();
 }
 
+void RenderManager::AddTerrainToRenderer(TerrainManager &t)
+{
+	terrainStep = t.GetTerrainMesh().GetStep();
+	terrain = SetupVAO(t.GetTerrainMesh());
+	terr = t.GetTerrainMesh().GetUniqueID();
+	terrainSize = t.GetTerrainMesh().GetSize();
+	terrainManager = &t;
+}
+
+
 void RenderManager::AddWater(Water &w)
 {
 	water = SetupVAO(w);
@@ -117,7 +128,7 @@ void RenderManager::RenderAll()
 	viewMatrixMade = false;
 
 	DrawSkyBox();
-	DrawTerrain();
+	DrawTerrainAlt();
 
 	std::vector<int>::iterator vit;
 	if (opaqueRenderList.size() > 0) {
@@ -381,6 +392,37 @@ void RenderManager::DrawTerrain()
 	//  unbind our shaders and arrays
 	glBindVertexArray(0);
 	glUseProgram(0);
+}
+
+void RenderManager::DrawTerrainAlt()
+{
+	for (int i = 0; i < terrainManager->GetSize(); i++) {
+		for (int j = 0; j < terrainManager->GetSize(); j++) {
+			Material mat = terrainManager->GetMaterial(i, j);
+			UniformLocations uniforms = mat.GetUniforms();
+			mat.Apply();
+
+			GameObject base;
+			base.SetLocation(terrainManager->GetBase(i, j).u, 0.0f, terrainManager->GetBase(i, j).v);
+
+			//  Build the modelview matrix for the mesh
+			BuildModelViewMatrix(base);
+
+			//  Find the uniform locations for this program and put relevant data into said locations
+			SetUniforms(uniforms);
+
+			//  Bind the VAO and draw the array
+			glBindVertexArray(terrain);
+
+			glPatchParameteri(GL_PATCH_VERTICES, 3);
+			glDrawElements(GL_PATCHES, terrainManager->GetTerrainMesh().GetIndexLength(), GL_UNSIGNED_INT, (void*)0);
+
+			//  unbind our shaders and arrays
+			glBindVertexArray(0);
+			glUseProgram(0);
+		}
+	}
+
 }
 
 void RenderManager::DrawWater()

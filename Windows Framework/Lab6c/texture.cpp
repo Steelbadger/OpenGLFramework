@@ -1,16 +1,16 @@
 #include "texture.h"
 
 
-Texture::Texture(void)
+Texture::Texture(void) : texRef(0)
 {
 }
 
-Texture::Texture(Type t, std::string p)
+Texture::Texture(Type t, std::string p) : texRef(0)
 {
 	SetTexture(t, p);
 }
 
-Texture::Texture(Type t, unsigned short* base, unsigned int length)
+Texture::Texture(Type t, unsigned short* base, unsigned int length) : texRef(0)
 {
 	SetTexture(t, base, length);
 }

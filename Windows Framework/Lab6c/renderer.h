@@ -16,6 +16,8 @@
 #include <string>
 #include <queue>
 
+class TerrainManager;
+
 class RenderManager
 {
 public:
@@ -31,6 +33,7 @@ public:
 	void RemoveFromRenderer(Mesh m);
 	void AddSkyBox(Mesh &m);
 	void AddTerrainToRenderer(Terrain &t);
+	void AddTerrainToRenderer(TerrainManager &t);
 	void AddLight(LightSource &l);
 	void AddWater(Water &w);
 
@@ -59,6 +62,7 @@ private:
 	
 	void DrawSkyBox();
 	void DrawTerrain();
+	void DrawTerrainAlt();
 	bool DrawMesh(int meshID);
 	void DrawWater();
 	float elapsed;
@@ -79,6 +83,7 @@ private:
 	int sky;
 
 	GLuint terrain;
+	TerrainManager* terrainManager;
 	int terr;
 	float terrainStep;
 	float terrainSize;

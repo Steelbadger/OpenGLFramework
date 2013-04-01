@@ -1,4 +1,5 @@
 #include "myvector2.h"
+#include <math.h>
 
 
 Vector2::Vector2(void)
@@ -21,6 +22,6 @@ bool Vector2::operator==(const Vector2 &rhs) const
 
 void Vector2::Floor()
 {
-	u = float(int(u));
-	v = float(int(v));
+	u = floor(u);
+	v = floor(v);
 }

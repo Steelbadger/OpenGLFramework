@@ -437,6 +437,8 @@ float NoiseGenerator::FractalSimplex(float x, float y, NoiseObject n)
 {
 	float noise = 0;
 	float maxamp = 0;
+	x = std::abs(x);
+	y = std::abs(y);
 	for(int i = 0; i < n.octaves; i++) {
 		float frequency = pow(2.0f,i);//This increases the frequency with every loop of the octave.
 		float amplitude = pow(n.persistance,i);//This decreases the amplitude with every loop of the octave.
