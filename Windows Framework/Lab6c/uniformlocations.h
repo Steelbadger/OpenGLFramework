@@ -18,4 +18,6 @@ struct UniformLocations
 	GLuint MapWidth;
 	GLuint Magnitude;
 	GLuint Time;
+	GLuint XMulFactor;
+	GLuint YMulFactor;
 };

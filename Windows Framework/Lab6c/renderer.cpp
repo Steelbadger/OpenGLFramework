@@ -128,7 +128,7 @@ void RenderManager::RenderAll()
 	viewMatrixMade = false;
 
 	DrawSkyBox();
-	DrawTerrainAlt();
+	DrawTerrain();
 
 	std::vector<int>::iterator vit;
 	if (opaqueRenderList.size() > 0) {
@@ -396,6 +396,8 @@ void RenderManager::DrawTerrain()
 
 void RenderManager::DrawTerrainAlt()
 {
+	float xmul = -1;
+	float ymul = -1;
 	for (int i = 0; i < terrainManager->GetSize(); i++) {
 		for (int j = 0; j < terrainManager->GetSize(); j++) {
 			Material mat = terrainManager->GetMaterial(i, j);
@@ -409,7 +411,10 @@ void RenderManager::DrawTerrainAlt()
 			BuildModelViewMatrix(base);
 
 			//  Find the uniform locations for this program and put relevant data into said locations
-			SetUniforms(uniforms);
+			SetUniforms(uniforms);	
+			glUniform1f(uniforms.XMulFactor, xmul);
+			glUniform1f(uniforms.YMulFactor, ymul);
+
 
 			//  Bind the VAO and draw the array
 			glBindVertexArray(terrain);
@@ -420,9 +425,11 @@ void RenderManager::DrawTerrainAlt()
 			//  unbind our shaders and arrays
 			glBindVertexArray(0);
 			glUseProgram(0);
+			ymul++;
 		}
+		ymul = -1;
+		xmul++;
 	}
-
 }
 
 void RenderManager::DrawWater()
@@ -434,7 +441,9 @@ void RenderManager::DrawWater()
 	mat.Apply();
 
 	//  Build the modelview matrix for the mesh
+
 	BuildModelViewMatrix(base);
+
 
 	//  Find the uniform locations for this program and put relevant data into said locations
 	SetUniforms(uniforms);
@@ -450,6 +459,7 @@ void RenderManager::DrawWater()
 	//  unbind our shaders and arrays
 	glBindVertexArray(0);
 	glUseProgram(0);
+
 }
 
 bool RenderManager::DrawMesh(int meshID)

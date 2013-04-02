@@ -132,10 +132,10 @@ void Application::Initialize(HINSTANCE hInstance)
 	Texture heightMap(Texture::DISPLACEMENT, heights.TBBGenerateHeightField(0, 0, myNoise, gridSize), 2048);
 	myTimer = clock() - myTimer;
 
-//	groundMat.AddTexture(heightMap);
-//	ground.AttachMaterial(groundMat);
+	groundMat.AddTexture(heightMap);
+	ground.AttachMaterial(groundMat);
 
-//	renderer.AddTerrainToRenderer(ground);
+	renderer.AddTerrainToRenderer(ground);
 
 
 
@@ -155,8 +155,8 @@ void Application::Initialize(HINSTANCE hInstance)
 	renderer.AddWater(water);
 
 
-	testTerrain.Initialize(renderer, myNoise);
-	renderer.AddTerrainToRenderer(testTerrain);
+//	testTerrain.Initialize(renderer, myNoise);
+//	renderer.AddTerrainToRenderer(testTerrain);
 
 	lastTime = time(NULL);
 	nbFrames = 0;

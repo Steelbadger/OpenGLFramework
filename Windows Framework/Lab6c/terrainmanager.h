@@ -17,7 +17,9 @@ public:
 	void Initialize(RenderManager &renderer, NoiseObject n);
 	void Update();
 	Terrain GetTerrainMesh(){return terrain;}
+	Water GetWaterMesh(){return water;}
 	Material GetMaterial(int i, int j){return materials[i][j];}
+	Material GetWaterMaterial(int i, int j){return waterMats[i][j];}
 	int GetSize(){return numChunks;}
 	Vector2 GetBase(int i , int j){return bases[i][j];}
 
@@ -28,8 +30,11 @@ private:
 
 	Vector2 bases[numChunks][numChunks];
 	Material materials[numChunks][numChunks];
+	Material waterMats[numChunks][numChunks];
 	Material defaultGround;
+	Material defaultWater;
 	Terrain terrain;
+	Water water;
 
 	std::map<float, std::map<float, Texture> > terrainMap;	
 

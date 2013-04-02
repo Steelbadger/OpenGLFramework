@@ -146,6 +146,8 @@ void ShaderProgram::FindUniformLocations()
 	newLocations.MapWidth = glGetUniformLocation(programRef, "mapWidth");
 	newLocations.Magnitude = glGetUniformLocation(programRef, "magnitude");
 	newLocations.Time = glGetUniformLocation(programRef, "time");
+	newLocations.XMulFactor = glGetUniformLocation(programRef, "xmul");
+	newLocations.YMulFactor = glGetUniformLocation(programRef, "ymul");
 
 	std::string nameString;
 	std::stringstream stream;
