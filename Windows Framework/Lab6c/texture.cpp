@@ -50,6 +50,7 @@ void Texture::SetTexture(Type t, unsigned short* base, unsigned int length)
 
 	texRef = TexID;
 	wrapping = GL_MIRRORED_REPEAT;
+	magnitude = 80;
 }
 
 void Texture::SetDisplacementMap(unsigned short* base, unsigned int length, float m)

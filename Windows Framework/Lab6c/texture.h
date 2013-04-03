@@ -20,6 +20,8 @@ public:
 	void SetTexture(Type t, unsigned short* base, unsigned int length);
 	void SetDisplacementMap(unsigned short* base, unsigned int length, float magnitude);
 	void Apply(int texUnit, GLuint target);
+	Type GetType(){return type;}
+	float GetDisplacementMagnitude(){return (type == DISPLACEMENT? magnitude : 0.0f);}
 	GLuint Reference(){return texRef;}
 private:
 	Type type;

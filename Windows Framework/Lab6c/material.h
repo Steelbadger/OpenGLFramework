@@ -19,6 +19,8 @@ public:
 	void AddTexture(Texture t);
 	void AddShader(std::string shader);
 	void ReplaceTexture(Texture oldTex, Texture newTex);
+	float GetDisplacementMagnitude(){return displacementMapMagnitude;}
+	void ReplaceTexture(Texture::Type t, Texture newTex);
 	
 	std::vector<Texture> GetTextures();
 	std::vector<Shader> GetShaders();

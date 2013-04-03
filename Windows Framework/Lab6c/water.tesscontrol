@@ -16,6 +16,8 @@ out float tcdepth[];
 uniform sampler2D texture2;
 uniform float magnitude;
 uniform float mapWidth;
+uniform float xmul;
+uniform float ymul;
 
 #define ID gl_InvocationID
 
@@ -28,9 +30,22 @@ void main()
 	tcglobalPos[ID] = vglobalPos[ID];
 
 	float depth[3];
-	depth[0] = (texture(texture2, vglobalPos[0].xz/mapWidth).a-0.5)*magnitude*2;
-	depth[1] = (texture(texture2, vglobalPos[1].xz/mapWidth).a-0.5)*magnitude*2;
-	depth[2] = (texture(texture2, vglobalPos[2].xz/mapWidth).a-0.5)*magnitude*2;
+
+	float u1 = (mapWidth*(-xmul) + vglobalPos[0].x*xmul + vglobalPos[0].x*(1+xmul))+1.0;
+	float v1 = (mapWidth*(-ymul) + vglobalPos[0].z*ymul + vglobalPos[0].z*(1+ymul))+1.0;
+	float u2 = (mapWidth*(-xmul) + vglobalPos[1].x*xmul + vglobalPos[1].x*(1+xmul))+1.0;
+	float v2 = (mapWidth*(-ymul) + vglobalPos[1].z*ymul + vglobalPos[1].z*(1+ymul))+1.0;
+	float u3 = (mapWidth*(-xmul) + vglobalPos[2].x*xmul + vglobalPos[2].x*(1+xmul))+1.0;
+	float v3 = (mapWidth*(-ymul) + vglobalPos[2].z*ymul + vglobalPos[2].z*(1+ymul))+1.0;
+
+
+	depth[0] = (texture(texture2, vec2(u1, v1)/(mapWidth+2)).a-0.5)*magnitude*2;
+	depth[1] = (texture(texture2, vec2(u2, v2)/(mapWidth+2)).a-0.5)*magnitude*2;
+	depth[2] = (texture(texture2, vec2(u3, v3)/(mapWidth+2)).a-0.5)*magnitude*2;
+
+//	depth[0] = (texture(texture2, vglobalPos[0].xz/mapWidth).a-0.5)*magnitude*2;
+//	depth[1] = (texture(texture2, vglobalPos[1].xz/mapWidth).a-0.5)*magnitude*2;
+//	depth[2] = (texture(texture2, vglobalPos[2].xz/mapWidth).a-0.5)*magnitude*2;
 
 	depth[0] = depth[0] + 16;
 	depth[1] = depth[1] + 16;

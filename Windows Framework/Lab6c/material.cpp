@@ -30,6 +30,9 @@ void Material::AddTexture(Texture t)
 {
 	textures.push_back(t);
 	texRefs.push_back(t.Reference());
+	if (t.GetType() == Texture::DISPLACEMENT) {
+		displacementMapMagnitude = t.GetDisplacementMagnitude();
+	}
 }
 
 void Material::ReplaceTexture(Texture oldTex, Texture newTex)
@@ -50,6 +53,20 @@ void Material::ReplaceTexture(Texture oldTex, Texture newTex)
 
 	textures.push_back(newTex);
 	texRefs.push_back(newTex.Reference());
+}
+
+void Material::ReplaceTexture(Texture::Type t, Texture newTex)
+{
+	std::vector<Texture>::iterator it;
+	int i = 0;
+	for (it = textures.begin(); it != textures.end(); it++) {
+		if ((*it).GetType() == t) {
+			*it = newTex;
+			texRefs[i] = newTex.Reference();
+			break;
+		}
+		i++;
+	}
 }
 
 void Material::AddShader(std::string shader)

@@ -9,8 +9,8 @@
 
 
 Application::Application(void):
-	gridSize(1500.0f),
-	myNoise(12, 500.0f, 0.41f, 80.0f, -1563.155f),
+	gridSize(600.0f),
+	myNoise(12, 500.0f, 0.41f, 80.0f, 1.155f),
 	ground(gridSize, 15.0f),
 	skybox("inwardCube.obj"),
 	water(gridSize)
@@ -129,13 +129,13 @@ void Application::Initialize(HINSTANCE hInstance)
 	Heightmap heights;
 
 	myTimer = clock();
-	Texture heightMap(Texture::DISPLACEMENT, heights.TBBGenerateHeightField(0, 0, myNoise, gridSize), 2048);
+//	Texture heightMap(Texture::DISPLACEMENT, heights.TBBGenerateHeightField(0, 0, myNoise, gridSize), 512);
 	myTimer = clock() - myTimer;
 
-	groundMat.AddTexture(heightMap);
-	ground.AttachMaterial(groundMat);
+//	groundMat.AddTexture(heightMap);
+//	ground.AttachMaterial(groundMat);
 
-	renderer.AddTerrainToRenderer(ground);
+//	renderer.AddTerrainToRenderer(ground);
 
 
 
@@ -148,15 +148,15 @@ void Application::Initialize(HINSTANCE hInstance)
 	waterMat.AddShader("water.tesscontrol");
 	waterMat.AddShader("water.tessevaluation");
 	waterMat.AddTexture(Texture(Texture::DIFFUSE, "seamlessWater.tga"));
-	waterMat.AddTexture(heightMap);
+//	waterMat.AddTexture(heightMap);
 	
 	water.AttachMaterial(waterMat);
 
 	renderer.AddWater(water);
 
 
-//	testTerrain.Initialize(renderer, myNoise);
-//	renderer.AddTerrainToRenderer(testTerrain);
+	testTerrain.Initialize(renderer, myNoise);
+	renderer.AddTerrainToRenderer(testTerrain);
 
 	lastTime = time(NULL);
 	nbFrames = 0;
@@ -188,7 +188,7 @@ void Application::MainLoop()
 		player.CheckGroundCollision(myNoise);
 
 		input.Update();
-	//	testTerrain.Update();
+		testTerrain.Update();
 
 		if(input.ReportRMousePress()) {
 			window.SetCursorToCentre();
@@ -198,7 +198,7 @@ void Application::MainLoop()
 		if(input.ReportKeyState(VK_LEFT)) {
 			sunParent.RotateDeltaX(0.01f);
 		}
-		sunParent.RotateDeltaX(-0.001f);
+//		sunParent.RotateDeltaX(-0.001f);
 
 		if (input.ReportKeyState(VK_RIGHT)) {
 			sunParent.RotateDeltaX(-0.01f);

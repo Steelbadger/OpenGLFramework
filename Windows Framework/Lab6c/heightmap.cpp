@@ -102,9 +102,10 @@ unsigned short* Heightmap::TBBGenerateHeightField(float x, float y, NoiseObject 
 {
 	GLushort* map = (GLushort*)malloc(size*size*4*sizeof(GLushort));
 
-	float step = float(square/size);
+	float step = float((square+2)/size);
 
-	tbb::parallel_for(tbb::blocked_range<int>(0, size, size/4),Generator(x, y, n, square, step, map, size), tbb::simple_partitioner());
+
+	tbb::parallel_for(tbb::blocked_range<int>(0, size, size/4),Generator(x-1, y-1, n, square+2, step, map, size), tbb::simple_partitioner());
 
 //	write_tga("TBBSimplex.tga", size, map);
 

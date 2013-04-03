@@ -5,6 +5,7 @@
 #include "noisegenerator.h"
 #include "terrain.h"
 #include "material.h"
+#include "TBB\task.h"
 
 class RenderManager;
 class GameObject;
@@ -24,9 +25,9 @@ public:
 	Vector2 GetBase(int i , int j){return bases[i][j];}
 
 private:
-	static const int range = 500;
-	static const int chunkSize = 1500;
-	static const int numChunks = (2*range)/(chunkSize/2)+1;
+	static const int range = 1000;
+	static const int chunkSize = 600;
+	static const int numChunks = (2*range)/(chunkSize/2)-2;
 
 	Vector2 bases[numChunks][numChunks];
 	Material materials[numChunks][numChunks];
@@ -43,4 +44,5 @@ private:
 	NoiseObject noise;
 
 };
+
 
