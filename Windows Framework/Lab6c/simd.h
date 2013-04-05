@@ -5,177 +5,126 @@
 
 namespace SIMD
 {
-	inline __m128& operator *(const __m128 &left, const __m128 &right)
+	class Integers;
+	class Floats
 	{
-		return _mm_mul_ps(left, right);
-	}
+	public:
+		Floats();
+		Floats(float x, float y, float z, float w);
+		Floats(float all);
+		Floats(float* pointer);
+		Floats(const Integers& ints);
+		Floats(__m128 data);
 
-	inline __m128& operator *(const __m128 &left, const float &right)
+		float x() const;
+		float y() const;
+		float z() const;
+		float w() const;
+		__m128 GetData() const {return data;}
+		float Sum() const;
+
+		Floats& operator += (const Floats& rhs);
+		Floats& operator -= (const Floats& rhs);
+		Floats& operator *= (const Floats& rhs);
+		Floats& operator /= (const Floats& rhs);
+
+		Floats operator > (const Floats& lhs) const;
+		Floats operator < (const Floats& lhs) const;
+
+		Floats& operator = (const Floats& lhs);
+		bool operator == (const Floats& rhs) const;
+		bool operator != (const Floats& rhs) const;
+
+	private:
+		__m128 data;	//  a0 = x, a1 = y, a2 = z, a3 = w
+	};
+
+	Floats operator + (const Floats& lhs, const Floats& rhs);
+	Floats operator - (const Floats& lhs, const Floats& rhs);
+	Floats operator * (const Floats& lhs, const Floats& rhs);
+	Floats operator / (const Floats& lhs, const Floats& rhs);
+
+	Floats operator + (const Floats& lhs, const float& rhs);
+	Floats operator + (const float& lhs, const Floats& rhs);
+
+	Floats operator - (const Floats& lhs, const float& rhs);
+	Floats operator - (const float& lhs, const Floats& rhs);
+
+	Floats operator * (const Floats& lhs, const float& rhs);
+	Floats operator * (const float& lhs, const Floats& rhs);
+
+	Floats operator / (const Floats& lhs, const float& rhs);
+	Floats operator / (const float& lhs, const Floats& rhs);
+
+	Floats operator | (const Floats& lhs, const Floats& rhs);
+	Floats operator ^ (const Floats& lhs, const Floats& rhs);
+	Floats operator & (const Floats& lhs, const Floats& rhs);
+
+	Floats Cross(Floats& lhs, Floats& rhs);
+	float Dot(Floats& lhs, Floats& rhs);
+
+
+	class Integers
 	{
-		return _mm_mul_ps(left, _mm_set1_ps(right));
-	}
+	public:
+		Integers();
+		Integers(int x, int y, int z, int w);
+		Integers(int all);
+		Integers(int* pointer);
+		Integers(const Floats& floats);
+		Integers(__m128i data);
 
-	inline __m128i operator *(const __m128i &a, const __m128i &b)
-	{
-		__m128i tmp1 = _mm_mul_epu32(a,b); /* mul 2,0*/
-		__m128i tmp2 = _mm_mul_epu32( _mm_srli_si128(a,4), _mm_srli_si128(b,4)); /* mul 3,1 */
-		return _mm_unpacklo_epi32(_mm_shuffle_epi32(tmp1, _MM_SHUFFLE (0,0,2,0)), _mm_shuffle_epi32(tmp2, _MM_SHUFFLE (0,0,2,0))); /* shuffle results to [63..0] and pack */
-	}
+		int x() const;
+		int y() const;
+		int z() const;
+		int w() const;
+		__m128i GetData()const {return data;}
 
-	inline __m128i operator *(const __m128i &a, const int &b)
-	{
-		__m128i tmpb = _mm_set1_epi32(b);
-		__m128i tmp1 = _mm_mul_epu32(a,tmpb); /* mul 2,0*/
-		__m128i tmp2 = _mm_mul_epu32( _mm_srli_si128(a,4), _mm_srli_si128(tmpb,4)); /* mul 3,1 */
-		return _mm_unpacklo_epi32(_mm_shuffle_epi32(tmp1, _MM_SHUFFLE (0,0,2,0)), _mm_shuffle_epi32(tmp2, _MM_SHUFFLE (0,0,2,0))); /* shuffle results to [63..0] and pack */
-	}
+		Integers& operator += (const Integers& rhs);
+		Integers& operator -= (const Integers& rhs);
+		Integers& operator *= (const Integers& rhs);
+		Integers& operator /= (const Integers& rhs);
 
-	inline __m128& operator /(const __m128 &num, const __m128 &den)
-	{
-		return _mm_div_ps(num, den);
-	}
-
-	inline __m128& operator /(const __m128 &num, const float &den)
-	{
-		return _mm_div_ps(num, _mm_set1_ps(den));
-	}
-
-	inline __m128& operator +(const __m128 &left, const __m128 &right)
-	{
-		return _mm_add_ps(left, right);
-	}
-
-	inline __m128& operator +(const __m128 &left, const float &right)
-	{
-		return _mm_add_ps(left, _mm_set1_ps(right));
-	}
-
-	inline __m128& operator -(const __m128 &left, const __m128 &right)
-	{
-		return _mm_sub_ps(left, right);
-	}
-
-	inline __m128& operator -(const float &left, const __m128 &right)
-	{
-		return _mm_sub_ps(_mm_set1_ps(left), right);
-	}
+		Integers operator > (const Integers& lhs) const;
+		Integers operator < (const Integers& lhs) const;
 
 
-	inline __m128& operator -(const __m128 &left, const float &right)
-	{
-		return _mm_sub_ps(left, _mm_set1_ps(right));
-	}
+		bool operator == (const Integers& rhs) const;
+		bool operator != (const Integers& rhs) const;
 
-	inline __m128i& operator +(const __m128i &left, const __m128i &right)
-	{
-		return _mm_add_epi32(left, right);
-	}
+	private:
+		__m128i data;
+	};
 
-	inline __m128i& operator +(const __m128i &left, const int &right)
-	{	
-		return _mm_add_epi32(left, _mm_set1_epi32(right));
-	}
+	Integers operator + (const Integers& lhs, const Integers& rhs);
+	Integers operator - (const Integers& lhs, const Integers& rhs);
+	Integers operator * (const Integers& lhs, const Integers& rhs);
 
-	inline __m128i& operator -(const __m128i &left, const int &right)
-	{	
-		return _mm_sub_epi32(left, _mm_set1_epi32(right));
-	}
+	Integers operator + (const Integers& lhs, const int& rhs);
+	Integers operator + (const int& lhs, const Integers& rhs);
 
-	inline __m128i& operator -(const __m128i &left, const __m128i &right)
-	{
-		return _mm_sub_epi32(left, right);
-	}
+	Integers operator - (const Integers& lhs, const int& rhs);
+	Integers operator - (const int& lhs, const Integers& rhs);
 
-	inline __m128& Assign(float* vals)
-	{
-		return _mm_load_ps(vals);
-	}
+	Integers operator * (const Integers& lhs, const int& rhs);
+	Integers operator * (const int& lhs, const Integers& rhs);
 
-	inline __m128& Assign(float val)
-	{
-		return _mm_set1_ps(val);
-	}
+	Integers operator | (const Integers& lhs, const Integers& rhs);
+	Integers operator ^ (const Integers& lhs, const Integers& rhs);
+	Integers operator & (const Integers& lhs, const Integers& rhs);
+	Integers operator << (const Integers& lhs, const int shift);
+	Integers operator >> (const Integers& lhs, const int shift);
 
-	inline __m128i& Assign(int* vals)
-	{
-		return _mm_set_epi32(vals[0], vals[1], vals[2], vals[3]);
-	}
+	Floats operator + (const Floats& lhs, const Integers& rhs);
+	Floats operator + (const Integers& lhs, const Floats& rhs);
 
-	inline __m128i& Assign(const __m128 val)
-	{
-		return _mm_cvtps_epi32(val);
-	}
+	Floats operator - (const Floats& lhs, const Integers& rhs);
+	Floats operator - (const Integers& lhs, const Floats& rhs);
 
-	inline __m128& Assign(const __m128i val)
-	{
-		return _mm_cvtepi32_ps(val);
-	}
+	Floats operator * (const Floats& lhs, const Integers& rhs);
+	Floats operator * (const Integers& lhs, const Floats& rhs);
 
-	inline __m128& Floor(const __m128 val)
-	{
-		__m128i tmp = _mm_cvttps_epi32(val);
-		return _mm_cvtepi32_ps(tmp);
-	}
-
-
-	inline void Return(float * target, __m128 val)
-	{
-		return _mm_store_ps(target, val);
-	}
-
-	inline __m128i& operator <<(const __m128i val, const int shift)
-	{
-		return _mm_slli_epi32(val, shift);
-	}
-
-	inline __m128i& operator >>(const __m128i val, const int shift)
-	{
-		return _mm_srai_epi32(val, shift);
-	}
-
-	inline __m128i& operator &(const __m128i lhs, const __m128i rhs)
-	{
-		return _mm_and_si128(lhs, rhs);
-	}
-
-	inline __m128i& operator &(const __m128i lhs, const int rhs)
-	{
-		__m128i tmp = _mm_set1_epi32(rhs);
-		return _mm_and_si128(lhs, tmp);
-	}
-
-	inline __m128& operator &(const __m128 lhs, const int rhs)
-	{
-		__m128 r = _mm_set1_ps(rhs);
-		return _mm_and_ps(lhs, r);
-	}
-
-	inline __m128i& operator ^(const __m128i lhs, const __m128i rhs)
-	{
-		return _mm_xor_si128(lhs, rhs);
-	}
-
-	inline __m128i& operator ^(const __m128i lhs, const int rhs)
-	{
-		__m128i tmp = _mm_set1_epi32(rhs);
-		return _mm_xor_si128(lhs, tmp);
-	}
-
-	inline __m128& operator >(const __m128 &lhs, const __m128 &rhs)
-	{
-		return _mm_cmpgt_ps(lhs, rhs);
-	}
-
-	inline __m128& Max(const __m128 &lhs, const __m128 &rhs)
-	{
-		return _mm_max_ps(lhs, rhs);
-	}
-
-	inline __m128& Max(const float &lhs, const __m128 &rhs)
-	{
-		__m128 tmp = _mm_set1_ps(lhs);
-		return _mm_max_ps(tmp, rhs);
-	}
-
+	Floats operator / (const Floats& lhs, const Integers& rhs);
+	Floats operator / (const Integers& lhs, const Floats& rhs);
 };
 

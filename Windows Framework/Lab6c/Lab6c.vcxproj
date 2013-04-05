@@ -99,6 +99,7 @@
     <ClCompile Include="primitives.cpp" />
     <ClCompile Include="quaternion.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="simd.cpp" />
     <ClCompile Include="staticobject.cpp" />
     <ClCompile Include="task.cpp" />
     <ClCompile Include="terrain.cpp" />

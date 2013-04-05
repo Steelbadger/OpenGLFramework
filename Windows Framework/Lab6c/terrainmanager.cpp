@@ -27,6 +27,7 @@ void TerrainManager::Initialize(RenderManager &r, NoiseObject n)
 	renderer = &r;
 	camera = renderer->GetCameraParent();
 	noise = n;
+	updateTask = NULL;
 
 	Vector2 base = (camera->GetPosition().xz() - range)/chunkSize;
 	std::cout << "Range Lower Extent: (" << base.u << ", " << base.v << ")" << std::endl;
@@ -80,62 +81,23 @@ void TerrainManager::Update()
 	base.Floor();
 	base = base * chunkSize;
 
-
 	if (updateTask != NULL) {
-		if (updateTask->state() != tbb::task::executing) {
-			updateTask = new(tbb::task::allocate_root())UpdateTask;
-			updateTask->Initialize(terrainMap, materials, waterMats, bases, noise, defaultGround, defaultWater);
-			updateTask->PassMutexes(materialMutex, waterMutex, basesMutex, terrainMutex);
-			updateTask->SetupForExecute(base);
-		//	updateTask->execute();
+		 if (updateTask->state() != tbb::task::executing) {
+				updateTask = new(tbb::task::allocate_root())UpdateTask;
+				updateTask->Initialize(terrainMap, materials, waterMats, bases, noise, defaultGround, defaultWater);
+				updateTask->PassMutexes(materialMutex, waterMutex, basesMutex, terrainMutex);
+				updateTask->SetupForExecute(base);
 
-			tbb::task::enqueue(*updateTask);
-		}
+				tbb::task::enqueue(*updateTask);
+		 }
+	} else {
+		updateTask = new(tbb::task::allocate_root())UpdateTask;
+		updateTask->Initialize(terrainMap, materials, waterMats, bases, noise, defaultGround, defaultWater);
+		updateTask->PassMutexes(materialMutex, waterMutex, basesMutex, terrainMutex);
+		updateTask->SetupForExecute(base);
+
+		tbb::task::enqueue(*updateTask);
 	}
-
-	//Heightmap heights;
-	//std::map<float, std::map<float, Texture> > oldTerrain;
-	//std::map<float, std::map<float, Texture> > newTerrain;
-	//terrainMutex.lock_read();
-	//oldTerrain = terrainMap;
-	//terrainMutex.unlock();
-	//Texture oldTex;
-	//Material materialsBuff[numChunks][numChunks];
-	//Material waterMatsBuff[numChunks][numChunks];
-	//Vector2 basesBuff[numChunks][numChunks];
-
-	//for(int i = 0; i < numChunks; i++) {
-	//	for(int j = 0; j < numChunks; j++) {
-	//		basesBuff[i][j] = Vector2(base.u + i*chunkSize, base.v + j * chunkSize);
-	//		if (oldTerrain[basesBuff[i][j].u].count(basesBuff[i][j].v) == 0) {
-	//			oldTex = oldTerrain[basesBuff[i][j].u][basesBuff[i][j].v];
-	//			std::cout << "Generating New Terrain Chunk: (" << basesBuff[i][j].u << ", " << basesBuff[i][j].v << ")" << std::endl;
-	//			newTerrain[basesBuff[i][j].u][basesBuff[i][j].v] = 
-	//						Texture(Texture::DISPLACEMENT, heights.TBBGenerateHeightField(basesBuff[i][j].u, basesBuff[i][j].v, noise, chunkSize), 512);
-	//			std::cout << "Done" << std::endl;
-	//		} else {
-	//			oldTex = oldTerrain[basesBuff[i][j].u][basesBuff[i][j].v];
-	//			newTerrain[basesBuff[i][j].u][basesBuff[i][j].v] = oldTex;
-	//		}
-	//		Material defaultGround = materials[i*numChunks+j];
-	//		defaultGround.ReplaceTexture(Texture::DISPLACEMENT, newTerrain[basesBuff[i][j].u][basesBuff[i][j].v]);
-	//		defaultWater.ReplaceTexture(Texture::DISPLACEMENT, newTerrain[basesBuff[i][j].u][basesBuff[i][j].v]);
-	//		oldTex = newTerrain[basesBuff[i][j].u][basesBuff[i][j].v];
-	//		materialsBuff[i][j] = defaultGround;
-	//		waterMatsBuff[i][j] = defaultWater;
-	//	}
-	//}
-
-	//newTerrain.swap(terrainMap);
-
-	//for (int i = 0; i < numChunks;i++) {
-	//	for (int j = 0; j < numChunks; j++) {
-	//		materials[i*numChunks+j] = materialsBuff[i][j];
-	//		waterMats[i*numChunks+j] = waterMatsBuff[i][j];
-	//		bases[i*numChunks+j] = basesBuff[i][j];
-	//	}
-	//}	
-
 }
 
 Material TerrainManager::GetMaterial(int x , int y)

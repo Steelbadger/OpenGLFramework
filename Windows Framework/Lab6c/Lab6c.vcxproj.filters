@@ -183,6 +183,9 @@
     <ClCompile Include="terrainmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="simd.cpp">
+      <Filter>Source Files\Maths</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">

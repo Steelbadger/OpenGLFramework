@@ -405,17 +405,11 @@ void RenderManager::DrawTerrainAlt()
 
 
 	for (int i = 0; i < terrainManager->GetSize(); i++) {
-//		xmul = 0;
-//		xmul -= (i+1)%2;
-//		xmul = -abs((int(terrainManager->GetBase(i, 0).u/dif))%2);
 
 		for (int j = 0; j < terrainManager->GetSize(); j++) {
 			Material mat = terrainManager->GetMaterial(i, j);
 			UniformLocations uniforms = mat.GetUniforms();
 			mat.Apply();
-			ymul = 0;
-//			ymul -= (j+1)%2;
-	//		ymul = -abs((int(terrainManager->GetBase(0, j).v/dif))%2);
 
 			xmul = terrainManager->GetBase(i, j).u;
 			ymul = terrainManager->GetBase(i, j).v;
@@ -441,24 +435,9 @@ void RenderManager::DrawTerrainAlt()
 			//  unbind our shaders and arrays
 			glBindVertexArray(0);
 			glUseProgram(0);
-			//if (ymul == -1) {
-			//	ymul++;
-			//} else {
-			//	ymul--;
-			//}
+
 		}
-		//if (ymul == -1) {
-		//	ymul++;
-		//} else {
-		//	ymul--;
-		//}
-//		ymul = -1;
-//		xmul++;
-		//if (xmul == -1) {
-		//	xmul++;
-		//} else {
-		//	xmul--;
-		//}
+
 	}
 }
 
@@ -505,15 +484,7 @@ void RenderManager::DrawWaterAlt()
 	float dif = b.u - b2.u;
 
 	for (int i = 0; i < terrainManager->GetSize(); i++) {
-	//	xmul = 0;
-	//	xmul -= (i+1)%2;
-	//	xmul = -abs((int(terrainManager->GetBase(i, 0).u/dif))%2);
 		for (int j = 0; j < terrainManager->GetSize(); j++) {
-			//mat.ReplaceTexture(mat.GetTextures().back(), terrainManager->GetMaterial(i, j).GetTextures().back());
-			//mat.Apply();
-	//		ymul = 0;
-	//		ymul -= (j+1)%2;
-	//		ymul = -abs((int(terrainManager->GetBase(0, j).v/dif))%2);
 			xmul = terrainManager->GetBase(i, j).u;
 			ymul = terrainManager->GetBase(i, j).v;
 
@@ -540,10 +511,7 @@ void RenderManager::DrawWaterAlt()
 			//  unbind our shaders and arrays
 			glBindVertexArray(0);
 			glUseProgram(0);
-//			ymul++;
 		}
-//		ymul = -1;
-//		xmul++;
 	}
 	elapsed += 0.1f;
 

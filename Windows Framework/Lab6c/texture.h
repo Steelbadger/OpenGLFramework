@@ -28,9 +28,14 @@ private:
 	std::string path;
 	GLuint texRef;
 	float magnitude;
+	bool created;
+	unsigned short* imgBase;
+	int imgSize;
+	int uid;
 
 	GLenum wrapping;
 
-	static std::map<std::string, GLuint> TextureLibrary;
+	static std::map<int, GLuint> TextureLibrary;
+	static int UNIQUE_ID_COUNTER;
 };
 

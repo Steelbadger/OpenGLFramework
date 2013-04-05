@@ -4,7 +4,6 @@
 #include "my4x4matrix.h"
 #include <stdlib.h>
 #include <algorithm>
-#include "simd.h"
 
 
 unsigned char NoiseGenerator::permutation[SIZE];
@@ -136,19 +135,6 @@ float NoiseGenerator::TurbulentPerlin2D(float x, float y, NoiseObject n)
 
 Vector3 NoiseGenerator::NormalToTurbulentPerlin2D(float x, float y, NoiseObject n, float step)
 {
-	//float offs = 0.01f;
-	//Vector4 A(x, TurbulentPerlin2D(x,y,n), y-offs, 1.0f);
-	//Vector4 B(x-offs, TurbulentPerlin2D(x-offs,y+offs,n), y+offs, 1.0f);
-	//Vector4 C(x+offs, TurbulentPerlin2D(x+offs,y+offs,n), y+offs, 1.0f);
-
-	//Vector4 AB = B - A;
-	//Vector4 AC = C - A;
-
-	//Vector4 Normal = AB.Cross(AC);
-	//Normal.NormaliseSelf();
-	//Vector3 output(Normal);
-	//return output;
-
 	float x1 = x-step;
 	float x2 = x;
 	float x3 = x+step;
@@ -208,7 +194,6 @@ float NoiseGenerator::FastPerlin2D(float x, float y, NoiseObject n)
 
 Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, int octaves, float zoom, float persistance, float amp, float step)
 {
-	//float offs = 0.01f;
 
 	float x1 = x-step;
 	float x2 = x;
@@ -216,10 +201,6 @@ Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, int octaves, float zo
 	float y1 = y-step;
 	float y2 = y;
 	float y3 = y+step;
-
-	//Vector4 A(x, Perlin2D(x,y,octaves,zoom,persistance,amp), y-offs, 1.0f);
-	//Vector4 B(x-offs, Perlin2D(x-offs,y+offs,octaves,zoom,persistance,amp), y+offs, 1.0f);
-	//Vector4 C(x+offs, Perlin2D(x+offs,y+offs,octaves,zoom,persistance,amp), y+offs, 1.0f);
 
 	Vector4 A(x1, Perlin2D(x1,y1,octaves,zoom,persistance,amp), y1, 1.0f);
 	Vector4 B(x2, Perlin2D(x2,y1,octaves,zoom,persistance,amp), y1, 1.0f);
@@ -246,11 +227,6 @@ Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, int octaves, float zo
 	Vector4 Normal6 = DF.Cross(DC);
 
 	Vector4 Normal = Normal1 + Normal2 + Normal3 + Normal4 + Normal5 + Normal6;
-
-	//Vector4 AB = B - A;
-	//Vector4 AC = C - A;
-	
-	//Vector4 Normal = AB.Cross(AC);
 
 	Normal.NormaliseSelf();
 
@@ -316,37 +292,6 @@ float NoiseGenerator::NonCoherentNoise2D(float x, float y)
 	return 1.0-((float)nn/1073741824.0);
 }
 
-__m128 NoiseGenerator::AltNonCoherentNoise2D(__m128 x, __m128 y)
-{
-	using namespace SIMD;
-	x = x * seed;
-	y = y * seed;
-	y = y * 57;
-
-	__m128i val1 = Assign(x);
-	__m128i val2 = Assign(y);
-
-	__m128i thingy = val1 + val2;
-
-	__m128i n;
-
-	n = val1 + val2;
-
-	n = (n<<13)^n;
-
-	__m128i m = n * n;
-	m = m * 604893;
-	m = m + 19990303;
-	m = n * m;
-	m = m + 1376312589;
-	m = m & 0x7fffffff;
-
-	__m128 p = Assign(m);
-	p = p / 1073741824.0f;
-	p = 1.0f - p;
-
-	return p;
-}
 
 float NoiseGenerator::Simplex(float x, float y)
 {

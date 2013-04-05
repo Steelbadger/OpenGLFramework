@@ -2,6 +2,7 @@
 
 #include "heightmap.h"
 #include "lights.h"
+#include "simd.h"
 #include "water.h"
 
 #include <iostream>
@@ -34,6 +35,7 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	glewInit();
 
+
 	double myTimer = clock();
 
 	myTimer = clock() - myTimer;
@@ -46,7 +48,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	std::cout << "Number of Texture Units: " << numTextureUnits << std::endl;
 	std::cout << std::endl << "Time to Add Terrain To Renderer: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
-	player.SetLocation(50.0f, 30.0f, 50.0f);
+	player.SetLocation(50.0f, 50.0f, 50.0f);
 	LightSource playerLight(LightSource::POINT);
 	playerLight.SetColour(0.7f, 0.7f, 0.7f);
 	playerLight.SetAmbient(0.0f);
@@ -198,7 +200,7 @@ void Application::MainLoop()
 		if(input.ReportKeyState(VK_LEFT)) {
 			sunParent.RotateDeltaX(0.01f);
 		}
-//		sunParent.RotateDeltaX(-0.001f);
+		sunParent.RotateDeltaX(-0.001f);
 
 		if (input.ReportKeyState(VK_RIGHT)) {
 			sunParent.RotateDeltaX(-0.01f);

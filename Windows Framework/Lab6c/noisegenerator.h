@@ -39,7 +39,6 @@ public:
 	Vector3 FastNormalToPerlin2D(float x, float y, NoiseObject n);
 	static void GeneratePermutationTable();
 	void Seed(float s){seed = s;}
-	__m128 AltNonCoherentNoise2D(__m128 x, __m128 y);
 	float NonCoherentNoise2D(float x, float y);
 
 private:
