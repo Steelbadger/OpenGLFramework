@@ -23,8 +23,10 @@ public:
 	int GetMouseY() {return mouse.GetY();}
 	bool GetMouseR() {return mouse.RButton();}
 	bool GetMouseL() {return mouse.LButton();}
+	bool GetMouseM() {return mouse.MButton();}
 	bool GetOldMouseR() {return mouse.OldRButton();}
 	bool GetOldMouseL() {return mouse.OldLButton();}
+	bool GetOldMouseM() {return mouse.OldMButton();}
 	bool ReportKeyState(int key) {return keys[key];}
 	bool ReportKeyState(char key) {return keys[key];}
 	bool ReportKeyPress(int key) {return pressed[key];}
@@ -33,8 +35,10 @@ public:
 	bool ReportKeyRelease(char key){return released[key];}
 	bool ReportLMousePress() {return mouse.lClick();}
 	bool ReportRMousePress() {return mouse.rClick();}
+	bool ReportMMousePress() {return mouse.mClick();}
 	bool ReportLMouseRelease() {return mouse.lRelease();}
 	bool ReportRMouseRelease() {return mouse.rRelease();}
+	bool ReportMMouseRelease() {return mouse.mRelease();}
 	bool WindowResized() {return windowResized;}
 	bool WindowMoved() {return windowMoved;}
 	int GetMouseDX(){return mouse.FrameDX();}

@@ -44,6 +44,8 @@ void Input::Message(UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case WM_MOUSEMOVE:
 		case WM_MOUSEWHEEL:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
 		case WM_LBUTTONDOWN:
 		case WM_LBUTTONUP:
 		case WM_RBUTTONDOWN:

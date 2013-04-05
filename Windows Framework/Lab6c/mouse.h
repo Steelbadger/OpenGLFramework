@@ -16,12 +16,16 @@ public:
 	void Update();
 	bool RButton() {return rmouse;}
 	bool LButton() {return lmouse;}
+	bool MButton() {return mmouse;}
 	bool OldRButton() {return lastrmouse;}
 	bool OldLButton() {return lastlmouse;}
+	bool OldMButton() {return lastmmouse;}
 	bool rClick() {return rmouseclick;}
 	bool lClick() {return lmouseclick;}
+	bool mClick() {return mmouseclick;}
 	bool lRelease() {return lrelease;}
 	bool rRelease() {return rrelease;}
+	bool mRelease() {return mrelease;}
 	int FrameDX(){return (x-Lockedx);}
 	int FrameDY(){return (y-Lockedy);}
 	int Location(axis);
@@ -33,10 +37,10 @@ private:
 	int x, y;
 	int oldx, oldy;
 	int Lockedx, Lockedy;
-	bool lmouse, rmouse;
-	bool lastlmouse, lastrmouse;
-	bool lmouseclick, rmouseclick;
-	bool lrelease, rrelease;
+	bool lmouse, rmouse, mmouse;
+	bool lastlmouse, lastrmouse, lastmmouse;
+	bool lmouseclick, rmouseclick, mmouseclick;
+	bool lrelease, rrelease, mrelease;
 	bool wheelMoved;
 	bool wheelWasMoved;
 	int wheelDelta;

@@ -17,5 +17,6 @@ private:
 	float sensitivity;
 
 	bool jumping;
+	bool autoRun;
 };
 

@@ -407,7 +407,7 @@ void RenderManager::DrawTerrainAlt()
 	for (int i = 0; i < terrainManager->GetSize(); i++) {
 //		xmul = 0;
 //		xmul -= (i+1)%2;
-		xmul = -abs((int(terrainManager->GetBase(i, 0).u/dif))%2);
+//		xmul = -abs((int(terrainManager->GetBase(i, 0).u/dif))%2);
 
 		for (int j = 0; j < terrainManager->GetSize(); j++) {
 			Material mat = terrainManager->GetMaterial(i, j);
@@ -415,10 +415,13 @@ void RenderManager::DrawTerrainAlt()
 			mat.Apply();
 			ymul = 0;
 //			ymul -= (j+1)%2;
-			ymul = -abs((int(terrainManager->GetBase(0, j).v/dif))%2);
+	//		ymul = -abs((int(terrainManager->GetBase(0, j).v/dif))%2);
+
+			xmul = terrainManager->GetBase(i, j).u;
+			ymul = terrainManager->GetBase(i, j).v;
 
 			GameObject base;
-			base.SetLocation(terrainManager->GetBase(i, j).u, 0.0f, terrainManager->GetBase(i, j).v);
+			base.SetLocation(xmul, 0.0f, ymul);
 
 			//  Build the modelview matrix for the mesh
 			BuildModelViewMatrix(base);
@@ -504,20 +507,22 @@ void RenderManager::DrawWaterAlt()
 	for (int i = 0; i < terrainManager->GetSize(); i++) {
 	//	xmul = 0;
 	//	xmul -= (i+1)%2;
-		xmul = -abs((int(terrainManager->GetBase(i, 0).u/dif))%2);
+	//	xmul = -abs((int(terrainManager->GetBase(i, 0).u/dif))%2);
 		for (int j = 0; j < terrainManager->GetSize(); j++) {
 			//mat.ReplaceTexture(mat.GetTextures().back(), terrainManager->GetMaterial(i, j).GetTextures().back());
 			//mat.Apply();
 	//		ymul = 0;
 	//		ymul -= (j+1)%2;
-			ymul = -abs((int(terrainManager->GetBase(0, j).v/dif))%2);
+	//		ymul = -abs((int(terrainManager->GetBase(0, j).v/dif))%2);
+			xmul = terrainManager->GetBase(i, j).u;
+			ymul = terrainManager->GetBase(i, j).v;
 
 			Material mat = terrainManager->GetWaterMaterial(i, j);
 			UniformLocations uniforms = mat.GetUniforms();
 			mat.Apply();
 			//  Build the modelview matrix for the mesh
 			GameObject base;
-			base.SetLocation(terrainManager->GetBase(i, j).u, 0.0f, terrainManager->GetBase(i, j).v);
+			base.SetLocation(xmul, 0.0f, ymul);
 			BuildModelViewMatrix(base);
 
 			//  Find the uniform locations for this program and put relevant data into said locations

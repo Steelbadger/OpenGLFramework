@@ -36,10 +36,23 @@ void main()
 
 	vec4 gPos = (gp0 + gp1 + gp2);
 
-	float u = (mapWidth*(-xmul) + gPos.x*xmul + gPos.x*(1+xmul))+1.0;
-	float v = (mapWidth*(-ymul) + gPos.z*ymul + gPos.z*(1+ymul))+1.0;
+//	float u = (mapWidth*(-xmul) + gPos.x*xmul + gPos.x*(1+xmul))+1.0;
+//	float v = (mapWidth*(-ymul) + gPos.z*ymul + gPos.z*(1+ymul))+1.0;
 
-	pos.y  = (texture(texture3, vec2(u/(mapWidth+2), v/(mapWidth+2))).a-0.5)*magnitude*2;
+//	float u = fract(gPos.x/mapWidth)*mapWidth;
+//	float v = fract(gPos.z/mapWidth)*mapWidth;
+
+//	u = fract((u+1)/(mapWidth+2));
+//	v = fract((v+1)/(mapWidth+2));
+
+	float u = gPos.x - xmul;
+	float v = gPos.z - ymul;
+
+	u = (u+1)/(mapWidth+2);
+	v = (v+1)/(mapWidth+2);
+
+
+	pos.y  = (texture(texture3, vec2(u, v)).a-0.5)*magnitude*2;
 //	pos.y  = (texture(texture3, vec2(gPos.x/mapWidth, gPos.z/mapWidth)).a-0.5)*magnitude*2;
 
     gl_Position = projectionMatrix * modelViewMatrix * pos;
@@ -58,7 +71,9 @@ void main()
     vec3 n2 = gl_TessCoord.z * tcnormal[2];
 
 //	vec3 norm = texture(texture3, vec2(gPos.x/mapWidth, gPos.z/mapWidth)).rgb-0.5;
-	vec3 norm = texture(texture3, vec2(u/(mapWidth+2), v/(mapWidth+2))).rgb-0.5;
+	vec3 norm = texture(texture3, vec2(u, v)).rgb-0.5;
+//	vec3 factors = vec3(mapWidth, magnitude * 2, mapWidth);
+//	norm = norm * factors;
 	norm = normalize(norm);
 	normal = vec3(normalMatrix * vec4(norm, 1.0));
 

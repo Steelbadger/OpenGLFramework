@@ -31,17 +31,23 @@ void main()
 
 	float depth[3];
 
-	float u1 = (mapWidth*(-xmul) + vglobalPos[0].x*xmul + vglobalPos[0].x*(1+xmul))+1.0;
-	float v1 = (mapWidth*(-ymul) + vglobalPos[0].z*ymul + vglobalPos[0].z*(1+ymul))+1.0;
-	float u2 = (mapWidth*(-xmul) + vglobalPos[1].x*xmul + vglobalPos[1].x*(1+xmul))+1.0;
-	float v2 = (mapWidth*(-ymul) + vglobalPos[1].z*ymul + vglobalPos[1].z*(1+ymul))+1.0;
-	float u3 = (mapWidth*(-xmul) + vglobalPos[2].x*xmul + vglobalPos[2].x*(1+xmul))+1.0;
-	float v3 = (mapWidth*(-ymul) + vglobalPos[2].z*ymul + vglobalPos[2].z*(1+ymul))+1.0;
+	float u1 = vglobalPos[0].x - xmul;
+	float v1 = vglobalPos[0].z - ymul;
+	float u2 = vglobalPos[1].x - xmul;
+	float v2 = vglobalPos[1].z - ymul;
+	float u3 = vglobalPos[2].x - xmul;
+	float v3 = vglobalPos[2].z - ymul;
 
+	u1 = (u1+1)/(mapWidth+2);
+	v1 = (v1+1)/(mapWidth+2);
+	u2 = (u2+1)/(mapWidth+2);
+	v2 = (v2+1)/(mapWidth+2);
+	u3 = (u3+1)/(mapWidth+2);
+	v3 = (v3+1)/(mapWidth+2);
 
-	depth[0] = (texture(texture2, vec2(u1, v1)/(mapWidth+2)).a-0.5)*magnitude*2;
-	depth[1] = (texture(texture2, vec2(u2, v2)/(mapWidth+2)).a-0.5)*magnitude*2;
-	depth[2] = (texture(texture2, vec2(u3, v3)/(mapWidth+2)).a-0.5)*magnitude*2;
+	depth[0] = (texture(texture2, vec2(u1, v1)).a-0.5)*magnitude*2;
+	depth[1] = (texture(texture2, vec2(u2, v2)).a-0.5)*magnitude*2;
+	depth[2] = (texture(texture2, vec2(u3, v3)).a-0.5)*magnitude*2;
 
 //	depth[0] = (texture(texture2, vglobalPos[0].xz/mapWidth).a-0.5)*magnitude*2;
 //	depth[1] = (texture(texture2, vglobalPos[1].xz/mapWidth).a-0.5)*magnitude*2;

@@ -15,6 +15,7 @@ Mouse::Mouse(void)
 	oldy = 0;
 	rmouse = false;
 	lmouse = false;
+	mmouse = false;
 }
 
 
@@ -41,6 +42,12 @@ void Mouse::Message(UINT message, WPARAM wParam, LPARAM lParam)
 			wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);
 			wheelMoved = true;
 			break;
+		case WM_MBUTTONDOWN:
+			mmouse = true;
+			break;
+		case WM_MBUTTONUP:
+			mmouse = false;
+			break;
 		case WM_LBUTTONDOWN:
 			lmouse = true;
 			break;	
@@ -60,8 +67,10 @@ void Mouse::Update()
 {
 	lmouseclick = false;
 	rmouseclick = false;
+	mmouseclick = false;
 	lrelease = false;
 	rrelease = false;
+	mrelease = false;
 	wheelWasMoved = wheelMoved;
 	if (wheelMoved == false) {
 		wheelDelta = 0;
@@ -75,6 +84,10 @@ void Mouse::Update()
 	{
 		rmouseclick = true;
 	}
+	if (mmouse == true && lastmmouse == false)
+	{
+		mmouseclick = true;
+	}
 	if (lmouse == false && lastlmouse == true)
 	{
 		lrelease = true;
@@ -83,8 +96,13 @@ void Mouse::Update()
 	{
 		rrelease = true;
 	}
+	if (mmouse == false && lastmmouse == true)
+	{
+		mrelease = true;
+	}
 	lastlmouse = lmouse;
 	lastrmouse = rmouse;
+	lastmmouse = mmouse;
 }
 
 int Mouse::Location(axis Axis)

@@ -247,6 +247,8 @@ LRESULT CALLBACK WindowWizard::WndProc (HWND hwnd, UINT message, WPARAM wParam, 
             case WM_LBUTTONDOWN:
 			case WM_RBUTTONDOWN:
             case WM_RBUTTONUP:
+			case WM_MBUTTONDOWN:
+			case WM_MBUTTONUP:
 			case WM_MOUSEWHEEL:
             case WM_MOUSEMOVE:
 			case WM_KEYDOWN:

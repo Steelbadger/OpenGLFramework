@@ -49,12 +49,12 @@ void main()
 			float dist3 = distance(vec3(0,0,0),edge3);
 
 			//  Set the tessellation level for this edge based on this distance
-			float tess0 = 4000/(1+dist3*0.05 + dist3 * dist3 *0.005);
-			tess0 = int(clamp(tess0, 1, 32));
-			float tess1 = 4000/(1+dist2*0.05 + dist2 * dist2 *0.005);
-			tess1 = int(clamp(tess1, 1, 32));
-			float tess2 = 4000/(1+dist1*0.05 + dist1 * dist1 *0.005);
-			tess2 = int(clamp(tess2, 1, 32));
+			float tess0 = 4000/(1+dist3*0.07 + dist3 * dist3 *0.007);
+			tess0 = int(clamp(tess0, 1, 64));
+			float tess1 = 4000/(1+dist2*0.07 + dist2 * dist2 *0.007);
+			tess1 = int(clamp(tess1, 1, 64));
+			float tess2 = 4000/(1+dist1*0.07 + dist1 * dist1 *0.007);
+			tess2 = int(clamp(tess2, 1, 64));
 			float tessm = (tess0 + tess1 + tess2)/3;
 
 			gl_TessLevelInner[0] = tessm;
