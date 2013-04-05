@@ -1,7 +1,6 @@
 #pragma once
 
-#include <mmintrin.h>
-#include <xmmintrin.h>
+#include "simd.h"
 
 class Vector3;
 
@@ -41,9 +40,13 @@ public:
 	void Seed(float s){seed = s;}
 	float NonCoherentNoise2D(float x, float y);
 
+	SIMD::Floats NonCoherentNoise2D(SIMD::Floats& x, SIMD::Floats& y);
+	float Perlin2DFourPass(float x, float y, float zoom, float persistance, int base);
+
 private:
 	float NonCoherentNoise1D(float x);
 	float Interpolate(float a, float b, float x);
+	SIMD::Floats Interpolate (SIMD::Floats& a, SIMD::Floats& b, SIMD::Floats& x);
 	float lInterpolate(float a, float b, float x);
 	float seed;
 

@@ -65,9 +65,7 @@ unsigned short* Heightmap::GenerateHeightField(float x, float y, NoiseObject n, 
 	const int subdivs = 64;  //  256, 512, 1024
 	const int threads = size/subdivs;
 
-
-	GLushort* map = (GLushort*)malloc(size*size*4*sizeof(GLushort));
-//	GLushort* map = new GLushort[size*size*4];
+	GLushort* map = new GLushort[size*size*4];
 
 	NoiseGenerator noise;
 	float max = n.amplitude;
@@ -101,7 +99,6 @@ unsigned short* Heightmap::GenerateHeightField(float x, float y, NoiseObject n, 
 
 unsigned short* Heightmap::TBBGenerateHeightField(float x, float y, NoiseObject n, float square)
 {
-//	GLushort* map = (GLushort*)malloc(size*size*4*sizeof(GLushort));
 	GLushort* map = new GLushort[size*size*4];
 	float step = float((square+2)/size);
 

@@ -93,6 +93,11 @@ namespace SIMD {
 		return *this;
 	}
 
+	float Floats::operator [] (const int index)
+	{
+		return data.m128_f32[3-index];
+	}
+
 	Floats Floats::operator > (const Floats& lhs) const
 	{
 		__m128 temp = _mm_cmpgt_ps(data, lhs.data);
@@ -159,7 +164,7 @@ namespace SIMD {
 	Integers::Integers(const Floats& floats)
 	{
 		__m128 temp = floats.GetData();
-		data = _mm_cvtps_epi32(temp);
+		data = _mm_cvttps_epi32(temp);
 	}
 
 	int Integers::x() const
@@ -214,6 +219,11 @@ namespace SIMD {
 	{
 		__m128i temp = _mm_cmplt_epi32(data, lhs.data);
 		return Integers(temp);
+	}
+
+	int Integers::operator [] (const int index)
+	{
+		return data.m128i_i32[3-index];
 	}
 
 	bool Integers::operator == (const Integers& rhs) const
@@ -319,7 +329,7 @@ namespace SIMD {
 		return output;
 	}
 
-	Floats Cross(Floats& lhs, Floats& rhs)
+	Floats Cross(const Floats& lhs, const Floats& rhs)
 	{
 		__m128 left = lhs.GetData();
 		__m128 right = rhs.GetData();
@@ -336,11 +346,42 @@ namespace SIMD {
 		return Floats(output);
 	}
 
-	float Dot(Floats& lhs, Floats& rhs)
+	float Dot(const Floats& lhs, const Floats& rhs)
 	{
 		const int mask = 0xE1;
 		__m128 output = _mm_dp_ps(lhs.GetData(), rhs.GetData(), mask);
 		return output.m128_f32[0];
+	}
+
+	Floats Cosine(const Floats& values)
+	{
+		Floats x = values + 1.57079632;
+		Floats logic = x > 3.14159265;
+		Floats sub(6.28318531);
+		sub = sub & logic;
+		x -= sub;
+
+		logic = x < -3.14159265;
+		sub = 6.28318531;
+		sub = sub & logic;
+		x += sub;
+		
+		logic = x < 0.0f;
+
+		sub = 2.0f & logic;
+		sub -= 1.0f;
+
+		Floats cos = (1.27323954 * x) + (0.405284735 * x * x * sub);
+
+
+		logic = cos < 0.0f;
+
+		sub = 2.0f & logic;
+		sub -= 1.0f;
+
+		cos = .225 * (cos * cos * sub - cos) + cos;
+
+		return cos;
 	}
 
 //////////////////////FLOATING POINT BINARY OPERATORS\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -387,42 +428,42 @@ namespace SIMD {
 		return temp;
 	}
 
-	Integers operator + (const Integers& lhs, const int& rhs)
+	Integers operator + (const Integers& lhs, const int rhs)
 	{
 		Integers temp(rhs);
 		temp += lhs;
 		return temp;
 	}
 
-	Integers operator + (const int& lhs, const Integers& rhs)
+	Integers operator + (const int lhs, const Integers& rhs)
 	{
 		Integers temp(lhs);
 		temp += rhs;
 		return temp;
 	}
 
-	Integers operator - (const Integers& lhs, const int& rhs)
+	Integers operator - (const Integers& lhs, const int rhs)
 	{
 		Integers temp(rhs);
 		Integers output = lhs - temp;
 		return output;
 	}
 
-	Integers operator - (const int& lhs, const Integers& rhs)
+	Integers operator - (const int lhs, const Integers& rhs)
 	{
 		Integers temp(lhs);
 		Integers output = temp - rhs;
 		return output;
 	}
 
-	Integers operator * (const Integers& lhs, const int& rhs)
+	Integers operator * (const Integers& lhs, const int rhs)
 	{
 		Integers temp(rhs);
 		Integers output = lhs * temp;
 		return output;
 	}
 
-	Integers operator * (const int& lhs, const Integers& rhs)
+	Integers operator * (const int lhs, const Integers& rhs)
 	{
 		Integers temp(lhs);
 		Integers output = temp * rhs;

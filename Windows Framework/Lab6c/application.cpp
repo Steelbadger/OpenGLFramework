@@ -2,7 +2,7 @@
 
 #include "heightmap.h"
 #include "lights.h"
-#include "simd.h"
+#include "noisegenerator.h"
 #include "water.h"
 
 #include <iostream>
@@ -34,6 +34,64 @@ void Application::Initialize(HINSTANCE hInstance)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glewInit();
+
+
+	NoiseGenerator thingy;
+	SIMD::Floats x(1.0f, 2.0f, 4.0f, 8.0f);
+	SIMD::Floats y(3.0f, 6.0f, 12.0f, 24.0f);
+
+
+
+//	SIMD::Floats result = thingy.NonCoherentNoise2D(x, y);
+	float singleResult[4];
+	float simdResult[4];
+	float comparisonResult[4];
+	//comparisonResult[0] = thingy.NonCoherentNoise2D(1.0f, 3.0f);
+	//comparisonResult[1] = thingy.NonCoherentNoise2D(2.0f, 6.0f);
+	//comparisonResult[2] = thingy.NonCoherentNoise2D(4.0f, 12.0f);
+	//comparisonResult[3] = thingy.NonCoherentNoise2D(8.0f, 24.0f);
+	//for (int i = 0; i < 4; i++) {
+	//	singleResult[i] = thingy.NonCoherentNoise2D(x[i], y[i]);
+	//	simdResult[i] = result[i];
+	//}
+
+	SIMD::Floats result = SIMD::Cosine(x);
+	for (int i = 0; i < 4; i++) {
+		singleResult[i] = cos(x[i]);
+		simdResult[i] = result[i];
+	}	
+
+
+	//float persistance = myNoise.persistance;
+	//float zoom = myNoise.zoom;
+
+	//float frequency = pow(2.0f,0);
+	//float amplitude = pow(persistance,0);
+	//float xp = 1.0f * frequency / zoom;
+	//float yp = 3.0f * frequency / zoom;
+	//comparisonResult[0] = thingy.Perlin2DSinglePass(xp, yp) * amplitude;
+	//frequency = pow(2.0f,1);
+	//amplitude = pow(persistance,1);
+	//xp = 1.0f * frequency / zoom;
+	//yp = 3.0f * frequency / zoom;
+	//comparisonResult[1] = thingy.Perlin2DSinglePass(xp, yp) * amplitude;
+	//frequency = pow(2.0f,2);
+	//amplitude = pow(persistance,2);
+	//xp = 1.0f * frequency / zoom;
+	//yp = 3.0f * frequency / zoom;
+	//comparisonResult[2] = thingy.Perlin2DSinglePass(xp, yp) * amplitude;
+	//frequency = pow(2.0f,3);
+	//amplitude = pow(persistance,3);
+	//xp = 1.0f * frequency / zoom;
+	//yp = 3.0f * frequency / zoom;
+	//comparisonResult[3] = thingy.Perlin2DSinglePass(xp, yp) * amplitude;
+
+	//float tot = 0.0f;
+	//float simdTot = thingy.Perlin2DFourPass(1.0f, 3.0f, zoom, persistance, 0);
+
+	//for (int i = 0; i < 4; i++) {
+	//	tot += comparisonResult[i];
+	//}
 
 
 	double myTimer = clock();

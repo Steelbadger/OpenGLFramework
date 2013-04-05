@@ -28,6 +28,8 @@ namespace SIMD
 		Floats& operator *= (const Floats& rhs);
 		Floats& operator /= (const Floats& rhs);
 
+		float operator [] (const int index);
+
 		Floats operator > (const Floats& lhs) const;
 		Floats operator < (const Floats& lhs) const;
 
@@ -60,8 +62,9 @@ namespace SIMD
 	Floats operator ^ (const Floats& lhs, const Floats& rhs);
 	Floats operator & (const Floats& lhs, const Floats& rhs);
 
-	Floats Cross(Floats& lhs, Floats& rhs);
-	float Dot(Floats& lhs, Floats& rhs);
+	Floats Cross(const Floats& lhs, const Floats& rhs);
+	float Dot(const Floats& lhs, const Floats& rhs);
+	Floats Cosine(const Floats& values);
 
 
 	class Integers
@@ -85,6 +88,8 @@ namespace SIMD
 		Integers& operator *= (const Integers& rhs);
 		Integers& operator /= (const Integers& rhs);
 
+		int operator [] (const int index);
+
 		Integers operator > (const Integers& lhs) const;
 		Integers operator < (const Integers& lhs) const;
 
@@ -100,14 +105,14 @@ namespace SIMD
 	Integers operator - (const Integers& lhs, const Integers& rhs);
 	Integers operator * (const Integers& lhs, const Integers& rhs);
 
-	Integers operator + (const Integers& lhs, const int& rhs);
-	Integers operator + (const int& lhs, const Integers& rhs);
+	Integers operator + (const Integers& lhs, const int rhs);
+	Integers operator + (const int lhs, const Integers& rhs);
 
-	Integers operator - (const Integers& lhs, const int& rhs);
-	Integers operator - (const int& lhs, const Integers& rhs);
+	Integers operator - (const Integers& lhs, const int rhs);
+	Integers operator - (const int lhs, const Integers& rhs);
 
-	Integers operator * (const Integers& lhs, const int& rhs);
-	Integers operator * (const int& lhs, const Integers& rhs);
+	Integers operator * (const Integers& lhs, const int rhs);
+	Integers operator * (const int lhs, const Integers& rhs);
 
 	Integers operator | (const Integers& lhs, const Integers& rhs);
 	Integers operator ^ (const Integers& lhs, const Integers& rhs);

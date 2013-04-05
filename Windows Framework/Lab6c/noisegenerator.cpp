@@ -86,6 +86,50 @@ float NoiseGenerator::Perlin2DSinglePass(float x, float y)
 	return Interpolate(int1, int2, y-floorY);	//Here we use y-floory, to get the 2nd dimension.
 }
 
+float NoiseGenerator::Perlin2DFourPass(float xin, float yin, float zoom, float persistance, int base)
+{
+	using namespace SIMD;
+
+	Floats scaleFactor(pow(2.0, base), pow(2.0, base+1), pow(2.0, base+2), pow(2.0, base+3));
+	scaleFactor /= zoom;
+	Floats ampFactor(pow(persistance, base), pow(persistance, base+1), pow(persistance, base+2), pow(persistance, base+3));
+
+	Floats x = scaleFactor * xin;
+	Floats y = scaleFactor * yin;
+
+	Floats floorX = Integers(x);
+	Floats floorY = Integers(y);
+	
+	Floats s = NonCoherentNoise2D(floorX,floorY); 
+	Floats t = NonCoherentNoise2D(floorX+1.0f,floorY);
+	Floats u = NonCoherentNoise2D(floorX,floorY+1.0f);	//Get the surrounding pixels to calculate the transition.
+	Floats v = NonCoherentNoise2D(floorX+1.0f,floorY+1.0f);
+
+	//Floats int1 = (s*(1.0f-(x-floorX)) + t*(x-floorX));
+	//Floats int2 = (u*(1.0f-(x-floorX)) + v*(x-floorX));
+
+	//Floats out = (int1*(1.0f-(y-floorY)) +int2*(y-floorY));
+
+	Floats int1 = Interpolate(s, t, x-floorX);
+	Floats int2 = Interpolate(u, v, x-floorX);
+
+	Floats out = Interpolate(int1, int2, y-floorY);
+
+	out *= ampFactor;
+	
+	return out.Sum();
+
+
+}
+
+SIMD::Floats NoiseGenerator::Interpolate (SIMD::Floats& a, SIMD::Floats& b, SIMD::Floats& x)
+{
+	using namespace SIMD;
+	Floats ft = x * 3.1415927;
+	Floats f = (1.0 - Cosine(ft)) * 0.5;
+	return (a * (1.0 - f) + b * f);
+}
+
 float NoiseGenerator::FastPerlin2DSinglePass(float x, float y)
 {
 	int floorX = x;
@@ -290,6 +334,26 @@ float NoiseGenerator::NonCoherentNoise2D(float x, float y)
 	n = (n<<13)^n;
 	int nn = (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
 	return 1.0-((float)nn/1073741824.0);
+}
+
+SIMD::Floats NoiseGenerator::NonCoherentNoise2D(SIMD::Floats& calcx, SIMD::Floats& calcy)
+{
+	using namespace SIMD;
+
+	Floats x = calcx;
+	Floats y = calcy;
+
+
+	x *= seed;
+	y *= seed;
+	y *= 57;
+
+	Integers n = x + y;
+
+	n = (n<<13)^n;
+	Integers nn = (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
+
+	return 1.0-(Floats(nn)/1073741824.0);
 }
 
 
