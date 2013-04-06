@@ -311,7 +311,7 @@ namespace SIMD {
 	Floats operator * (const float& lhs, const Floats& rhs)
 	{
 		Floats temp(lhs);
-		Floats output = rhs + temp;
+		Floats output = rhs * temp;
 		return output;
 	}
 
@@ -376,8 +376,8 @@ namespace SIMD {
 
 		logic = cos < 0.0f;
 
-		sub = 2.0f & logic;
-		sub -= 1.0f;
+		sub = -2.0f & logic;
+		sub += 1.0f;
 
 		cos = .225 * (cos * cos * sub - cos) + cos;
 
@@ -501,6 +501,14 @@ namespace SIMD {
 		__m128i temp = _mm_srai_epi32(lhs.GetData(), shift);
 		return Integers(temp);
 	}
+
+	Integers operator ~ (const Integers& lhs)
+	{
+		__m128i mask = _mm_set1_epi32(0xFFFFFFFF);
+		__m128i temp = _mm_andnot_si128(lhs.GetData(), mask);
+		return Floats(temp);
+	}
+
 
 
 ////////////////COMPOUND ARITHMETIC\\\\\\\\\\\\\\\

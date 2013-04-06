@@ -170,6 +170,79 @@ unsigned __stdcall Heightmap::GenerateSection(void *data)
 	return 0;
 }
 
+void Heightmap::GenHeightsSIMD(float x, float y, NoiseObject n, float square)
+{
+	GLushort* map = new GLushort[size*size*4];
+	float step = float((square+2)/size);
+
+	float maxAmp = 0;
+
+	NoiseGenerator noise;
+	maxAmp = noise.MaxAmplitude(n);
+	for (int j = 0; j < size; j++) {
+		int counter = j*size;
+		int currentpixel = counter*4;
+		for (float i = 0; i < size; i++) {
+			float height = 0;
+			for (int k = 0; k < n.octaves; k+=4) {
+				height += noise.Perlin2DFourPass(i*step + x, j*step + y, n.zoom, n.persistance, k);
+			}
+
+			height /= maxAmp;
+			height *= n.amplitude;
+			Vector3 normal(0,0,0);
+
+			//  Convert the numbers to short int
+			map[currentpixel] = GLushort(((height+n.amplitude)/(2*n.amplitude)) * 65535);			//  R
+			map[currentpixel + 1] = GLushort(((height+n.amplitude)/(2*n.amplitude)) * 65535);		//  G
+			map[currentpixel + 2] = GLushort(((height+n.amplitude)/(2*n.amplitude)) * 65535);		//  B
+			map[currentpixel + 3] = 65535;		// A
+
+			counter++;
+			currentpixel = counter*4;
+		}	
+	}
+
+//	write_tga("SIMDPerlinNoise.tga", size, map);
+
+	delete[] map;
+}
+
+void Heightmap::GenHeightsLinear(float x, float y, NoiseObject n, float square)
+{
+	GLushort* map = new GLushort[size*size*4];
+	float step = float((square+2)/size);
+
+	float maxAmp = 0;
+	for (int i = 0; i < n.octaves; i++) {
+		maxAmp += pow(n.persistance,i);//This decreases the amplitude with every loop of the octave.
+	}
+
+	NoiseGenerator noise;
+	for (int j = 0; j < size; j++) {
+		int counter = j*size;
+		int currentpixel = counter*4;
+		for (float i = 0; i < size; i++) {
+			float height = noise.Perlin2D(i*step + x, j*step + y, n)/maxAmp;
+
+			Vector3 normal(0,0,0);
+
+			//  Convert the numbers to short int
+			map[currentpixel] = GLushort(((height+n.amplitude)/(2*n.amplitude)) * 65535);			//  R
+			map[currentpixel + 1] = GLushort(((height+n.amplitude)/(2*n.amplitude)) * 65535);		//  G
+			map[currentpixel + 2] = GLushort(((height+n.amplitude)/(2*n.amplitude)) * 65535);		//  B
+			map[currentpixel + 3] = 65535;		// A
+
+			counter++;
+			currentpixel = counter*4;
+		}	
+	}
+
+//	write_tga("LinearPerlinNoise.tga", size, map);
+
+	delete[] map;
+
+}
 
 
 void Heightmap::write_tga(const char *filename, int size, unsigned char* base)

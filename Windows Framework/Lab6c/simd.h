@@ -119,6 +119,8 @@ namespace SIMD
 	Integers operator & (const Integers& lhs, const Integers& rhs);
 	Integers operator << (const Integers& lhs, const int shift);
 	Integers operator >> (const Integers& lhs, const int shift);
+	Integers operator ~ (const Integers& lhs);
+
 
 	Floats operator + (const Floats& lhs, const Integers& rhs);
 	Floats operator + (const Integers& lhs, const Floats& rhs);

@@ -39,9 +39,13 @@ public:
 	static void GeneratePermutationTable();
 	void Seed(float s){seed = s;}
 	float NonCoherentNoise2D(float x, float y);
+	float MaxAmplitude(NoiseObject n);
 
 	SIMD::Floats NonCoherentNoise2D(SIMD::Floats& x, SIMD::Floats& y);
 	float Perlin2DFourPass(float x, float y, float zoom, float persistance, int base);
+	float Simplex2DFourPass(float x, float y, float zoom, float persistance, int base);
+	float SIMDPerlin2D(float x, float y, NoiseObject n);
+	float SIMDSimplex2D(float x, float y, NoiseObject n);
 
 private:
 	float NonCoherentNoise1D(float x);

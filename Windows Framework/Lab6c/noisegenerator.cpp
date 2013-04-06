@@ -105,11 +105,6 @@ float NoiseGenerator::Perlin2DFourPass(float xin, float yin, float zoom, float p
 	Floats u = NonCoherentNoise2D(floorX,floorY+1.0f);	//Get the surrounding pixels to calculate the transition.
 	Floats v = NonCoherentNoise2D(floorX+1.0f,floorY+1.0f);
 
-	//Floats int1 = (s*(1.0f-(x-floorX)) + t*(x-floorX));
-	//Floats int2 = (u*(1.0f-(x-floorX)) + v*(x-floorX));
-
-	//Floats out = (int1*(1.0f-(y-floorY)) +int2*(y-floorY));
-
 	Floats int1 = Interpolate(s, t, x-floorX);
 	Floats int2 = Interpolate(u, v, x-floorX);
 
@@ -128,6 +123,27 @@ SIMD::Floats NoiseGenerator::Interpolate (SIMD::Floats& a, SIMD::Floats& b, SIMD
 	Floats ft = x * 3.1415927;
 	Floats f = (1.0 - Cosine(ft)) * 0.5;
 	return (a * (1.0 - f) + b * f);
+}
+
+float NoiseGenerator::SIMDPerlin2D(float x, float y, NoiseObject n)
+{
+	float height = 0;
+
+	for (int k = 0; k < n.octaves; k+=4) {
+		height += Perlin2DFourPass(x, y, n.zoom, n.persistance, k);
+	}
+
+	return height;
+}
+
+float NoiseGenerator::MaxAmplitude(NoiseObject n)
+{
+	float maxAmp = 0;
+	for (int i = 0; i < n.octaves; i++) {
+		maxAmp += pow(n.persistance,i);//This decreases the amplitude with every loop of the octave.
+	}
+
+	return maxAmp;
 }
 
 float NoiseGenerator::FastPerlin2DSinglePass(float x, float y)
@@ -162,7 +178,7 @@ float NoiseGenerator::FastPerlin2DSinglePass(float x, float y)
 float NoiseGenerator::Perlin2D(float x, float y, int octaves, float zoom, float persistance, float amp)
 {
 	float noise = 0;
-	for(int i = 0; i < octaves-1; i++) {
+	for(int i = 0; i < octaves; i++) {
 		float frequency = pow(2.0f,i);//This increases the frequency with every loop of the octave.
 		float amplitude = pow(persistance,i);//This decreases the amplitude with every loop of the octave.
 
@@ -440,6 +456,103 @@ float NoiseGenerator::Simplex(float x, float y)
 	return 70.0 * (n1 + n2 + n3);
 
 }
+
+float NoiseGenerator::Simplex2DFourPass(float xin, float yin, float zoom, float persistance, int base)
+{
+	using namespace SIMD;
+
+	Floats scaleFactor(pow(2.0, base), pow(2.0, base+1), pow(2.0, base+2), pow(2.0, base+3));
+	scaleFactor /= zoom;
+	Floats ampFactor(pow(persistance, base), pow(persistance, base+1), pow(persistance, base+2), pow(persistance, base+3));
+
+	Floats x = scaleFactor * xin;
+	Floats y = scaleFactor * yin;
+
+	float root3 = 1.73205080757;
+
+	// Skew the input space to determine which simplex cell we're in
+	float skewFactor = 0.5*(root3-1.0);
+	Floats s = (x+y)*skewFactor;			// Hairy factor for 2D
+
+	Integers i = x+s;
+	Integers j = y+s;
+
+	float unskewFactor = (3.0-root3)/6.0;
+
+	Floats t = Floats(i+j)*unskewFactor;
+
+	Floats X0 = i-t;		// Unskew the cell origin back to (x,y) space
+	Floats Y0 = j-t;
+	Floats dx = x-X0;		// The x,y distances from the cell origin
+	Floats dy = y-Y0;
+
+	// For the 2D case, the simplex shape is an equilateral triangle.
+	// Determine which simplex we are in.
+
+	Integers logic = dy > dx;
+
+	Integers i1 = 1 & logic;
+	Integers j1 = 1 & ~logic;
+
+	Floats x2 = dx - i1 + unskewFactor;				// Offsets for middle corner in (x,y) unskewed coords
+	Floats y2 = dy - j1 + unskewFactor;
+	Floats x3 = dx - 1.0 + 2.0 * unskewFactor;		// Offsets for last corner in (x,y) unskewed coords
+	Floats y3 = dy - 1.0 + 2.0 * unskewFactor;
+
+	// Work out the hashed gradient indices of the three simplex corners
+
+	Floats grad = NonCoherentNoise2D(dx, dy);
+
+	Floats t1 = 0.5 - dx*dx-dy*dy;
+	Floats flogic = t1 < 0.0;
+	Floats sum = -1.0 & flogic;
+	sum += 1.0;
+	t1 = t1*t1;
+	t1 = t1*t1;
+
+	Floats n1 = (t1 * grad)*sum;
+
+	grad = NonCoherentNoise2D(x2, y2);
+	Floats t2 = 0.5 - x2*x2-y2*y2;
+
+	flogic = t2 < 0.0;
+	sum = -1.0 & flogic;
+	sum += 1.0;
+	t2 = t2*t2;
+	t2 = t2*t2;
+
+	Floats n2 = (t2 * grad)*sum;
+
+	grad = NonCoherentNoise2D(x3, y3);
+	Floats t3 = 0.5 - x3*x3-y3*y3;
+
+	flogic = t3 < 0.0;
+	sum = -1.0 & flogic;
+	sum += 1.0;
+	t3 = t3*t3;
+	t3 = t3*t3;
+
+	Floats n3 = (t3 * grad)*sum;
+
+	// Add contributions from each corner to get the final noise value.
+	// The result is scaled to return values in the interval [-1,1] (ish).
+
+	Floats output = 70.0*(n1+n2+n3)*ampFactor;
+
+	return output.Sum();
+}
+
+float NoiseGenerator::SIMDSimplex2D(float x, float y, NoiseObject n)
+{
+	float height = 0;
+
+	for (int k = 0; k < n.octaves; k+=4) {
+		height += Simplex2DFourPass(x, y, n.zoom, n.persistance, k);
+	}
+
+	return height;
+}
+
 
 
 float NoiseGenerator::FractalSimplex(float x, float y, NoiseObject n)

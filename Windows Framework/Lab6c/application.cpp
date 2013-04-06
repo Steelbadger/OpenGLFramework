@@ -35,68 +35,63 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	glewInit();
 
-
 	NoiseGenerator thingy;
-	SIMD::Floats x(1.0f, 2.0f, 4.0f, 8.0f);
-	SIMD::Floats y(3.0f, 6.0f, 12.0f, 24.0f);
+	Heightmap heights;
+	float out = 0;
 
 
+//	out = thingy.SIMDSimplex2D(1.2, 3.2, myNoise);
 
-//	SIMD::Floats result = thingy.NonCoherentNoise2D(x, y);
-	float singleResult[4];
-	float simdResult[4];
-	float comparisonResult[4];
-	//comparisonResult[0] = thingy.NonCoherentNoise2D(1.0f, 3.0f);
-	//comparisonResult[1] = thingy.NonCoherentNoise2D(2.0f, 6.0f);
-	//comparisonResult[2] = thingy.NonCoherentNoise2D(4.0f, 12.0f);
-	//comparisonResult[3] = thingy.NonCoherentNoise2D(8.0f, 24.0f);
-	//for (int i = 0; i < 4; i++) {
-	//	singleResult[i] = thingy.NonCoherentNoise2D(x[i], y[i]);
-	//	simdResult[i] = result[i];
-	//}
+//	std::cout << "Result: " << out << std::endl;
 
-	SIMD::Floats result = SIMD::Cosine(x);
-	for (int i = 0; i < 4; i++) {
-		singleResult[i] = cos(x[i]);
-		simdResult[i] = result[i];
-	}	
-
-
-	//float persistance = myNoise.persistance;
-	//float zoom = myNoise.zoom;
-
-	//float frequency = pow(2.0f,0);
-	//float amplitude = pow(persistance,0);
-	//float xp = 1.0f * frequency / zoom;
-	//float yp = 3.0f * frequency / zoom;
-	//comparisonResult[0] = thingy.Perlin2DSinglePass(xp, yp) * amplitude;
-	//frequency = pow(2.0f,1);
-	//amplitude = pow(persistance,1);
-	//xp = 1.0f * frequency / zoom;
-	//yp = 3.0f * frequency / zoom;
-	//comparisonResult[1] = thingy.Perlin2DSinglePass(xp, yp) * amplitude;
-	//frequency = pow(2.0f,2);
-	//amplitude = pow(persistance,2);
-	//xp = 1.0f * frequency / zoom;
-	//yp = 3.0f * frequency / zoom;
-	//comparisonResult[2] = thingy.Perlin2DSinglePass(xp, yp) * amplitude;
-	//frequency = pow(2.0f,3);
-	//amplitude = pow(persistance,3);
-	//xp = 1.0f * frequency / zoom;
-	//yp = 3.0f * frequency / zoom;
-	//comparisonResult[3] = thingy.Perlin2DSinglePass(xp, yp) * amplitude;
-
-	//float tot = 0.0f;
-	//float simdTot = thingy.Perlin2DFourPass(1.0f, 3.0f, zoom, persistance, 0);
-
-	//for (int i = 0; i < 4; i++) {
-	//	tot += comparisonResult[i];
-	//}
-
-
+	std::cout << "Generating Perlin Noise over  10000x10000 range with 12 Octaves" << std::endl;
 	double myTimer = clock();
 
+	float maxAmp = thingy.MaxAmplitude(myNoise);
+
+	for (int i = 0; i < 10000; i++) {
+		for (int j = 0; j < 10000; j++) {
+			out += (thingy.SIMDPerlin2D(i, j, myNoise)/maxAmp)*myNoise.amplitude;
+		}
+	}
+	//heights.GenHeightsSIMD(0, 0, myNoise, 5000);
+
 	myTimer = clock() - myTimer;
+	std::cout << std::endl << "SIMD Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	float out2 = 0;
+	myTimer = clock();
+
+	for (int i = 0; i < 10000; i++) {
+		for (int j = 0; j < 10000; j++) {
+			out2 += thingy.Perlin2D(i, j, myNoise);
+		}
+	}
+	//heights.GenHeightsLinear(0, 0, myNoise, 5000);
+	myTimer = clock() - myTimer;
+	std::cout << std::endl << "Linear Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	float sum = 0;
+
+	sum = abs(out2 - out);
+
+
+	sum /= (10000*10000);
+	std::cout << std::endl << "Average Difference: " << sum << std::endl;
+
+	out2 = 0;
+
+	myTimer = clock();
+	for (int i = 0; i < 10000; i++) {
+		for (int j = 0; j < 10000; j++) {
+			out2 += thingy.FractalSimplex(i, j, myNoise);
+		}
+	}
+	myTimer = clock()-myTimer;
+
+	std::cout << std::endl << "Simplex Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	sum = abs(out2 - out);
+	sum /= (10000*10000);
+	std::cout << "This comparison Makes no sense!" << sum << std::endl;
+
 	int numTextureUnits;
 
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &numTextureUnits);
@@ -186,7 +181,7 @@ void Application::Initialize(HINSTANCE hInstance)
 	groundMat.AddShader("terrain.tessevaluation");
 
 
-	Heightmap heights;
+//	Heightmap heights;
 
 	myTimer = clock();
 //	Texture heightMap(Texture::DISPLACEMENT, heights.TBBGenerateHeightField(0, 0, myNoise, gridSize), 512);
