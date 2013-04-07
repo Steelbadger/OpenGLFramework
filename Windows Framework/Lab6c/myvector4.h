@@ -3,7 +3,7 @@
 #include "myvector2.h"
 
 #include <math.h>
-#include <stdio.h>
+#include <iostream>
 
 class Quaternion;
 
@@ -31,6 +31,8 @@ public:
 	float Dot4(const Vector4 & rhs) const;
 	Vector4 Cross(const Vector4 & rhs) const;
 	void CalcNormal(Vector4 A, Vector4 B, Vector4 C);
+
+	friend std::ostream& operator<< (std::ostream& out, const Vector4& lhs);
 
 	Vector4 & operator*=(const float s);
 	Vector4 & operator/=(const float s);

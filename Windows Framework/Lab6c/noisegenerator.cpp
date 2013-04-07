@@ -94,8 +94,8 @@ float NoiseGenerator::Perlin2DFourPass(float xin, float yin, float zoom, float p
 	scaleFactor /= zoom;
 	Floats ampFactor(pow(persistance, base), pow(persistance, base+1), pow(persistance, base+2), pow(persistance, base+3));
 
-	Floats x = scaleFactor * xin;
-	Floats y = scaleFactor * yin;
+	Floats x = xin * scaleFactor;
+	Floats y = yin * scaleFactor;
 
 	Floats floorX = Integers(x);
 	Floats floorY = Integers(y);
@@ -128,6 +128,8 @@ SIMD::Floats NoiseGenerator::Interpolate (SIMD::Floats& a, SIMD::Floats& b, SIMD
 float NoiseGenerator::SIMDPerlin2D(float x, float y, NoiseObject n)
 {
 	float height = 0;
+	x += 15000;
+	y += 15000;
 
 	for (int k = 0; k < n.octaves; k+=4) {
 		height += Perlin2DFourPass(x, y, n.zoom, n.persistance, k);
@@ -565,7 +567,7 @@ float NoiseGenerator::FractalSimplex(float x, float y, NoiseObject n)
 		float frequency = pow(2.0f,i);//This increases the frequency with every loop of the octave.
 		float amplitude = pow(n.persistance,i);//This decreases the amplitude with every loop of the octave.
 		maxamp += amplitude;
-		noise += Simplex(x*frequency/n.zoom, y/n.zoom*frequency)*amplitude;
+		noise += Simplex(x*frequency/(n.zoom*2), y*frequency/(n.zoom*2))*amplitude;
 	}
 	noise /= maxamp;
 
@@ -580,6 +582,26 @@ Vector3 NoiseGenerator::FractalSimplexNormal(float x, float y, NoiseObject n, fl
 	Vector4 A(x, FractalSimplex(x,y+xtrioffs,n), y+xtrioffs, 1.0f);
 	Vector4 B(x-xtrioffs, FractalSimplex(x-xtrioffs,y-ytrioffs,n), y-ytrioffs, 1.0f);
 	Vector4 C(x+xtrioffs, FractalSimplex(x+xtrioffs,y-ytrioffs,n), y-ytrioffs, 1.0f);
+
+	Vector4 AB = B - A;
+	Vector4 AC = C - A;
+
+	Vector4 Normal = AC.Cross(AB);
+	Normal.NormaliseSelf();
+	Vector3 output(Normal);
+	return output;
+}
+
+Vector3 NoiseGenerator::SIMDPerlinNormal(float x, float y, NoiseObject n, float step)
+{
+
+	float offs = step;
+	float xtrioffs = offs * 0.86602540378;
+	float ytrioffs = offs * 0.5;
+	float maxamp = MaxAmplitude(n);
+	Vector4 A(x, (SIMDPerlin2D(x,y+xtrioffs,n)*n.amplitude)/maxamp, y+xtrioffs, 1.0f);
+	Vector4 B(x-xtrioffs, (SIMDPerlin2D(x-xtrioffs,y-ytrioffs,n)*n.amplitude)/maxamp, y-ytrioffs, 1.0f);
+	Vector4 C(x+xtrioffs, (SIMDPerlin2D(x+xtrioffs,y-ytrioffs,n)*n.amplitude)/maxamp, y-ytrioffs, 1.0f);
 
 	Vector4 AB = B - A;
 	Vector4 AC = C - A;

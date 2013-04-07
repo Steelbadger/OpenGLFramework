@@ -11,7 +11,7 @@
 
 Application::Application(void):
 	gridSize(600.0f),
-	myNoise(12, 500.0f, 0.41f, 80.0f, 1.155f),
+	myNoise(16, 200.0f, 0.43f, 80.0f, 1.155f),
 	ground(gridSize, 15.0f),
 	skybox("inwardCube.obj"),
 	water(gridSize)
@@ -44,53 +44,88 @@ void Application::Initialize(HINSTANCE hInstance)
 
 //	std::cout << "Result: " << out << std::endl;
 
-	std::cout << "Generating Perlin Noise over  10000x10000 range with 12 Octaves" << std::endl;
+	//std::cout << "Generating Perlin Noise over  10000x10000 range with 12 Octaves" << std::endl;
+
+	//SIMD::Floats x(1.2, 3.5, 4.6, 1.0);
+	//SIMD::Floats y(5.2, 8.1, 4.6, 1.0);
+
+	//SIMD::Floats res;
+	//const int itnum = 100000;
 	double myTimer = clock();
 
-	float maxAmp = thingy.MaxAmplitude(myNoise);
+	//for (int i = 0; i < itnum; i++) {
+	//	for (int j = 0; j < itnum; j++) {
+	//		res += SIMD::Cross(x, y);
+	//	}
+	//}
+	//myTimer = clock()-myTimer;
 
-	for (int i = 0; i < 10000; i++) {
-		for (int j = 0; j < 10000; j++) {
-			out += (thingy.SIMDPerlin2D(i, j, myNoise)/maxAmp)*myNoise.amplitude;
-		}
-	}
-	//heights.GenHeightsSIMD(0, 0, myNoise, 5000);
+	//std::cout << res/(itnum*itnum) << std::endl;
+	//std::cout << "SIMD Op Time: " << myTimer/(CLOCKS_PER_SEC) << "s" << std::endl;
 
-	myTimer = clock() - myTimer;
-	std::cout << std::endl << "SIMD Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
-	float out2 = 0;
-	myTimer = clock();
+	//Vector4 xv(1.2, 3.5, 4.6, 1.0);
+	//Vector4 yv(5.2, 8.1, 4.6, 1.0);
+	//Vector4 resv;
 
-	for (int i = 0; i < 10000; i++) {
-		for (int j = 0; j < 10000; j++) {
-			out2 += thingy.Perlin2D(i, j, myNoise);
-		}
-	}
-	//heights.GenHeightsLinear(0, 0, myNoise, 5000);
-	myTimer = clock() - myTimer;
-	std::cout << std::endl << "Linear Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
-	float sum = 0;
+	//myTimer = clock();
 
-	sum = abs(out2 - out);
+	//for (int i = 0; i < itnum; i++) {
+	//	for (int j = 0; j < itnum; j++) {
+	//		resv += xv.Cross(yv);
+	//	}
+	//}
+	//myTimer = clock()-myTimer;
+
+	//std::cout << resv/(itnum*itnum) << std::endl;
+	//std::cout << "Vector Op Time: " << myTimer/(CLOCKS_PER_SEC) << "s" << std::endl;
+
+	//float maxAmp = thingy.MaxAmplitude(myNoise);
+
+	//for (int i = 0; i < 10000; i++) {
+	//	for (int j = 0; j < 10000; j++) {
+	//		out += (thingy.SIMDPerlin2D(i, j, myNoise)/maxAmp)*myNoise.amplitude;
+	//	}
+	//}
+	////heights.GenHeightsSIMD(0, 0, myNoise, 5000);
+
+	//myTimer = clock() - myTimer;
+	//std::cout << std::endl << "SIMD Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	//float out2 = 0;
+	//myTimer = clock();
+
+	//for (int i = 0; i < 10000; i++) {
+	//	for (int j = 0; j < 10000; j++) {
+	//		out2 += thingy.Perlin2D(i, j, myNoise);
+	//	}
+	//}
+	////heights.GenHeightsLinear(0, 0, myNoise, 5000);
+	//myTimer = clock() - myTimer;
+	//std::cout << std::endl << "Linear Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	//float sum = 0;
+
+	//sum = abs(out2 - out);
 
 
-	sum /= (10000*10000);
-	std::cout << std::endl << "Average Difference: " << sum << std::endl;
+	//sum /= (10000*10000);
+	//std::cout << std::endl << "Average Difference: " << sum << std::endl;
 
-	out2 = 0;
+	//out2 = 0;
 
-	myTimer = clock();
-	for (int i = 0; i < 10000; i++) {
-		for (int j = 0; j < 10000; j++) {
-			out2 += thingy.FractalSimplex(i, j, myNoise);
-		}
-	}
-	myTimer = clock()-myTimer;
+	//myTimer = clock();
+	//for (int i = 0; i < 10000; i++) {
+	//	for (int j = 0; j < 10000; j++) {
+	//		out2 += thingy.FractalSimplex(i, j, myNoise);
+	//	}
+	//}
+	//myTimer = clock()-myTimer;
 
-	std::cout << std::endl << "Simplex Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
-	sum = abs(out2 - out);
-	sum /= (10000*10000);
-	std::cout << "This comparison Makes no sense!" << sum << std::endl;
+	//std::cout << std::endl << "Simplex Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	//sum = abs(out2 - out);
+	//sum /= (10000*10000);
+	//std::cout << "This comparison Makes no sense!" << sum << std::endl;
+
+
+
 
 	int numTextureUnits;
 
@@ -99,7 +134,6 @@ void Application::Initialize(HINSTANCE hInstance)
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "OpenGL 4.2 Initialized: " << 	GLEW_VERSION_4_2 << std::endl;
 	std::cout << "Number of Texture Units: " << numTextureUnits << std::endl;
-	std::cout << std::endl << "Time to Add Terrain To Renderer: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
 	player.SetLocation(50.0f, 50.0f, 50.0f);
 	LightSource playerLight(LightSource::POINT);
@@ -150,15 +184,11 @@ void Application::Initialize(HINSTANCE hInstance)
 	sphere.AttachMaterial(crateMatProc);
 	crateMesh.AttachMaterial(crateMat);
 
-//	crateMesh.AttachMaterial(waterMat);
-
 	int num = 5;
 	for (int i = 0; i < num; i++) {
 		for (int j = 0; j < num; j++) {
 			for (int k = 0; k < num; k++) {
 				StaticObject* curr = new StaticObject();
-//				curr->AttachMesh(crateMesh);
-//				curr->AttachMesh(sphere);
 				curr->AttachMesh(altCrate);
 				curr->SetLocation(i*3.0f, 20.0f+j*3.0f, k*3.0f);
 				renderer.AddToRenderer(*curr->GetMesh());
@@ -167,7 +197,6 @@ void Application::Initialize(HINSTANCE hInstance)
 	}
 	Mesh newAlt(meshGenerator.CubeSphere(4));
 	newAlt.AttachMaterial(crateMatProc);
-//	testObject.AttachMesh(crateMesh);
 	testObject.AttachMesh(newAlt);
 	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
@@ -180,21 +209,6 @@ void Application::Initialize(HINSTANCE hInstance)
 	groundMat.AddShader("terrain.tesscontrol");
 	groundMat.AddShader("terrain.tessevaluation");
 
-
-//	Heightmap heights;
-
-	myTimer = clock();
-//	Texture heightMap(Texture::DISPLACEMENT, heights.TBBGenerateHeightField(0, 0, myNoise, gridSize), 512);
-	myTimer = clock() - myTimer;
-
-//	groundMat.AddTexture(heightMap);
-//	ground.AttachMaterial(groundMat);
-
-//	renderer.AddTerrainToRenderer(ground);
-
-
-
-	std::cout << std::endl << "Time to Generate Heightmap: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 	std::cout << std::endl << "Number of Available Processors: " << GetActiveProcessorCount(ALL_PROCESSOR_GROUPS) << std::endl;
 
 	Material waterMat("waterMat");
@@ -203,7 +217,6 @@ void Application::Initialize(HINSTANCE hInstance)
 	waterMat.AddShader("water.tesscontrol");
 	waterMat.AddShader("water.tessevaluation");
 	waterMat.AddTexture(Texture(Texture::DIFFUSE, "seamlessWater.tga"));
-//	waterMat.AddTexture(heightMap);
 	
 	water.AttachMaterial(waterMat);
 

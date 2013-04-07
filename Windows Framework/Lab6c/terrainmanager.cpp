@@ -54,23 +54,30 @@ void TerrainManager::Initialize(RenderManager &r, NoiseObject n)
 	defaultWater.Compile();
 	Texture oldTex;
 
+	double bigTimer = clock();
+	double timer = clock();
+
 	for(int i = 0; i < numChunks; i++) {
 		for(int j = 0; j < numChunks; j++) {
 			bases[i*numChunks+j] = Vector2(base.u + i*chunkSize, base.v + j * chunkSize);
 			std::cout << "Generating at: (" << bases[i*numChunks+j].u << ", " << bases[i*numChunks+j].v << ")" << std::endl;
+			timer = clock();
 			terrainMap[bases[i*numChunks+j].u][bases[i*numChunks+j].v] = 
-							Texture(Texture::DISPLACEMENT, heights.TBBGenerateHeightField(bases[i*numChunks+j].u, bases[i*numChunks+j].v, noise, chunkSize), 512);
+							Texture(Texture::DISPLACEMENT, heights.TBBSIMDGenerateHeightField(bases[i*numChunks+j].u, bases[i*numChunks+j].v, noise, chunkSize), 1024);
 			std::cout << "Applying Material..." << std::endl;
 			defaultGround.ReplaceTexture(oldTex, terrainMap[bases[i*numChunks+j].u][bases[i*numChunks+j].v]);
 			defaultWater.ReplaceTexture(oldTex, terrainMap[bases[i*numChunks+j].u][bases[i*numChunks+j].v]);
 			oldTex = terrainMap[bases[i*numChunks+j].u][bases[i*numChunks+j].v];
 			materials[i*numChunks+j] = defaultGround;
 			waterMats[i*numChunks+j] = defaultWater;
-			std::cout << "Done" << std::endl << std::endl;
+			timer = clock()-timer;
+			std::cout << "Done in " << timer/CLOCKS_PER_SEC << "s" << std::endl;
 		}
 	}
 
-	std::cout << "DONE TERRAIN INIT" << std::endl;
+	bigTimer = clock()-bigTimer;
+	
+	std::cout << "DONE TERRAIN INIT (" << bigTimer/CLOCKS_PER_SEC << "s)" << std::endl;
 
 
 }

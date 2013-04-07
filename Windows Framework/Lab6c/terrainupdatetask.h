@@ -15,7 +15,7 @@
 class UpdateTask : public tbb::task
 {
 public:
-	UpdateTask(): noise(16, 500.0f, 0.41f, 80.0f, 1.155f){};
+	UpdateTask(): noise(16, 200.0f, 0.43f, 80.0f, 1.155f){};
 	void Initialize(std::map<float, std::map<float, Texture> > &terrain, Material &mat, Material &wMat, Vector2 &bas, NoiseObject n) {
 		terrainMap = &terrain;
 		materials = &mat;

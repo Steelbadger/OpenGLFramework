@@ -133,3 +133,9 @@ void Vector4::CalcNormal(Vector4 pointA, Vector4 pointB, Vector4 pointC)
 	z = Normal.z;
 	w = 1.0f;
 }
+
+std::ostream& operator<< (std::ostream& out, const Vector4& lhs)
+{
+	out << "(" << lhs.x << ", " << lhs.y << ", " << lhs.z << ", " << lhs.w << ")";
+	return out;
+}

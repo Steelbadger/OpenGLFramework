@@ -45,6 +45,7 @@ public:
 	float Perlin2DFourPass(float x, float y, float zoom, float persistance, int base);
 	float Simplex2DFourPass(float x, float y, float zoom, float persistance, int base);
 	float SIMDPerlin2D(float x, float y, NoiseObject n);
+	Vector3 SIMDPerlinNormal(float x, float y, NoiseObject n, float step);
 	float SIMDSimplex2D(float x, float y, NoiseObject n);
 
 private:

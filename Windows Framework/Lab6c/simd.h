@@ -2,6 +2,7 @@
 #include <mmintrin.h>
 #include <xmmintrin.h>
 #include <emmintrin.h>
+#include <iostream>
 
 namespace SIMD
 {
@@ -22,6 +23,7 @@ namespace SIMD
 		float w() const;
 		__m128 GetData() const {return data;}
 		float Sum() const;
+		float Length() const;
 
 		Floats& operator += (const Floats& rhs);
 		Floats& operator -= (const Floats& rhs);
@@ -32,6 +34,8 @@ namespace SIMD
 
 		Floats operator > (const Floats& lhs) const;
 		Floats operator < (const Floats& lhs) const;
+
+		friend std::ostream& operator<< (std::ostream& out, const Floats& lhs);
 
 		Floats& operator = (const Floats& lhs);
 		bool operator == (const Floats& rhs) const;

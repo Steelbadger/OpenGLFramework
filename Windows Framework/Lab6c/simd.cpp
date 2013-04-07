@@ -38,22 +38,22 @@ namespace SIMD {
 
 	float Floats::x() const
 	{
-		return data.m128_f32[0];
+		return data.m128_f32[3];
 	}
 
 	float Floats::y() const
 	{
-		return data.m128_f32[1];
+		return data.m128_f32[2];
 	}
 
 	float Floats::z() const
 	{
-		return data.m128_f32[2];
+		return data.m128_f32[1];
 	}
 
 	float Floats::w() const
 	{
-		return data.m128_f32[3];
+		return data.m128_f32[0];
 	}
 
 	float Floats::Sum() const
@@ -62,6 +62,16 @@ namespace SIMD {
 		__m128 tmp = _mm_set1_ps(1.0);
 		__m128 output = _mm_dp_ps(data, tmp, mask);
 		return output.m128_f32[0];
+	}
+
+	float Floats::Length() const
+	{
+		Floats temp = *this;
+		Floats mul(1.0, 1.0, 1.0, 0.0);
+		temp *= mul;
+		temp = temp*temp;
+		float lengthSqr = temp.Sum();
+		return sqrt(lengthSqr);
 	}
 
 
@@ -108,6 +118,12 @@ namespace SIMD {
 	{
 		__m128 temp = _mm_cmplt_ps(data, lhs.data);
 		return Floats(temp);
+	}
+
+	std::ostream& operator<< (std::ostream& out, const Floats& lhs)
+	{
+		out << "(" << lhs.x() << ", " << lhs.y() << ", " << lhs.z() << ", " << lhs.w() << ")";
+		return out;
 	}
 
 	Floats& Floats::operator = (const Floats& lhs)
@@ -331,19 +347,30 @@ namespace SIMD {
 
 	Floats Cross(const Floats& lhs, const Floats& rhs)
 	{
-		__m128 left = lhs.GetData();
-		__m128 right = rhs.GetData();
-		__m128 temp1 = _mm_shuffle_ps(left, left, _MM_SHUFFLE(3, 0, 2, 1));
-		__m128 temp2 = _mm_shuffle_ps(right, right, _MM_SHUFFLE(3, 1, 0, 2));
+		__m128 left = _mm_set_ps(lhs.x(), lhs.y(), lhs.z(), 0);
+		__m128 right = _mm_set_ps(rhs.x(), rhs.y(), rhs.z(), 0);
 
-		__m128 temp3 = _mm_shuffle_ps(left, left, _MM_SHUFFLE(3, 1, 0, 2));
-		__m128 temp4 = _mm_shuffle_ps(right, right, _MM_SHUFFLE(3, 0, 2, 1));
+		//__m128 temp1 = _mm_shuffle_ps(left, left, _MM_SHUFFLE(3, 0, 2, 1));
+		//__m128 temp2 = _mm_shuffle_ps(right, right, _MM_SHUFFLE(3, 1, 0, 2));
+
+		//__m128 temp3 = _mm_shuffle_ps(left, left, _MM_SHUFFLE(3, 1, 0, 2));
+		//__m128 temp4 = _mm_shuffle_ps(right, right, _MM_SHUFFLE(3, 0, 2, 1));
+
+		__m128 temp1 = _mm_shuffle_ps(left, left, _MM_SHUFFLE(2, 1, 3, 0));
+		__m128 temp2 = _mm_shuffle_ps(right, right, _MM_SHUFFLE(1, 3, 2, 0));
+
+		__m128 temp3 = _mm_shuffle_ps(left, left, _MM_SHUFFLE(1, 3, 2, 0));
+		__m128 temp4 = _mm_shuffle_ps(right, right, _MM_SHUFFLE(2, 1, 3, 0));
 
 		__m128 temp5 = _mm_mul_ps(temp1, temp2);
 		__m128 temp6 = _mm_mul_ps(temp3, temp4);
 		
 		__m128 output = _mm_sub_ps(temp5, temp6);
-		return Floats(output);
+
+		Floats homogenise(0,0,0,1);
+		Floats out = output;
+
+		return out+homogenise;
 	}
 
 	float Dot(const Floats& lhs, const Floats& rhs)

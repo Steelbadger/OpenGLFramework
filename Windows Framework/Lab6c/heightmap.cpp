@@ -50,6 +50,45 @@ struct Generator
 
 };
 
+struct SIMDGenerator
+{
+	SIMDGenerator(float x, float y, NoiseObject n, float square, float st, unsigned short* m, int s):
+		sq(square), no(n), xb(x), yb(y), step(st), map(m), size(s){};
+
+	void operator()(const tbb::blocked_range<int> range) const {
+		NoiseGenerator noise;
+		float maxAmp = noise.MaxAmplitude(no);
+		for (int j = range.begin(); j != range.end(); j++) {
+			int counter = j*size;
+			int currentpixel = counter*4;
+			for (float i = 0; i < size; i++) {
+				float height = noise.SIMDPerlin2D(i*step + xb, j*step + yb, no);
+				Vector3 normal = noise.SIMDPerlinNormal(i*step + xb, j*step + yb, no, step);
+				height /= maxAmp;
+				height *= no.amplitude;
+
+				//  Convert the numbers to short int
+				map[currentpixel] = GLushort((normal.x+1)/2 * 65535);			//  R
+				map[currentpixel + 1] = GLushort((normal.y+1)/2 * 65535);		//  G
+				map[currentpixel + 2] = GLushort((normal.z+1)/2 * 65535);		//  B
+				map[currentpixel + 3] = GLushort(((height+no.amplitude)/(2*no.amplitude)) * 65535);		// A
+
+				counter++;
+				currentpixel = counter*4;
+			}	
+		}
+	}
+
+	float sq;
+	NoiseObject no;
+	float xb;
+	float yb;
+	float step;
+	unsigned short* map;
+	int size;
+};
+
+
 
 Heightmap::Heightmap(void)
 {
@@ -206,6 +245,20 @@ void Heightmap::GenHeightsSIMD(float x, float y, NoiseObject n, float square)
 //	write_tga("SIMDPerlinNoise.tga", size, map);
 
 	delete[] map;
+}
+
+unsigned short* Heightmap::TBBSIMDGenerateHeightField(float x, float y, NoiseObject n, float square)
+{
+	GLushort* map = new GLushort[size*size*4];
+	float step = float((square+2)/size);
+
+
+	tbb::parallel_for(tbb::blocked_range<int>(0, size, size/4),SIMDGenerator(x-1, y-1, n, square+2, step, map, size), tbb::simple_partitioner());
+
+//	write_tga("TBBSIMDPerlin.tga", size, map);
+
+
+	return map;
 }
 
 void Heightmap::GenHeightsLinear(float x, float y, NoiseObject n, float square)

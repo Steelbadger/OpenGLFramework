@@ -28,7 +28,7 @@ bool Rigidbody::CheckGroundCollision(NoiseObject n)
 	ground.Seed(n.seed);
 	n.octaves = 9;
 	if(active) {
-		float h = ground.FractalSimplex(parent->GetPosition().x+1, parent->GetPosition().z+1, n);
+		float h = ground.SIMDPerlin2D(parent->GetPosition().x+1, parent->GetPosition().z+1, n);
 		if (parent->GetPosition().y < 2.0f+h) {
 			parent->SetLocation(parent->GetPosition().x, 2.0f+h, parent->GetPosition().z);
 			velocity = Vector4(0.0f, 0.0f, 0.0f, 1.0f);

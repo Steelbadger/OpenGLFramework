@@ -29,6 +29,7 @@ public:
 	unsigned int GenerateHeightmap(float x, float y, NoiseObject n, float square);
 	unsigned short* GenerateHeightField(float x, float y, NoiseObject n, float square);
 	unsigned short* TBBGenerateHeightField(float x, float y, NoiseObject n, float square);
+	unsigned short* TBBSIMDGenerateHeightField(float x, float y, NoiseObject n, float square);
 
 	void GenHeightsSIMD(float x, float y, NoiseObject n, float square);
 	void GenHeightsLinear(float x, float y, NoiseObject n, float square);
@@ -38,6 +39,6 @@ private:
 	void write_tga(const char *filename, int size, unsigned short* base);
 	static unsigned __stdcall GenerateSection(void *data);
 
-	static const int size = 512;
+	static const int size = 1024;
 };
 
