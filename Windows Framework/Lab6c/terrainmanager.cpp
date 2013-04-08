@@ -57,6 +57,10 @@ void TerrainManager::Initialize(RenderManager &r, NoiseObject n)
 	double bigTimer = clock();
 	double timer = clock();
 
+	//bases = new Vector2[numChunks*numChunks];
+	//materials = new Material[numChunks*numChunks];
+	//waterMats = new Material[numChunks*numChunks];
+
 	for(int i = 0; i < numChunks; i++) {
 		for(int j = 0; j < numChunks; j++) {
 			bases[i*numChunks+j] = Vector2(base.u + i*chunkSize, base.v + j * chunkSize);

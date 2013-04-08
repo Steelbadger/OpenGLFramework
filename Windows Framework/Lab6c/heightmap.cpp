@@ -25,8 +25,10 @@ struct Generator
 			int counter = j*size;
 			int currentpixel = counter*4;
 			for (float i = 0; i < size; i++) {
-				float height = noise.FractalSimplex(i*step + xb, j*step + yb, no);
+//				float height = noise.FractalSimplex(i*step + xb, j*step + yb, no);
 				Vector3 normal = noise.FractalSimplexNormal(i*step + xb, j*step + yb, no, step);
+				float height = noise.Perlin2D(i*step + xb, j*step + yb, no);
+				//Vector3 normal(0.0f, 0.0f, 0.0f);
 
 				//  Convert the numbers to short int
 				map[currentpixel] = GLushort((normal.x+1)/2 * 65535);			//  R
@@ -64,6 +66,7 @@ struct SIMDGenerator
 			for (float i = 0; i < size; i++) {
 				float height = noise.SIMDPerlin2D(i*step + xb, j*step + yb, no);
 				Vector3 normal = noise.SIMDPerlinNormal(i*step + xb, j*step + yb, no, step);
+				//Vector3 normal(0.0f, 0.0f, 0.0f);
 				height /= maxAmp;
 				height *= no.amplitude;
 
@@ -259,6 +262,16 @@ unsigned short* Heightmap::TBBSIMDGenerateHeightField(float x, float y, NoiseObj
 
 
 	return map;
+}
+
+void Heightmap::GenHeightsTBBSIMD(float x, float y, NoiseObject n, float square)
+{
+	GLushort* map = new GLushort[size*size*4];
+	float step = float((square+2)/size);
+
+	tbb::parallel_for(tbb::blocked_range<int>(0, size, size/4),SIMDGenerator(x-1, y-1, n, square+2, step, map, size), tbb::simple_partitioner());
+
+	delete[] map;
 }
 
 void Heightmap::GenHeightsLinear(float x, float y, NoiseObject n, float square)

@@ -31,8 +31,10 @@ public:
 	unsigned short* TBBGenerateHeightField(float x, float y, NoiseObject n, float square);
 	unsigned short* TBBSIMDGenerateHeightField(float x, float y, NoiseObject n, float square);
 
+
 	void GenHeightsSIMD(float x, float y, NoiseObject n, float square);
 	void GenHeightsLinear(float x, float y, NoiseObject n, float square);
+	void GenHeightsTBBSIMD(float x, float y, NoiseObject n, float square);
 	
 private:
 	void write_tga(const char *filename, int size, unsigned char* base);

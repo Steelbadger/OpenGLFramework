@@ -38,20 +38,19 @@ void Application::Initialize(HINSTANCE hInstance)
 	NoiseGenerator thingy;
 	Heightmap heights;
 	float out = 0;
+	double myTimer;
+	const int itnum = 100000;
 
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 
-//	out = thingy.SIMDSimplex2D(1.2, 3.2, myNoise);
-
-//	std::cout << "Result: " << out << std::endl;
-
-	//std::cout << "Generating Perlin Noise over  10000x10000 range with 12 Octaves" << std::endl;
+	//std::cout << "Timing " << itnum*itnum << " cross products..." << std::endl; 
 
 	//SIMD::Floats x(1.2, 3.5, 4.6, 1.0);
 	//SIMD::Floats y(5.2, 8.1, 4.6, 1.0);
 
 	//SIMD::Floats res;
-	//const int itnum = 100000;
-	double myTimer = clock();
+
+	//myTimer = clock();
 
 	//for (int i = 0; i < itnum; i++) {
 	//	for (int j = 0; j < itnum; j++) {
@@ -77,55 +76,79 @@ void Application::Initialize(HINSTANCE hInstance)
 	//myTimer = clock()-myTimer;
 
 	//std::cout << resv/(itnum*itnum) << std::endl;
-	//std::cout << "Vector Op Time: " << myTimer/(CLOCKS_PER_SEC) << "s" << std::endl;
+	//std::cout << "SISD Op Time: " << myTimer/(CLOCKS_PER_SEC) << "s" << std::endl;
+
+	//////////////////////////////////////////////////////////////////////////////////
+
+	//std::cout << "Generating Noise over " << itnum << "x" << itnum << " range with 12 Octaves" << std::endl;
 
 	//float maxAmp = thingy.MaxAmplitude(myNoise);
-
-	//for (int i = 0; i < 10000; i++) {
-	//	for (int j = 0; j < 10000; j++) {
+	//myTimer = clock();
+	//for (int i = 0; i < itnum; i++) {
+	//	for (int j = 0; j < itnum; j++) {
 	//		out += (thingy.SIMDPerlin2D(i, j, myNoise)/maxAmp)*myNoise.amplitude;
 	//	}
 	//}
-	////heights.GenHeightsSIMD(0, 0, myNoise, 5000);
 
 	//myTimer = clock() - myTimer;
-	//std::cout << std::endl << "SIMD Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	//std::cout << std::endl << "SIMD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 	//float out2 = 0;
 	//myTimer = clock();
 
-	//for (int i = 0; i < 10000; i++) {
-	//	for (int j = 0; j < 10000; j++) {
+	//for (int i = 0; i < itnum; i++) {
+	//	for (int j = 0; j < itnum; j++) {
 	//		out2 += thingy.Perlin2D(i, j, myNoise);
 	//	}
 	//}
-	////heights.GenHeightsLinear(0, 0, myNoise, 5000);
 	//myTimer = clock() - myTimer;
-	//std::cout << std::endl << "Linear Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	//std::cout << std::endl << "SISD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 	//float sum = 0;
 
 	//sum = abs(out2 - out);
 
 
-	//sum /= (10000*10000);
+	//sum /= (itnum*itnum);
 	//std::cout << std::endl << "Average Difference: " << sum << std::endl;
 
 	//out2 = 0;
 
 	//myTimer = clock();
-	//for (int i = 0; i < 10000; i++) {
-	//	for (int j = 0; j < 10000; j++) {
+	//for (int i = 0; i < itnum; i++) {
+	//	for (int j = 0; j < itnum; j++) {
 	//		out2 += thingy.FractalSimplex(i, j, myNoise);
 	//	}
 	//}
 	//myTimer = clock()-myTimer;
 
-	//std::cout << std::endl << "Simplex Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	//std::cout << std::endl << "SISD Simplex Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 	//sum = abs(out2 - out);
-	//sum /= (10000*10000);
+	//sum /= (itnum*itnum);
 	//std::cout << "This comparison Makes no sense!" << sum << std::endl;
 
+	////////////////////////////////////////////////////////////////////////////////////////
 
+	//float maxAmp = thingy.MaxAmplitude(myNoise);
+	//myTimer = clock();
+	//heights.GenHeightsLinear(0,0,myNoise,5000);
+	//myTimer = clock() - myTimer;
+	//std::cout << std::endl << "SISD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 
+	//myTimer = clock();
+	//heights.GenHeightsSIMD(0,0,myNoise,5000);
+	//myTimer = clock() - myTimer;
+	//std::cout << std::endl << "SIMD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+
+	//myTimer = clock();
+	//heights.TBBGenerateHeightField(0,0,myNoise,5000);
+	//myTimer = clock() - myTimer;
+	//std::cout << std::endl << "MIMD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+
+	//myTimer = clock();
+	//heights.GenHeightsTBBSIMD(0,0,myNoise,5000);
+	//myTimer = clock() - myTimer;
+	//std::cout << std::endl << "SIMD+MIMD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	int numTextureUnits;
 
