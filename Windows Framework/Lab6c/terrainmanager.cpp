@@ -8,8 +8,6 @@
 #include <iostream>
 
 
-
-
 TerrainManager::TerrainManager(void) : noise(16, 500.0f, 0.41f, 80.0f, 1.155f),	terrain(chunkSize, 15.0f), water(chunkSize)
 {
 }
@@ -56,10 +54,6 @@ void TerrainManager::Initialize(RenderManager &r, NoiseObject n)
 
 	double bigTimer = clock();
 	double timer = clock();
-
-	//bases = new Vector2[numChunks*numChunks];
-	//materials = new Material[numChunks*numChunks];
-	//waterMats = new Material[numChunks*numChunks];
 
 	for(int i = 0; i < numChunks; i++) {
 		for(int j = 0; j < numChunks; j++) {

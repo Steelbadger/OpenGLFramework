@@ -5,7 +5,8 @@ MyThread::MyThread(void):
 	threadActive(true),
 	taskComplete(false),
 	taskAssigned(false),
-	inProcess(false)
+	inProcess(false),
+	doOnce(false)
 {
 	handle = (HANDLE) _beginthreadex(NULL,0,&MyThread::ThreadFunc,(void*)this,CREATE_SUSPENDED,NULL);
 	taskSem = CreateSemaphore(NULL, 0, 1, NULL);
@@ -14,11 +15,12 @@ MyThread::MyThread(void):
 	taskCompleteSem = CreateSemaphore(NULL, 0, 1, NULL);
 }
 
-MyThread::MyThread(BaseTask* t):
+MyThread::MyThread(BaseTask& t):
 	threadActive(true),
 	taskComplete(false),
 	taskAssigned(false),
-	inProcess(false)
+	inProcess(false),
+	doOnce(false)
 {
 	AssignTask(t);
 	handle = (HANDLE) _beginthreadex(NULL,0,&MyThread::ThreadFunc,(void*)this,CREATE_SUSPENDED,NULL);
@@ -36,9 +38,9 @@ MyThread::~MyThread(void)
 	WaitForSingleObject(threadCompleteSem, INFINITE);
 }
 
-void MyThread::AssignTask(BaseTask* task)
+void MyThread::AssignTask(BaseTask& task)
 {
-	currentTask = task;
+	currentTask = &task;
 	taskComplete = false;
 	taskAssigned = true;
 	inProcess = false;
@@ -89,6 +91,7 @@ unsigned __stdcall MyThread::ThreadFunc(void* args)
 		deathCheckResult = WaitForSingleObject(p->deathSem, 0L);
 		if (deathCheckResult == WAIT_TIMEOUT) {
 			p->threadActive = false;
+			p->currentTask->Completed();
 		}
 		ReleaseSemaphore(p->taskCompleteSem, 1, NULL);
 	}

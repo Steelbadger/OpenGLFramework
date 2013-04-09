@@ -7,10 +7,10 @@ class MyThread
 {
 public:
 	MyThread(void);
-	MyThread(BaseTask* t);
+	MyThread(BaseTask& t);
 	~MyThread(void);
 
-	void AssignTask(BaseTask* t);
+	void AssignTask(BaseTask& t);
 	void BeginTask();
 	void WaitForTask();
 	bool TaskComplete();
@@ -26,6 +26,7 @@ private:
 	bool taskComplete;
 	bool inProcess;
 	bool threadActive;
+	bool doOnce;
 	static unsigned __stdcall ThreadFunc(void* args);
 };
 

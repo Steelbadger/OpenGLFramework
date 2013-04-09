@@ -42,10 +42,6 @@ private:
 	Material materials[numChunks*numChunks];
 	Material waterMats[numChunks*numChunks];
 
-	//tbb::atomic<Vector2*> bases;
-	//tbb::atomic<Material*> materials;
-	//tbb::atomic<Material*> waterMats;
-
 	Material defaultGround;
 	Material defaultWater;
 	Terrain terrain;
@@ -84,18 +80,6 @@ public:
 		defaultWater = dwater;
 	}
 
-	//void Initialize(std::map<float, std::map<float, Texture> > &terrain, 
-	//				tbb::atomic<Material*> &mat, tbb::atomic<Material*> &wMat, tbb::atomic<Vector2*> &bas, NoiseObject n, 
-	//				Material dground, Material dwater) {
-	//	terrainMap = &terrain;
-	//	materials = mat;
-	//	waterMaterials = wMat;
-	//	bases = bas;
-	//	noise = n;
-	//	defaultGround = dground;
-	//	defaultWater = dwater;
-	//}
-
 	void PassMutexes(tbb::spin_rw_mutex &material, tbb::spin_rw_mutex &water, tbb::spin_rw_mutex &basesm, tbb::spin_rw_mutex &terrainm) {
 		materialMutex = material;
 		waterMutex = water;
@@ -118,13 +102,6 @@ public:
 		Material materialsBuff[numChunks*numChunks];
 		Material waterMatsBuff[numChunks*numChunks];
 		Vector2 basesBuff[numChunks*numChunks];
-
-		//tbb::atomic<Vector2*> basesBuff;
-		//tbb::atomic<Material*> materialsBuff;
-		//tbb::atomic<Material*> waterMatsBuff;
-		//basesBuff = new Vector2[numChunks*numChunks];
-		//materialsBuff = new Material[numChunks*numChunks];
-		//waterMatsBuff = new Material[numChunks*numChunks];
 
 		double timer = clock();
 		
@@ -172,18 +149,6 @@ public:
 		waterMutex.unlock();
 		materialMutex.unlock();
 
-		//tbb::atomic<Vector2*> tempb = bases;
-		//tbb::atomic<Material*> tempm = materials;
-		//tbb::atomic<Material*> tempw = waterMaterials;
-
-		//materials = materialsBuff;
-		//waterMaterials = waterMatsBuff;
-		//bases = basesBuff;
-
-		//delete [] tempb;
-		//delete [] tempm;
-		//delete [] tempw;
-
 		tbb::task::recycle_as_continuation();
 
 		return NULL;
@@ -192,9 +157,6 @@ public:
 private:
 	Vector2 base;
 	std::map<float, std::map<float, Texture> > *terrainMap;
-	//Material* materials;
-	//Material* waterMaterials;
-	//Vector2* bases;
 
 	tbb::atomic<Vector2*> bases;
 	tbb::atomic<Material*> materials;
