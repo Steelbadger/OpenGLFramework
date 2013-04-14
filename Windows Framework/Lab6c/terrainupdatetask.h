@@ -1,34 +1,45 @@
 #pragma once
-
+#include "barrier.h"
 #include "myvector2.h"
 #include <map>
 #include "texture.h"
 #include "noisegenerator.h"
+#include "terrain.h"
 #include "heightmap.h"
 #include "material.h"
 #include "TBB\task.h"
 #include "TBB\spin_rw_mutex.h"
-#include "terrainmanager.h"
+#include "TBB\atomic.h"
 #include <iostream>
+#include <time.h>
+
+static const int RANGE = 1000;
+static const int CHUNKSIZE = 600;
+static const int NUMCHUNKS = (2*RANGE)/(CHUNKSIZE/2)-2;
 
 
 class UpdateTask : public tbb::task
 {
 public:
 	UpdateTask(): noise(16, 200.0f, 0.43f, 80.0f, 1.155f){};
-	void Initialize(std::map<float, std::map<float, Texture> > &terrain, Material &mat, Material &wMat, Vector2 &bas, NoiseObject n) {
+	void Initialize(std::map<float, std::map<float, Texture> > &terrain, 
+					Material *mat, Material *wMat, Vector2 *bas, NoiseObject n, 
+					Material dground, Material dwater) {
 		terrainMap = &terrain;
-		materials = &mat;
-		waterMaterials = &wMat;
-		bases = &bas;
+		materials = mat;
+		waterMaterials = wMat;
+		bases = bas;
 		noise = n;
+		defaultGround = dground;
+		defaultWater = dwater;
 	}
 
-	void PassMutexes(tbb::spin_rw_mutex &material, tbb::spin_rw_mutex &water, tbb::spin_rw_mutex &basesm, tbb::spin_rw_mutex &terrainm) {
+	void PassMutexes(tbb::spin_rw_mutex &material, tbb::spin_rw_mutex &water, tbb::spin_rw_mutex &basesm, tbb::spin_rw_mutex &terrainm, Barrier &barry) {
 		materialMutex = material;
 		waterMutex = water;
 		basesMutex = basesm;
 		terrainMutex = terrainm;
+		barrier = &barry;
 	}
 
 	void SetupForExecute(Vector2 b) {
@@ -36,6 +47,7 @@ public:
 	}
 
 	tbb::task* execute() {
+		barrier->NewThread();
 		Heightmap heights;
 		std::map<float, std::map<float, Texture> > oldTerrain;
 		std::map<float, std::map<float, Texture> > newTerrain;
@@ -43,33 +55,38 @@ public:
 		oldTerrain = *terrainMap;
 		terrainMutex.unlock();
 		Texture oldTex;
-		Material materialsBuff[TerrainManager::numChunks][TerrainManager::numChunks];
-		Material waterMatsBuff[TerrainManager::numChunks][TerrainManager::numChunks];
-		Vector2 basesBuff[TerrainManager::numChunks][TerrainManager::numChunks];
+		Material materialsBuff[NUMCHUNKS*NUMCHUNKS];
+		Material waterMatsBuff[NUMCHUNKS*NUMCHUNKS];
+		Vector2 basesBuff[NUMCHUNKS*NUMCHUNKS];
 
-		for(int i = 0; i < TerrainManager::numChunks; i++) {
-			for(int j = 0; j < TerrainManager::numChunks; j++) {
-				basesBuff[i][j] = Vector2(base.u + i*TerrainManager::chunkSize, base.v + j * TerrainManager::chunkSize);
-				if (oldTerrain[basesBuff[i][j].u].count(basesBuff[i][j].v) == 0) {
-					oldTex = oldTerrain[basesBuff[i][j].u][basesBuff[i][j].v];
-					std::cout << "Generating New Terrain Chunk: (" << basesBuff[i][j].u << ", " << basesBuff[i][j].v << ")" << std::endl;
-					newTerrain[basesBuff[i][j].u][basesBuff[i][j].v] = 
-								Texture(Texture::DISPLACEMENT, heights.TBBGenerateHeightField(basesBuff[i][j].u, basesBuff[i][j].v, noise, TerrainManager::chunkSize), 512);
-					std::cout << "Done" << std::endl;
+		double timer = clock();
+		
+		for(int i = 0; i < NUMCHUNKS; i++) {
+			for(int j = 0; j < NUMCHUNKS; j++) {
+				basesBuff[i*NUMCHUNKS+j] = Vector2(base.u + i*CHUNKSIZE, base.v + j * CHUNKSIZE);
+				if (oldTerrain[basesBuff[i*NUMCHUNKS+j].u].count(basesBuff[i*NUMCHUNKS+j].v) == 0) {
+					oldTex = oldTerrain[basesBuff[i*NUMCHUNKS+j].u][basesBuff[i*NUMCHUNKS+j].v];
+					std::cout << "Generating New Terrain Chunk: (" << basesBuff[i*NUMCHUNKS+j].u << ", " << basesBuff[i*NUMCHUNKS+j].v << ")" << std::endl;
+					timer = clock();
+					newTerrain[basesBuff[i*NUMCHUNKS+j].u][basesBuff[i*NUMCHUNKS+j].v] = 
+								Texture(Texture::DISPLACEMENT, heights.TBBSIMDGenerateHeightField(basesBuff[i*NUMCHUNKS+j].u, basesBuff[i*NUMCHUNKS+j].v, noise, CHUNKSIZE), 1024);
+					timer = clock()-timer;
+					std::cout << "Done in " << timer/CLOCKS_PER_SEC << "s" << std::endl;
 				} else {
-					oldTex = oldTerrain[basesBuff[i][j].u][basesBuff[i][j].v];
-					newTerrain[basesBuff[i][j].u][basesBuff[i][j].v] = oldTex;
+					oldTex = oldTerrain[basesBuff[i*NUMCHUNKS+j].u][basesBuff[i*NUMCHUNKS+j].v];
+					newTerrain[basesBuff[i*NUMCHUNKS+j].u][basesBuff[i*NUMCHUNKS+j].v] = oldTex;
 				}
 				materialMutex.lock_read();
-				Material defaultGround = materials[i*TerrainManager::numChunks+j];
+				Material defaultGround = materials[i*NUMCHUNKS+j];
 				materialMutex.unlock();
-				defaultGround.ReplaceTexture(Texture::DISPLACEMENT, newTerrain[basesBuff[i][j].u][basesBuff[i][j].v]);
-				defaultWater.ReplaceTexture(Texture::DISPLACEMENT, newTerrain[basesBuff[i][j].u][basesBuff[i][j].v]);
-				oldTex = newTerrain[basesBuff[i][j].u][basesBuff[i][j].v];
-				materialsBuff[i][j] = defaultGround;
-				waterMatsBuff[i][j] = defaultWater;
+				defaultGround.ReplaceTexture(Texture::DISPLACEMENT, newTerrain[basesBuff[i*NUMCHUNKS+j].u][basesBuff[i*NUMCHUNKS+j].v]);
+				defaultWater.ReplaceTexture(Texture::DISPLACEMENT, newTerrain[basesBuff[i*NUMCHUNKS+j].u][basesBuff[i*NUMCHUNKS+j].v]);
+				oldTex = newTerrain[basesBuff[i*NUMCHUNKS+j].u][basesBuff[i*NUMCHUNKS+j].v];
+				materialsBuff[i*NUMCHUNKS+j] = defaultGround;
+				waterMatsBuff[i*NUMCHUNKS+j] = defaultWater;
 			}
 		}
+
 		terrainMutex.lock();
 		newTerrain.swap(*terrainMap);
 		terrainMutex.unlock();
@@ -77,17 +94,18 @@ public:
 		materialMutex.lock();
 		waterMutex.lock();
 		basesMutex.lock();
-
-		for (int i = 0; i < TerrainManager::numChunks;i++) {
-			for (int j = 0; j < TerrainManager::numChunks; j++) {
-				materials[i*TerrainManager::numChunks+j] = materialsBuff[i][j];
-				waterMaterials[i*TerrainManager::numChunks+j] = waterMatsBuff[i][j];
-				bases[i*TerrainManager::numChunks+j] = basesBuff[i][j];
+		for (int i = 0; i < NUMCHUNKS;i++) {
+			for (int j = 0; j < NUMCHUNKS; j++) {
+				materials[i*NUMCHUNKS+j] = materialsBuff[i*NUMCHUNKS+j];
+				waterMaterials[i*NUMCHUNKS+j] = waterMatsBuff[i*NUMCHUNKS+j];
+				bases[i*NUMCHUNKS+j] = basesBuff[i*NUMCHUNKS+j];
 			}
-		}	
+		}
 		basesMutex.unlock();
 		waterMutex.unlock();
 		materialMutex.unlock();
+
+		barrier->Wait();
 
 		return NULL;
 	}
@@ -95,9 +113,11 @@ public:
 private:
 	Vector2 base;
 	std::map<float, std::map<float, Texture> > *terrainMap;
-	Material* materials;
-	Material* waterMaterials;
-	Vector2* bases;
+
+	tbb::atomic<Vector2*> bases;
+	tbb::atomic<Material*> materials;
+	tbb::atomic<Material*> waterMaterials;
+
 	Material defaultGround;
 	Material defaultWater;
 	NoiseObject noise;
@@ -108,4 +128,7 @@ private:
 	tbb::spin_rw_mutex waterMutex;
 	tbb::spin_rw_mutex basesMutex;
 	tbb::spin_rw_mutex terrainMutex;
+
+//  Delay Barrier
+	Barrier* barrier;
 };

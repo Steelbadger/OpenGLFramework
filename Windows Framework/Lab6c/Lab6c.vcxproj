@@ -82,6 +82,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
+    <ClCompile Include="barrier.cpp" />
     <ClCompile Include="cameracontroller.cpp" />
     <ClCompile Include="cameramodule.cpp" />
     <ClCompile Include="collider.cpp" />
@@ -119,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
+    <ClInclude Include="barrier.h" />
     <ClInclude Include="cameracontroller.h" />
     <ClInclude Include="cameramodule.h" />
     <ClInclude Include="collider.h" />

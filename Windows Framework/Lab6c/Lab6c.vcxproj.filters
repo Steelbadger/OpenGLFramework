@@ -186,6 +186,9 @@
     <ClCompile Include="simd.cpp">
       <Filter>Source Files\Maths</Filter>
     </ClCompile>
+    <ClCompile Include="barrier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -303,6 +306,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="terrainupdatetask.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="barrier.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
