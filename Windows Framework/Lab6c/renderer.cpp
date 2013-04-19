@@ -74,28 +74,13 @@ void RenderManager::AddSkyBox(Mesh &m)
 	sky = m.GetUniqueID();
 }
 
-void RenderManager::AddTerrainToRenderer(Terrain &t)
-{
-	terrainStep = t.GetStep();
-	terrain = SetupVAO(t);
-	terr = t.GetUniqueID();
-	terrainSize = t.GetSize();
-}
-
 void RenderManager::AddTerrainToRenderer(TerrainManager &t)
 {
 	terrainStep = t.GetTerrainMesh().GetStep();
 	terrain = SetupVAO(t.GetTerrainMesh());
-	terr = t.GetTerrainMesh().GetUniqueID();
 	terrainSize = t.GetTerrainMesh().GetSize();
 	terrainManager = &t;
-}
-
-
-void RenderManager::AddWater(Water &w)
-{
-	water = SetupVAO(w);
-	waterID = w.GetUniqueID();
+	water = SetupVAO(t.GetWaterMesh());
 }
 
 void RenderManager::RemoveFromRenderer(Mesh m)
@@ -128,7 +113,7 @@ void RenderManager::RenderAll()
 	viewMatrixMade = false;
 
 	DrawSkyBox();
-	DrawTerrainAlt();
+	DrawTerrain();
 
 	std::vector<int>::iterator vit;
 	if (opaqueRenderList.size() > 0) {
@@ -139,7 +124,7 @@ void RenderManager::RenderAll()
 		}
 	}
 
-	DrawWaterAlt();
+	DrawWater();
 
 	std::list<int>::iterator lit;
 	if (renderList.size() > 0) {
@@ -311,7 +296,6 @@ void RenderManager::BuildModelViewMatrix(GameObject g)
 void RenderManager::BuildSkyBoxViewMatrix(GameObject g)
 {
 	g.SetRotate(0.0f, 0.0f, 0.0f);
-//	g.RotateDeltaX(elapsed/10.0f);
 	Matrix4x4 mat;
 	mat = BuildModelMatrix(g) * BuildViewMatrix();
 	ConvertToOpenGLMatrix(mat, modelViewMatrix);
@@ -371,31 +355,6 @@ void RenderManager::DrawSkyBox()
 
 void RenderManager::DrawTerrain()
 {
-	Mesh* m = Mesh::GetMeshPointer(terr);
-
-	Material mat = m->GetMaterial();
-	UniformLocations uniforms = mat.GetUniforms();
-	mat.Apply();
-
-	//  Build the modelview matrix for the mesh
-	BuildModelViewMatrix(base);
-
-	//  Find the uniform locations for this program and put relevant data into said locations
-	SetUniforms(uniforms);
-
-	//  Bind the VAO and draw the array
-	glBindVertexArray(terrain);
-
-	glPatchParameteri(GL_PATCH_VERTICES, 3);
-	glDrawElements(GL_PATCHES, m->GetIndexLength(), GL_UNSIGNED_INT, (void*)0);
-
-	//  unbind our shaders and arrays
-	glBindVertexArray(0);
-	glUseProgram(0);
-}
-
-void RenderManager::DrawTerrainAlt()
-{
 	float xmul = 0;
 	float ymul = 0;
 
@@ -443,40 +402,7 @@ void RenderManager::DrawTerrainAlt()
 
 void RenderManager::DrawWater()
 {
-	Mesh* m = Mesh::GetMeshPointer(waterID);
 
-	Material mat = m->GetMaterial();
-	UniformLocations uniforms = mat.GetUniforms();
-	mat.Apply();
-
-	//  Build the modelview matrix for the mesh
-
-	BuildModelViewMatrix(base);
-
-
-	//  Find the uniform locations for this program and put relevant data into said locations
-	SetUniforms(uniforms);
-	glUniform1f(uniforms.Time, elapsed);
-	elapsed += 0.1f;
-
-	//  Bind the VAO and draw the array
-	glBindVertexArray(water);
-
-	glPatchParameteri(GL_PATCH_VERTICES, 3);
-	glDrawElements(GL_PATCHES, m->GetIndexLength(), GL_UNSIGNED_INT, (void*)0);
-
-	//  unbind our shaders and arrays
-	glBindVertexArray(0);
-	glUseProgram(0);
-
-}
-
-void RenderManager::DrawWaterAlt()
-{
-	Mesh* m = Mesh::GetMeshPointer(waterID);
-
-//	Material mat = m->GetMaterial();
-//	UniformLocations uniforms = mat.GetUniforms();
 	float xmul = 0;
 	float ymul = 0;
 	Vector2 b = terrainManager->GetBase(0, 0);
@@ -506,7 +432,7 @@ void RenderManager::DrawWaterAlt()
 			glBindVertexArray(water);
 
 			glPatchParameteri(GL_PATCH_VERTICES, 3);
-			glDrawElements(GL_PATCHES, m->GetIndexLength(), GL_UNSIGNED_INT, (void*)0);
+			glDrawElements(GL_PATCHES, terrainManager->GetWaterMesh().GetIndexLength(), GL_UNSIGNED_INT, (void*)0);
 
 			//  unbind our shaders and arrays
 			glBindVertexArray(0);

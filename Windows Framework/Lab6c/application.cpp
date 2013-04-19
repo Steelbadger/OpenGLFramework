@@ -12,9 +12,7 @@
 Application::Application(void):
 	gridSize(600.0f),
 	myNoise(16, 200.0f, 0.43f, 80.0f, 1.155f),
-	ground(gridSize, 15.0f),
-	skybox("inwardCube.obj"),
-	water(gridSize)
+	skybox("inwardCube.obj")
 {
 }
 
@@ -223,27 +221,8 @@ void Application::Initialize(HINSTANCE hInstance)
 	testObject.AttachMesh(newAlt);
 	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
-	
-	Material groundMat;
-	groundMat.AddTexture(Texture(Texture::DIFFUSE, "grass.tga"));
-	groundMat.AddTexture(Texture(Texture::DIFFUSE, "rockTexture.tga"));
-	groundMat.AddShader("terrain.fragmentshader");
-	groundMat.AddShader("terrain.vertexshader");
-	groundMat.AddShader("terrain.tesscontrol");
-	groundMat.AddShader("terrain.tessevaluation");
 
 	std::cout << std::endl << "Number of Available Processors: " << GetActiveProcessorCount(ALL_PROCESSOR_GROUPS) << std::endl;
-
-	Material waterMat("waterMat");
-	waterMat.AddShader("water.vertexshader");
-	waterMat.AddShader("water.fragmentshader");
-	waterMat.AddShader("water.tesscontrol");
-	waterMat.AddShader("water.tessevaluation");
-	waterMat.AddTexture(Texture(Texture::DIFFUSE, "seamlessWater.tga"));
-	
-	water.AttachMaterial(waterMat);
-
-	renderer.AddWater(water);
 
 
 	testTerrain.Initialize(renderer, myNoise);

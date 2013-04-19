@@ -42,8 +42,6 @@ private:
 	const int gridSize;
 	NoiseObject myNoise;
 	PrimitiveFactory meshGenerator;
-	Terrain ground;
-	Water water;
 	RenderManager renderer;
 	TerrainManager testTerrain;
 	GameObject sunParent;

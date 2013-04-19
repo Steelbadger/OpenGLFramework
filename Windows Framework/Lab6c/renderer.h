@@ -32,10 +32,8 @@ public:
 	bool AddToRenderer(Mesh &m);
 	void RemoveFromRenderer(Mesh m);
 	void AddSkyBox(Mesh &m);
-	void AddTerrainToRenderer(Terrain &t);
 	void AddTerrainToRenderer(TerrainManager &t);
 	void AddLight(LightSource &l);
-	void AddWater(Water &w);
 
 	void RenderAll();
 	static bool MeshComparator(int rhs, int lhs);
@@ -62,10 +60,8 @@ private:
 	
 	void DrawSkyBox();
 	void DrawTerrain();
-	void DrawTerrainAlt();
 	bool DrawMesh(int meshID);
 	void DrawWater();
-	void DrawWaterAlt();
 	float elapsed;
 
 	void ConvertToOpenGLMatrix(Matrix4x4 m, GLfloat* target);
@@ -85,14 +81,12 @@ private:
 
 	GLuint terrain;
 	TerrainManager* terrainManager;
-	int terr;
 	float terrainStep;
 	float terrainSize;
 
 	GLuint water;
-	int waterID;
 
-	GameObject base;
+//	GameObject base;
 
 	LightSource sun;
 	Light sunSource;
