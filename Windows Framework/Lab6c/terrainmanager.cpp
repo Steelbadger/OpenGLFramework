@@ -28,6 +28,7 @@ void TerrainManager::Initialize(RenderManager &r, NoiseObject n)
 	camera = renderer->GetCameraParent();
 	noise = n;
 	updateTask = NULL;
+	threadCounter = 0;
 
 	Vector2 base = (camera->GetPosition().xz() - RANGE)/CHUNKSIZE;
 	std::cout << "Range Lower Extent: (" << base.u << ", " << base.v << ")" << std::endl;
@@ -103,10 +104,11 @@ void TerrainManager::Update()
 	base = base * CHUNKSIZE;
 
 	//  Peek at the barrier, if the barrier is still waiting to be tripped then don't create a new watcher as old watcher is still working
-	if (!barrier.Check()) {
+	if (threadCounter == 0) {
+		threadCounter++;
 		updateTask = new(tbb::task::allocate_root())UpdateTask;
 		updateTask->Initialize(terrainMap, materials, waterMats, bases, noise, defaultGround, defaultWater);
-		updateTask->PassMutexes(materialMutex, waterMutex, basesMutex, terrainMutex, barrier);
+		updateTask->PassMutexes(materialMutex, waterMutex, basesMutex, terrainMutex, threadCounter);
 		updateTask->SetupForExecute(base);
 
 		tbb::task::enqueue(*updateTask);

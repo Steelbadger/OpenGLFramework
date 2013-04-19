@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <algorithm>
 
-
+tbb::mutex NoiseGenerator::setupMutex;
 unsigned char NoiseGenerator::permutation[SIZE];
 unsigned char NoiseGenerator::perm[SIZE*2];
 float NoiseGenerator::gradX[SIZE];
@@ -58,10 +58,12 @@ NoiseObject::NoiseObject(int o, float z, float p, float a, float s):
 
 NoiseGenerator::NoiseGenerator(void)
 {
+	setupMutex.lock();
 	if (!pTableBuilt) {
 		GeneratePermutationTable();
 	}
 	seed = 1.0f;
+	setupMutex.unlock();
 }
 
 

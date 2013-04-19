@@ -29,6 +29,11 @@ public:
 	void Debug();
 
 private:
+	void InitialiseScene();
+	void CrossProductBenchmark();
+	void PerlinSimplexBenchmark();
+	void SIMDThreadingBenchmark();
+
 	WindowWizard window;
 	Player player;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "simd.h"
+#include "TBB/mutex.h"
 
 class Vector3;
 
@@ -45,12 +46,14 @@ private:
 	SIMD::Floats Interpolate (SIMD::Floats& a, SIMD::Floats& b, SIMD::Floats& x);
 	float seed;
 
+	static tbb::mutex setupMutex;
 	static const int SIZE = 256;
 	static unsigned char permutation[SIZE];
 	static unsigned char perm[SIZE*2];
 	static float gradX[SIZE];
 	static float gradY[SIZE];
 	static bool pTableBuilt;
+
 	static int grads[12][3];
 };
 

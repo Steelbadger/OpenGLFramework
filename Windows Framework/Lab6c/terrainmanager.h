@@ -97,7 +97,6 @@ private:
 	tbb::spin_rw_mutex basesMutex;
 	tbb::spin_rw_mutex terrainMutex;
 
-//  BARRIER
-	Barrier barrier;
-
+//  ATOMIC COUNTER
+	tbb::atomic<int> threadCounter;
 };

@@ -34,12 +34,16 @@ public:
 		defaultWater = dwater;
 	}
 
-	void PassMutexes(tbb::spin_rw_mutex &material, tbb::spin_rw_mutex &water, tbb::spin_rw_mutex &basesm, tbb::spin_rw_mutex &terrainm, Barrier &barry) {
+	~UpdateTask() {
+		(*threadCounter)--;
+	}
+
+	void PassMutexes(tbb::spin_rw_mutex &material, tbb::spin_rw_mutex &water, tbb::spin_rw_mutex &basesm, tbb::spin_rw_mutex &terrainm, tbb::atomic<int> &tcounter) {
 		materialMutex = material;
 		waterMutex = water;
 		basesMutex = basesm;
 		terrainMutex = terrainm;
-		barrier = &barry;
+		threadCounter = &tcounter;
 	}
 
 	void SetupForExecute(Vector2 b) {
@@ -47,7 +51,6 @@ public:
 	}
 
 	tbb::task* execute() {
-		barrier->NewThread();
 		Heightmap heights;
 		std::map<float, std::map<float, Texture> > oldTerrain;
 		std::map<float, std::map<float, Texture> > newTerrain;
@@ -105,8 +108,6 @@ public:
 		waterMutex.unlock();
 		materialMutex.unlock();
 
-		barrier->Wait();
-
 		return NULL;
 	}
 
@@ -129,6 +130,6 @@ private:
 	tbb::spin_rw_mutex basesMutex;
 	tbb::spin_rw_mutex terrainMutex;
 
-//  Delay Barrier
-	Barrier* barrier;
+//  ATOMIC COUNTER
+	tbb::atomic<int>* threadCounter;
 };

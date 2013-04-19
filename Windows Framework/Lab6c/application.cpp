@@ -33,121 +33,6 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	glewInit();
 
-	NoiseGenerator thingy;
-	Heightmap heights;
-	float out = 0;
-	double myTimer;
-	const int itnum = 100000;
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//std::cout << "Timing " << itnum*itnum << " cross products..." << std::endl; 
-
-	//SIMD::Floats x(1.2, 3.5, 4.6, 1.0);
-	//SIMD::Floats y(5.2, 8.1, 4.6, 1.0);
-
-	//SIMD::Floats res;
-
-	//myTimer = clock();
-
-	//for (int i = 0; i < itnum; i++) {
-	//	for (int j = 0; j < itnum; j++) {
-	//		res += SIMD::Cross(x, y);
-	//	}
-	//}
-	//myTimer = clock()-myTimer;
-
-	//std::cout << res/(itnum*itnum) << std::endl;
-	//std::cout << "SIMD Op Time: " << myTimer/(CLOCKS_PER_SEC) << "s" << std::endl;
-
-	//Vector4 xv(1.2, 3.5, 4.6, 1.0);
-	//Vector4 yv(5.2, 8.1, 4.6, 1.0);
-	//Vector4 resv;
-
-	//myTimer = clock();
-
-	//for (int i = 0; i < itnum; i++) {
-	//	for (int j = 0; j < itnum; j++) {
-	//		resv += xv.Cross(yv);
-	//	}
-	//}
-	//myTimer = clock()-myTimer;
-
-	//std::cout << resv/(itnum*itnum) << std::endl;
-	//std::cout << "SISD Op Time: " << myTimer/(CLOCKS_PER_SEC) << "s" << std::endl;
-
-	//////////////////////////////////////////////////////////////////////////////////
-
-	//std::cout << "Generating Noise over " << itnum << "x" << itnum << " range with 12 Octaves" << std::endl;
-
-	//float maxAmp = thingy.MaxAmplitude(myNoise);
-	//myTimer = clock();
-	//for (int i = 0; i < itnum; i++) {
-	//	for (int j = 0; j < itnum; j++) {
-	//		out += (thingy.SIMDPerlin2D(i, j, myNoise)/maxAmp)*myNoise.amplitude;
-	//	}
-	//}
-
-	//myTimer = clock() - myTimer;
-	//std::cout << std::endl << "SIMD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
-	//float out2 = 0;
-	//myTimer = clock();
-
-	//for (int i = 0; i < itnum; i++) {
-	//	for (int j = 0; j < itnum; j++) {
-	//		out2 += thingy.Perlin2D(i, j, myNoise);
-	//	}
-	//}
-	//myTimer = clock() - myTimer;
-	//std::cout << std::endl << "SISD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
-	//float sum = 0;
-
-	//sum = abs(out2 - out);
-
-
-	//sum /= (itnum*itnum);
-	//std::cout << std::endl << "Average Difference: " << sum << std::endl;
-
-	//out2 = 0;
-
-	//myTimer = clock();
-	//for (int i = 0; i < itnum; i++) {
-	//	for (int j = 0; j < itnum; j++) {
-	//		out2 += thingy.FractalSimplex(i, j, myNoise);
-	//	}
-	//}
-	//myTimer = clock()-myTimer;
-
-	//std::cout << std::endl << "SISD Simplex Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
-	//sum = abs(out2 - out);
-	//sum /= (itnum*itnum);
-	//std::cout << "This comparison Makes no sense!" << sum << std::endl;
-
-	////////////////////////////////////////////////////////////////////////////////////////
-
-	//float maxAmp = thingy.MaxAmplitude(myNoise);
-	//myTimer = clock();
-	//heights.GenHeightsLinear(0,0,myNoise,5000);
-	//myTimer = clock() - myTimer;
-	//std::cout << std::endl << "SISD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
-
-	//myTimer = clock();
-	//heights.GenHeightsSIMD(0,0,myNoise,5000);
-	//myTimer = clock() - myTimer;
-	//std::cout << std::endl << "SIMD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
-
-	//myTimer = clock();
-	//heights.TBBGenerateHeightField(0,0,myNoise,5000);
-	//myTimer = clock() - myTimer;
-	//std::cout << std::endl << "MIMD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
-
-	//myTimer = clock();
-	//heights.GenHeightsTBBSIMD(0,0,myNoise,5000);
-	//myTimer = clock() - myTimer;
-	//std::cout << std::endl << "SIMD+MIMD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-
 	int numTextureUnits;
 
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &numTextureUnits);
@@ -156,77 +41,9 @@ void Application::Initialize(HINSTANCE hInstance)
 	std::cout << "OpenGL 4.2 Initialized: " << 	GLEW_VERSION_4_2 << std::endl;
 	std::cout << "Number of Texture Units: " << numTextureUnits << std::endl;
 
-	player.SetLocation(50.0f, 50.0f, 50.0f);
-	LightSource playerLight(LightSource::POINT);
-	playerLight.SetColour(0.7f, 0.7f, 0.7f);
-	playerLight.SetAmbient(0.0f);
-
-	LightSource sunSource(LightSource::DIRECTIONAL);
-	sunSource.SetColour(0.7f, 0.7f, 0.7f);
-	sunSource.SetAmbient(0.1f);
-
-	sunSource.SetParent(sunParent);
-	player.SetCameraTargetWindow(&window);
-	playerLight.SetParent(player);
-
-	renderer.SetActiveCamera(*player.GetCamera());
-	renderer.AddLight(sunSource);
-	renderer.AddLight(playerLight);
-
-	Material skyMat;
-	skyMat.AddTexture(Texture(Texture::DIFFUSE, "stars2.tga"));
-	skyMat.AddShader("skybox.fragmentshader");
-	skyMat.AddShader("skybox.vertexshader");
-
-	skybox = meshGenerator.InwardCubeSphere(4);
-
-	skybox.AttachMaterial(skyMat);
-	renderer.AddSkyBox(skybox);
-
-	PrimitiveFactory prims;
-
-	Terrain dummy(prims.Plane(1500.0f, 1500.0f, 100, 100));
-
-	Material crateMatProc;
-	crateMatProc.AddTexture(Texture(Texture::DIFFUSE, "crateDiffuseProc.tga"));
-	crateMatProc.AddShader("default.fragmentshader");
-	crateMatProc.AddShader("default.vertexshader");
-
-	Material crateMat;
-	crateMat.AddTexture(Texture(Texture::DIFFUSE, "crateDiffuse.tga"));
-	crateMat.AddShader("default.fragmentshader");
-	crateMat.AddShader("default.vertexshader");
-
-	Mesh crateMesh("crate.obj");
-	Mesh altCrate(meshGenerator.SubDivide(meshGenerator.UnitCube()));
-	Mesh sphere(meshGenerator.LSphere(10, 10));
-
-	altCrate.AttachMaterial(crateMatProc);
-	sphere.AttachMaterial(crateMatProc);
-	crateMesh.AttachMaterial(crateMat);
-
-	int num = 5;
-	for (int i = 0; i < num; i++) {
-		for (int j = 0; j < num; j++) {
-			for (int k = 0; k < num; k++) {
-				StaticObject* curr = new StaticObject();
-				curr->AttachMesh(altCrate);
-				curr->SetLocation(i*3.0f, 20.0f+j*3.0f, k*3.0f);
-				renderer.AddToRenderer(*curr->GetMesh());
-			}
-		}
-	}
-	Mesh newAlt(meshGenerator.CubeSphere(4));
-	newAlt.AttachMaterial(crateMatProc);
-	testObject.AttachMesh(newAlt);
-	testObject.SetLocation(100.0f, 40.0f, 100.0f);
-	renderer.AddToRenderer(*testObject.GetMesh());
-
 	std::cout << std::endl << "Number of Available Processors: " << GetActiveProcessorCount(ALL_PROCESSOR_GROUPS) << std::endl;
 
-
-	testTerrain.Initialize(renderer, myNoise);
-	renderer.AddTerrainToRenderer(testTerrain);
+	InitialiseScene();
 
 	lastTime = time(NULL);
 	nbFrames = 0;
@@ -334,3 +151,208 @@ void Application::Debug()
 		}
 	}
 }
+
+void Application::InitialiseScene()
+{
+
+	player.SetLocation(50.0f, 50.0f, 50.0f);
+	LightSource playerLight(LightSource::POINT);
+	playerLight.SetColour(0.7f, 0.7f, 0.7f);
+	playerLight.SetAmbient(0.0f);
+
+	LightSource sunSource(LightSource::DIRECTIONAL);
+	sunSource.SetColour(0.7f, 0.7f, 0.7f);
+	sunSource.SetAmbient(0.1f);
+
+	sunSource.SetParent(sunParent);
+	player.SetCameraTargetWindow(&window);
+	playerLight.SetParent(player);
+
+	renderer.SetActiveCamera(*player.GetCamera());
+	renderer.AddLight(sunSource);
+	renderer.AddLight(playerLight);
+
+	Material skyMat;
+	skyMat.AddTexture(Texture(Texture::DIFFUSE, "stars2.tga"));
+	skyMat.AddShader("skybox.fragmentshader");
+	skyMat.AddShader("skybox.vertexshader");
+
+	skybox = meshGenerator.InwardCubeSphere(4);
+
+	skybox.AttachMaterial(skyMat);
+	renderer.AddSkyBox(skybox);
+
+	PrimitiveFactory prims;
+
+	Material crateMatProc;
+	crateMatProc.AddTexture(Texture(Texture::DIFFUSE, "crateDiffuseProc.tga"));
+	crateMatProc.AddShader("default.fragmentshader");
+	crateMatProc.AddShader("default.vertexshader");
+
+	Material crateMat;
+	crateMat.AddTexture(Texture(Texture::DIFFUSE, "crateDiffuse.tga"));
+	crateMat.AddShader("default.fragmentshader");
+	crateMat.AddShader("default.vertexshader");
+
+	Mesh crateMesh("crate.obj");
+	Mesh altCrate(meshGenerator.SubDivide(meshGenerator.UnitCube()));
+	Mesh sphere(meshGenerator.LSphere(10, 10));
+
+	altCrate.AttachMaterial(crateMatProc);
+	sphere.AttachMaterial(crateMatProc);
+	crateMesh.AttachMaterial(crateMat);
+
+	int num = 5;
+	for (int i = 0; i < num; i++) {
+		for (int j = 0; j < num; j++) {
+			for (int k = 0; k < num; k++) {
+				StaticObject* curr = new StaticObject();
+				curr->AttachMesh(altCrate);
+				curr->SetLocation(i*3.0f, 20.0f+j*3.0f, k*3.0f);
+				renderer.AddToRenderer(*curr->GetMesh());
+			}
+		}
+	}
+	Mesh newAlt(meshGenerator.CubeSphere(4));
+	newAlt.AttachMaterial(crateMatProc);
+	testObject.AttachMesh(newAlt);
+	testObject.SetLocation(100.0f, 40.0f, 100.0f);
+	renderer.AddToRenderer(*testObject.GetMesh());
+
+
+	
+
+	testTerrain.Initialize(renderer, myNoise);
+	renderer.AddTerrainToRenderer(testTerrain);
+}
+
+void Application::CrossProductBenchmark()
+{
+
+	float out = 0;
+	double myTimer;
+	const int itnum = 100000;
+
+	std::cout << "Timing " << itnum*itnum << " cross products..." << std::endl; 
+
+	SIMD::Floats x(1.2, 3.5, 4.6, 1.0);
+	SIMD::Floats y(5.2, 8.1, 4.6, 1.0);
+
+	SIMD::Floats res;
+
+	myTimer = clock();
+
+	for (int i = 0; i < itnum; i++) {
+		for (int j = 0; j < itnum; j++) {
+			res += SIMD::Cross(x, y);
+		}
+	}
+	myTimer = clock()-myTimer;
+
+	std::cout << res/(itnum*itnum) << std::endl;
+	std::cout << "SIMD Op Time: " << myTimer/(CLOCKS_PER_SEC) << "s" << std::endl;
+
+	Vector4 xv(1.2, 3.5, 4.6, 1.0);
+	Vector4 yv(5.2, 8.1, 4.6, 1.0);
+	Vector4 resv;
+
+	myTimer = clock();
+
+	for (int i = 0; i < itnum; i++) {
+		for (int j = 0; j < itnum; j++) {
+			resv += xv.Cross(yv);
+		}
+	}
+	myTimer = clock()-myTimer;
+
+	std::cout << resv/(itnum*itnum) << std::endl;
+	std::cout << "SISD Op Time: " << myTimer/(CLOCKS_PER_SEC) << "s" << std::endl;
+
+}
+
+void Application::PerlinSimplexBenchmark()
+{
+	float out = 0;
+	double myTimer;
+	const int itnum = 10000;
+
+	NoiseGenerator thingy;
+
+	std::cout << "Generating Noise over " << itnum << "x" << itnum << " range with 12 Octaves" << std::endl;
+
+	float maxAmp = thingy.MaxAmplitude(myNoise);
+	myTimer = clock();
+	for (int i = 0; i < itnum; i++) {
+		for (int j = 0; j < itnum; j++) {
+			out += (thingy.SIMDPerlin2D(i, j, myNoise)/maxAmp)*myNoise.amplitude;
+		}
+	}
+
+	myTimer = clock() - myTimer;
+	std::cout << std::endl << "SIMD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	float out2 = 0;
+	myTimer = clock();
+
+	for (int i = 0; i < itnum; i++) {
+		for (int j = 0; j < itnum; j++) {
+			out2 += thingy.Perlin2D(i, j, myNoise);
+		}
+	}
+	myTimer = clock() - myTimer;
+	std::cout << std::endl << "SISD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	float sum = 0;
+
+	sum = abs(out2 - out);
+
+
+	sum /= (itnum*itnum);
+	std::cout << std::endl << "Average Difference: " << sum << std::endl;
+
+	out2 = 0;
+
+	myTimer = clock();
+	for (int i = 0; i < itnum; i++) {
+		for (int j = 0; j < itnum; j++) {
+			out2 += thingy.FractalSimplex(i, j, myNoise);
+		}
+	}
+	myTimer = clock()-myTimer;
+
+	std::cout << std::endl << "SISD Simplex Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+	sum = abs(out2 - out);
+	sum /= (itnum*itnum);
+	std::cout << "This comparison Makes no sense!" << sum << std::endl;
+}
+
+void Application::SIMDThreadingBenchmark()
+{
+	float out = 0;
+	double myTimer;
+	const int itnum = 10000;
+
+	NoiseGenerator thingy;
+	Heightmap heights;
+
+	float maxAmp = thingy.MaxAmplitude(myNoise);
+	myTimer = clock();
+	heights.GenHeightsLinear(0,0,myNoise,5000);
+	myTimer = clock() - myTimer;
+	std::cout << std::endl << "SISD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+
+	myTimer = clock();
+	heights.GenHeightsSIMD(0,0,myNoise,5000);
+	myTimer = clock() - myTimer;
+	std::cout << std::endl << "SIMD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+
+	myTimer = clock();
+	heights.TBBGenerateHeightField(0,0,myNoise,5000);
+	myTimer = clock() - myTimer;
+	std::cout << std::endl << "MIMD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+
+	myTimer = clock();
+	heights.GenHeightsTBBSIMD(0,0,myNoise,5000);
+	myTimer = clock() - myTimer;
+	std::cout << std::endl << "SIMD+MIMD Perlin Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
+
+}
+
