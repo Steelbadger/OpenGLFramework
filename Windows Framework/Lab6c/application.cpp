@@ -22,19 +22,30 @@ Application::~Application(void)
 }
 
 void Application::Initialize(HINSTANCE hInstance)
+//  Open a window, setup OpenGL, output some system info and then initialise the scene
 {
 	srand(51816);
 	float rot = 0.0;
+
+	//  Create a new window called OpenGL Framework, 1000 pix long and 500 pix tall
 	window.WindowCreate("OpenGL Framework", 1000, 500, (WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN), 0, hInstance);
+
+	//  Create the openGL viewport in the window with a field of view of 45 degrees
 	window.InitializeGraphics(45.0f);
+
+	//  Move the cursor to the middle of the window
 	window.SetCursorToCentre();
+
+	//  Enable alpha blending
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	//  Initialise glew (needed for all post 1.1 functionality)
 	glewInit();
 
-	int numTextureUnits;
 
+	//  Find the number of texture units we have to play with
+	int numTextureUnits;
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &numTextureUnits);
 
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
@@ -43,6 +54,7 @@ void Application::Initialize(HINSTANCE hInstance)
 
 	std::cout << std::endl << "Number of Available Processors: " << GetActiveProcessorCount(ALL_PROCESSOR_GROUPS) << std::endl;
 
+	//  Create all the objects in the scene
 	InitialiseScene();
 
 	lastTime = time(NULL);
@@ -55,11 +67,16 @@ void Application::Initialize(HINSTANCE hInstance)
 
 void Application::MainLoop()
 {
+	//  Slow down incase of really fast machine
 	if (input.GetTimeSinceLastFrame() >= 10) {
+		//  Lots of debug outputs
 		Debug();
+		//  Set the window buffers
 		window.PrepareForDrawing();
+		//  Update the player based on input
 		player.InputUpdate();
 
+		//  Rotate the sphere
 		testObject.RotateLocalDeltaZ(0.05f);
 		testObject.RotateLocalDeltaY(0.025f);
 		testObject.RotateLocalDeltaX(0.03f);
@@ -72,11 +89,16 @@ void Application::MainLoop()
 			testObject.UniformScale(0.99f);
 		}
 
+		//  Make sure the player doesn't fall through the ground
 		player.CheckGroundCollision(myNoise);
 
+		//  Update the input state
 		input.Update();
+
+		//  Check for need to build more terrain
 		testTerrain.Update();
 
+		//  When we right click lock the mouse to the centre before 
 		if(input.ReportRMousePress()) {
 			window.SetCursorToCentre();
 			window.SetMouseLockedCentre();
@@ -127,6 +149,25 @@ void Application::Debug()
 
 	}
 
+	if (input.ReportKeyState('Y')) {
+		boat.MoveLocalDeltaX(0.08f);
+	}
+	if (input.ReportKeyState('H')) {
+		boat.MoveLocalDeltaX(-0.08f);
+	}
+	if (input.ReportKeyState('G')) {
+		boat.RotateDeltaY(0.01f);
+	}
+	if (input.ReportKeyState('J')) {
+		boat.RotateDeltaY(-0.01f);
+	}
+	if (input.ReportKeyState('B')) {
+		boat.RotateLocalDeltaZ(0.01f);
+	}
+	if (input.ReportKeyState('V')) {
+		std::cout << "Boat Position: " << boat.GetPosition() << std::endl;
+		std::cout << "Rotation Quaternion: (" << player.GetRotation().s << ", (" << player.GetRotation().x << ", " << player.GetRotation().y << ", " << player.GetRotation().z << "))" << std::endl;
+	}
 
 	if (input.ReportKeyPress('N')) {
 		std::cout << "Last Frame Took: " << input.GetTimeForLastFrame() << "s" << std::endl;
@@ -196,10 +237,8 @@ void Application::InitialiseScene()
 
 	Mesh crateMesh("crate.obj");
 	Mesh altCrate(meshGenerator.SubDivide(meshGenerator.UnitCube()));
-	Mesh sphere(meshGenerator.LSphere(10, 10));
 
 	altCrate.AttachMaterial(crateMatProc);
-	sphere.AttachMaterial(crateMatProc);
 	crateMesh.AttachMaterial(crateMat);
 
 	int num = 5;
@@ -219,8 +258,18 @@ void Application::InitialiseScene()
 	testObject.SetLocation(100.0f, 40.0f, 100.0f);
 	renderer.AddToRenderer(*testObject.GetMesh());
 
-
-	
+	Mesh boatMesh("boat.obj");
+	Material boatMaterial;
+	boatMaterial.AddTexture(Texture(Texture::DIFFUSE, "grey.tga"));
+	boatMaterial.AddShader("default.vertexshader");
+	boatMaterial.AddShader("default.fragmentshader");
+	boatMesh.AttachMaterial(boatMaterial);
+	boat.AttachMesh(boatMesh);
+	boat.SetLocation(105.0f, -12.67f, 44.0f);
+	boat.RotateLocalDeltaZ(-0.15f);
+	boat.RotateLocalDeltaX(0.05f);
+//	boat.SetLocation(-108.047f, -14.376f, -55.7129f);
+	renderer.AddToRenderer(*boat.GetMesh());
 
 	testTerrain.Initialize(renderer, myNoise);
 	renderer.AddTerrainToRenderer(testTerrain);

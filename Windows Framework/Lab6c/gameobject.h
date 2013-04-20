@@ -14,7 +14,7 @@ public:
 	~GameObject(void);
 	void SetLocation(float x, float y, float z);
 	void SetRotate(float xRot, float yRot, float zRot);
-	void OrientateAxesToGlobalUp();
+	void SetRotate(Quaternion rotation);
 
 	void MoveDeltaX(float dx);
 	void MoveDeltaY(float dy);

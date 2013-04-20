@@ -254,8 +254,7 @@ void Matrix4x4::Projection(float fov, float aspect, float near, float far)
 	elem[2][3] = -1;
 	elem[3][2] = 2.0f*(near*far)/neg_depth;
 
-	}
-
+}
 
 void Matrix4x4::DumpMatrix4x4(char * s)
 {

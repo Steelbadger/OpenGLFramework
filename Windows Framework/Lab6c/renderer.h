@@ -86,8 +86,6 @@ private:
 
 	GLuint water;
 
-//	GameObject base;
-
 	LightSource sun;
 	Light sunSource;
 	std::vector<LightSource> lightObjects;

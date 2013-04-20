@@ -10,6 +10,8 @@
 #include "Terrain.h"
 #include "terrainmanager.h"
 
+#include "my4x4matrix.h"
+
 
 
 #include <windows.h>
@@ -53,5 +55,6 @@ private:
 	Mesh skybox;
 
 	StaticObject testObject;
+	StaticObject boat;
 };
 

@@ -46,15 +46,12 @@ void Controller::CheckInputAndAct()
 			parent->MoveLocalDeltaX(-sensitivity*input.GetTimeForLastFrame());
 		if (input.ReportKeyState('A'))
 			parent->MoveLocalDeltaX(sensitivity*input.GetTimeForLastFrame());
-		parent->OrientateAxesToGlobalUp();
 	} else {
 		if (input.ReportKeyState('D')) {
 			parent->RotateDeltaY(-sensitivity*input.GetTimeForLastFrame()/5);
-			parent->OrientateAxesToGlobalUp();
 		}
 		if (input.ReportKeyState('A')) {
 			parent->RotateDeltaY(sensitivity*input.GetTimeForLastFrame()/5);
-			parent->OrientateAxesToGlobalUp();
 		}
 	}
 }

@@ -8,7 +8,6 @@ layout(location = 2) in vec2 vertexUV;
 out vec2 UV;
 out vec3 worldPosition;
 out vec3 normal;
-out vec3 vertNorm;
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
@@ -26,12 +25,9 @@ void main(){
 	worldPosition = vec3(viewMatrix * modelMatrix * vec4(vertexPosition_modelspace, 1.0));
 
 	//  Find the normal in eye-space
-	normal = vec3(normalMatrix * vec4(vertexNormal, 1.0));
+	normal = normalize(vec3(normalMatrix * vec4(vertexNormal, 1.0)));
 
 	//  Uvs to be passed to fragment shader
 	UV = vertexUV;
-
-	//  Find the normal in world-space
-	vertNorm = vertexNormal;
 }
 
