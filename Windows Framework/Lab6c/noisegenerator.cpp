@@ -21,6 +21,15 @@ bool NoiseGenerator::pTableBuilt = false;
 
 
 void NoiseGenerator::GeneratePermutationTable()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Generate the permutation table used for simplex noise		|
+|				This should ONLY happen ONCE per application execution		|
+|																			|
+|	Parameters:	None.														|
+|																			|
+|	Returns:	Fills the permutations tables with pseudorandom numbers		|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	int j;
 	int tempSwap;
@@ -72,11 +81,19 @@ NoiseGenerator::~NoiseGenerator(void)
 }
 
 float NoiseGenerator::Perlin2DSinglePass(float x, float y)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Do a single Perlin coherent noise calculation				|
+|																			|
+|	Parameters:	the x and y position of the point to sample					|
+|																			|
+|	Returns:	the magnitude of the perlin function at that point			|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	float floorX = float(int(x));
 	float floorY = float(int(y));
 
-	float s, t, u, v;							//Integer declaration
+	float s, t, u, v;							//The four corners
 
 	s = NonCoherentNoise2D(floorX,floorY); 
 	t = NonCoherentNoise2D(floorX+1,floorY);
@@ -84,11 +101,21 @@ float NoiseGenerator::Perlin2DSinglePass(float x, float y)
 	v = NonCoherentNoise2D(floorX+1,floorY+1);
 
 	float int1 = Interpolate(s,t,x-floorX);		//Interpolate between the values.
-	float int2 = Interpolate(u,v,x-floorX);		//Here we use x-floorx, to get 1st dimension. Don't mind the x-floorx thingie, it's part of the cosine formula.
+	float int2 = Interpolate(u,v,x-floorX);		//Here we use x-floorx, to get 1st dimension.
 	return Interpolate(int1, int2, y-floorY);	//Here we use y-floory, to get the 2nd dimension.
 }
 
 float NoiseGenerator::Perlin2DFourPass(float xin, float yin, float zoom, float persistance, int base)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Do 4 Perlin checks for a given point (Fractal)				|
+|																			|
+|	Parameters:	The x and y position of the point, the zoom and persistance	|
+|				levels of the sampling function, and the depth into the		|
+|				fractal that this point is currently sampling				|
+|																			|
+|	Returns:	The magnitude of the fractal perlin function at that point	|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	using namespace SIMD;
 
@@ -120,6 +147,16 @@ float NoiseGenerator::Perlin2DFourPass(float xin, float yin, float zoom, float p
 }
 
 SIMD::Floats NoiseGenerator::Interpolate (SIMD::Floats& a, SIMD::Floats& b, SIMD::Floats& x)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Interpolate 4 sets of values simultaneously using SIMD		|
+|				Uses Cosine interpolation									|
+|																			|
+|	Parameters:	Two sets of values to interpolate between and a set of	 	|
+|				distances along the curves between each point				|
+|																			|
+|	Returns:	The interpolated value										|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	using namespace SIMD;
 	Floats ft = x * 3.1415927;
@@ -128,6 +165,17 @@ SIMD::Floats NoiseGenerator::Interpolate (SIMD::Floats& a, SIMD::Floats& b, SIMD
 }
 
 float NoiseGenerator::SIMDPerlin2D(float x, float y, NoiseObject n)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Sample the fractal perlin function at point x,y using		|
+|				noise decribed by noiseobject n								|
+|																			|
+|	Parameters:	the x and y position of the point to sample and the noise	|
+|				parameters to use											|					
+|																			|
+|	Returns:	The magnitude of the fractal perlin noise function at that	|
+|				point														|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	float height = 0;
 	x += 15000;
@@ -141,6 +189,16 @@ float NoiseGenerator::SIMDPerlin2D(float x, float y, NoiseObject n)
 }
 
 float NoiseGenerator::MaxAmplitude(NoiseObject n)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Using the noise parameters find the maximum amplitude of 	|
+|				any noise function (for normalisation purposes)				|
+|																			|
+|	Parameters:	The noise parameters (octaves, and persistance primarily)	|
+|																			|
+|	Returns:	The maximum value that a noise function using these params	|
+|				could give													|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	float maxAmp = 0;
 	for (int i = 0; i < n.octaves; i++) {
@@ -152,6 +210,17 @@ float NoiseGenerator::MaxAmplitude(NoiseObject n)
 
 
 float NoiseGenerator::Perlin2D(float x, float y, int octaves, float zoom, float persistance, float amp)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Sample the fractal perlin function at point x,y using		|
+|				noise decribed by noise parameters							|
+|																			|
+|	Parameters:	the x and y position of the point to sample and the noise	|
+|				parameters to use											|					
+|																			|
+|	Returns:	The magnitude of the fractal perlin noise function at that	|
+|				point														|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	float noise = 0;
 	for(int i = 0; i < octaves; i++) {
@@ -165,6 +234,18 @@ float NoiseGenerator::Perlin2D(float x, float y, int octaves, float zoom, float 
 }
 
 Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, int octaves, float zoom, float persistance, float amp, float step)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	High accuracy normal sampling function for perlin noise		|
+|				samples 7 points around point of interest and interpolates	|
+|				normal based on this information							|
+|																			|
+|	Parameters:	the x and y position of the point to sample and the noise	|
+|				parameters to use											|					
+|																			|
+|	Returns:	A normalised vectorthat describes the normal of the perlin	|
+|				noise function at that point								|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 
 	float x1 = x-step;
@@ -206,16 +287,48 @@ Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, int octaves, float zo
 }
 
 float NoiseGenerator::Perlin2D(float x, float y, NoiseObject n)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Sample the fractal perlin function at point x,y using		|
+|				noise decribed by noise parameters							|
+|																			|
+|	Parameters:	the x and y position of the point to sample and the noise	|
+|				parameters to use											|					
+|																			|
+|	Returns:	The magnitude of the fractal perlin noise function at that	|
+|				point														|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	return Perlin2D(x, y, n.octaves, n.zoom, n.persistance, n.amplitude);
 }
 
 Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, NoiseObject n, float step)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	High accuracy normal sampling function for perlin noise		|
+|				samples 7 points around point of interest and interpolates	|
+|				normal based on this information							|
+|																			|
+|	Parameters:	the x and y position of the point to sample and the noise	|
+|				parameters to use											|					
+|																			|
+|	Returns:	A normalised vectorthat describes the normal of the perlin	|
+|				noise function at that point								|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	return NormalToPerlin2D(x, y, n.octaves, n.zoom, n.persistance, n.amplitude, step);
 }
 
 float NoiseGenerator::Interpolate(float a, float b, float x)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Interpolate between two values using cosine interpolation	|
+|																			|
+|	Parameters:	Two values to interpolate between and a					 	|
+|				distance along the curve									|
+|																			|
+|	Returns:	The interpolated value										|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	float ft = x * 3.1415927;
 	float f = (1.0 - cos(ft)) * 0.5;
@@ -223,12 +336,28 @@ float NoiseGenerator::Interpolate(float a, float b, float x)
 }
 
 float NoiseGenerator::NonCoherentNoise1D(float x)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	A 1D pseudorandom (or hashing) function						|
+|																			|
+|	Parameters:	floating point number to hash								|
+|																			|
+|	Returns:	A pseudorandom number from -1.0 to 1.0						|
+|																			|
+\*-------------------------------------------------------------------------*/
 {	 
 	int n = (n<<13) ^ n;
 	return float( 1.0 - ( (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);	
 }
 
 float NoiseGenerator::NonCoherentNoise2D(float x, float y)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	A 2D pseudorandom (or hashing) function						|
+|																			|
+|	Parameters:	two floating point numbers to hash together					|
+|																			|
+|	Returns:	A pseudorandom number from -1.0 to 1.0						|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	x *= seed;
 	y *= seed;
@@ -239,6 +368,14 @@ float NoiseGenerator::NonCoherentNoise2D(float x, float y)
 }
 
 SIMD::Floats NoiseGenerator::NonCoherentNoise2D(SIMD::Floats& calcx, SIMD::Floats& calcy)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	A 2D pseudorandom (or hashing) function	(SIMD)				|
+|																			|
+|	Parameters:	two sets of floating point numbers to hash together			|
+|																			|
+|	Returns:	A set of pseudorandom numbers from -1.0 to 1.0				|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	using namespace SIMD;
 
@@ -260,6 +397,14 @@ SIMD::Floats NoiseGenerator::NonCoherentNoise2D(SIMD::Floats& calcx, SIMD::Float
 
 
 float NoiseGenerator::Simplex(float x, float y)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Do a single Simplex coherent noise calculation				|
+|																			|
+|	Parameters:	the x and y position of the point to sample					|
+|																			|
+|	Returns:	the magnitude of the simplex function at that point			|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	float root3 = 1.73205080757;
 	float n1, n2, n3;		// Noise contributions from the three corners
@@ -345,6 +490,16 @@ float NoiseGenerator::Simplex(float x, float y)
 
 
 float NoiseGenerator::FractalSimplex(float x, float y, NoiseObject n)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Sample the fractal Simplex function (defined by the			|
+|				NoiseObject) at a point										|
+|																			|
+|	Parameters:	the x and y position of the point to sample	and a 			|
+|				NoiseObject to describe the noise function					|
+|																			|
+|	Returns:	the magnitude of the fractal simplex function at that point	|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	float noise = 0;
 	float maxamp = 0;
@@ -362,6 +517,18 @@ float NoiseGenerator::FractalSimplex(float x, float y, NoiseObject n)
 }
 
 Vector3 NoiseGenerator::FractalSimplexNormal(float x, float y, NoiseObject n, float step)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Sample the fractal Simplex function (defined by the			|
+|				NoiseObject) at a point	to find the normal					|
+|																			|
+|	Parameters:	the x and y position of the point to sample	and a 			|
+|				NoiseObject to describe the noise function as well as the	|
+|				distance between samples									|
+|																			|
+|	Returns:	A vector3 that describes the normal of the fractal simplex	|
+|				function at that point										|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	float offs = step;
 	float xtrioffs = offs * 0.86602540378;
@@ -380,6 +547,18 @@ Vector3 NoiseGenerator::FractalSimplexNormal(float x, float y, NoiseObject n, fl
 }
 
 Vector3 NoiseGenerator::SIMDPerlinNormal(float x, float y, NoiseObject n, float step)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Normal sampling function for perlin noise using SIMD to		|
+|				increase speed, samples 3 points around point of interest	|
+|				and interpolates normal based on this information			|
+|																			|
+|	Parameters:	the x and y position of the point to sample and the noise	|
+|				parameters to use											|					
+|																			|
+|	Returns:	A normalised vectorthat describes the normal of the perlin	|
+|				noise function at that point								|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 
 	float offs = step;

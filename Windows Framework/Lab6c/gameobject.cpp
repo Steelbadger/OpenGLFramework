@@ -84,32 +84,43 @@ void GameObject::MoveDeltaZ(float dz)
 
 void GameObject::MoveLocalDeltaX(float dx)
 {
+	//  Find the local axis by applying the orientation to the global axis
 	localX = rotation * Quaternion(GLOBALX) * rotation.Inverse();
+	//  Create translation vector
 	Vector4 translator = localX.Normalise();
 	translator *= dx;
+
+	//  Create translation matrix
 	Matrix4x4 TranslationMatrix;
 	TranslationMatrix.Translation(translator.x, translator.y, translator.z);
 
+	//  Translate our position
 	position = TranslationMatrix * position;
 }
 void GameObject::MoveLocalDeltaY(float dy)
 {
+	//  Find the local axis by applying the orientation to the global axis
 	localY = rotation * Quaternion(GLOBALY) * rotation.Inverse();
+	//  Create translation vector
 	Vector4 translator = localY.Normalise();
 	translator *= dy;
+	//  Create translation matrix
 	Matrix4x4 TranslationMatrix;
 	TranslationMatrix.Translation(translator.x, translator.y, translator.z);
-
+	//  Translate our position
 	position = TranslationMatrix * position;
 }
 void GameObject::MoveLocalDeltaZ(float dz)
 {
+	//  Find the local axis by applying the orientation to the global axis
 	localZ = rotation * Quaternion(GLOBALZ) * rotation.Inverse();
+	//  Create translation vector
 	Vector4 translator = localZ.Normalise();
 	translator *= dz;
+	//  Create translation matrix
 	Matrix4x4 TranslationMatrix;
 	TranslationMatrix.Translation(translator.x, translator.y, translator.z);
-
+	//  Translate our position
 	position = TranslationMatrix * position;
 }
 

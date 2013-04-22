@@ -76,7 +76,6 @@ void RenderManager::AddSkyBox(Mesh &m)
 
 void RenderManager::AddTerrainToRenderer(TerrainManager &t)
 {
-	terrainStep = t.GetTerrainMesh().GetStep();
 	terrain = SetupVAO(t.GetTerrainMesh());
 	terrainSize = t.GetTerrainMesh().GetSize();
 	terrainManager = &t;
@@ -487,6 +486,7 @@ void RenderManager::PrepareLights()
 
 
 void RenderManager::SetUniforms(UniformLocations uniform)
+//  Send the lights and matrices to the current shader program
 {
 	glUniformMatrix4fv(uniform.ProjectionMatrix, 1, GL_FALSE, projectionMatrix);
 	glUniformMatrix4fv(uniform.ModelMatrix, 1, GL_FALSE, modelMatrix);

@@ -412,6 +412,7 @@ void Application::PerlinSimplexBenchmark()
 	std::cout << std::endl << "SISD Simplex Generation Time: " << myTimer/CLOCKS_PER_SEC << "s" << std::endl;
 	sum = abs(out2 - out);
 	sum /= (itnum*itnum);
+	//  Force the compiler to do the operation and not optimise it out
 	std::cout << "This comparison Makes no sense!" << sum << std::endl;
 }
 

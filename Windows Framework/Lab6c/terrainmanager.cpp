@@ -103,7 +103,7 @@ void TerrainManager::Update()
 	base.Floor();
 	base = base * CHUNKSIZE;
 
-	//  Peek at the barrier, if the barrier is still waiting to be tripped then don't create a new watcher as old watcher is still working
+	//  Peek at the thread counter, if there's no current running threads for this task then create one and run it
 	if (threadCounter == 0) {
 		threadCounter++;
 		updateTask = new(tbb::task::allocate_root())UpdateTask;

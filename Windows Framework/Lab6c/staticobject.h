@@ -1,4 +1,9 @@
 #pragma once
+///////////////////////// By Ross Davies /////////////////////////
+//	A minimalistic extension of GameObject to provide direct	//
+//	access to n meshes (this is a nasty paste-over-the-cracks	//
+//	fix for Meshes attached to GameObjects going out of scope	//
+//////////////////////////////////////////////////////////////////
 #include "gameobject.h"
 #include "mesh.h"
 

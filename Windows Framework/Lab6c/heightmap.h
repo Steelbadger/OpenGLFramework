@@ -1,8 +1,14 @@
 #pragma once
+///////////////////////// By Ross Davies /////////////////////////
+//	Heightmap generation class, can use varying functions to	//
+//	generate a perlin or simplex noise based heightmap using	//
+//	threads or SIMD as requested								//
+//////////////////////////////////////////////////////////////////
 #include "noisegenerator.h"
 #include "glew.h"
 #include <gl\GL.h>
 
+//  A structure for holding the variables needed for win32 threading functions
 struct ThreadData
 {
 	ThreadData():n(12, 500.0f, 0.41f, 70.0f, -1563.155f){}
@@ -19,6 +25,7 @@ struct ThreadData
 	int sectionSize;
 	NoiseObject n;
 };
+
 
 class Heightmap
 {

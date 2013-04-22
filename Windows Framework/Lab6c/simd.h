@@ -1,4 +1,8 @@
 #pragma once
+///////////////////////// By Ross Davies /////////////////////////
+//					SIMD types and operations in a				//
+//					namespace									//
+//////////////////////////////////////////////////////////////////
 #include <mmintrin.h>
 #include <xmmintrin.h>
 #include <emmintrin.h>

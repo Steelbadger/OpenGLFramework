@@ -1,5 +1,10 @@
 #pragma once
-
+///////////////////////// By Ross Davies /////////////////////////
+//	Noise generation class, this class can generate both		//
+//	non-coherent and coherent noise using Perlin or Simplex		//
+//	methods, can generate Perlin noise 4-octaves at a time		//
+//	using SIMD instructions.									//
+//////////////////////////////////////////////////////////////////
 #include "simd.h"
 #include "TBB/mutex.h"
 
@@ -46,7 +51,11 @@ private:
 	SIMD::Floats Interpolate (SIMD::Floats& a, SIMD::Floats& b, SIMD::Floats& x);
 	float seed;
 
+	//  As there's static one-time initialisation data we need to protect it for multi-threaded
+	//  use
 	static tbb::mutex setupMutex;
+
+	//  Look-up table data
 	static const int SIZE = 256;
 	static unsigned char permutation[SIZE];
 	static unsigned char perm[SIZE*2];
