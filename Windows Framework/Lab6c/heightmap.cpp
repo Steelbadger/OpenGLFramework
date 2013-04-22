@@ -25,7 +25,6 @@ struct Generator
 			int counter = j*size;
 			int currentpixel = counter*4;
 			for (float i = 0; i < size; i++) {
-//				float height = noise.FractalSimplex(i*step + xb, j*step + yb, no);
 				Vector3 normal = noise.FractalSimplexNormal(i*step + xb, j*step + yb, no, step);
 				float height = noise.Perlin2D(i*step + xb, j*step + yb, no);
 				//Vector3 normal(0.0f, 0.0f, 0.0f);

@@ -22,7 +22,15 @@ Application::~Application(void)
 }
 
 void Application::Initialize(HINSTANCE hInstance)
-//  Open a window, setup OpenGL, output some system info and then initialise the scene
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Create a window, initialise OpenGL context and retrieve		|
+|				machine and driver specs									|
+|																			|
+|	Parameters:	hInstance of the process									|
+|																			|
+|	Returns:	None.														|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	srand(51816);
 	float rot = 0.0;
@@ -66,6 +74,15 @@ void Application::Initialize(HINSTANCE hInstance)
 }
 
 void Application::MainLoop()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	The primary application loop, handles calling of all		|
+|				update functions											|
+|																			|
+|	Parameters:	None.														|
+|																			|
+|	Returns:	None.														|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	//  Slow down incase of really fast machine
 	if (input.GetTimeSinceLastFrame() >= 10) {
@@ -104,6 +121,7 @@ void Application::MainLoop()
 			window.SetMouseLockedCentre();
 		}
 
+		//  Allow the player to speed up or reverse the movement of the sun
 		if(input.ReportKeyState(VK_LEFT)) {
 			sunParent.RotateDeltaX(0.01f);
 		}
@@ -113,9 +131,11 @@ void Application::MainLoop()
 			sunParent.RotateDeltaX(-0.01f);
 		}
 
+		//  Exit the program
 		if (input.ReportKeyPress(VK_ESCAPE))
 			exit(0);
 
+		//  Render the scene
 		renderer.RenderAll();
 
 		window.FlipBuffers();
@@ -123,6 +143,15 @@ void Application::MainLoop()
 }
 
 void Application::Debug()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Checks for key presses requesting debug information			|
+|				and sends the information to console out					|
+|																			|
+|	Parameters:	None.														|
+|																			|
+|	Returns:	None.														|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	double currentTime = time(NULL);
 	nbFrames++;
@@ -147,26 +176,6 @@ void Application::Debug()
 			std::cout << "Backface Culling: OFF" << std::endl;
 		}
 
-	}
-
-	if (input.ReportKeyState('Y')) {
-		boat.MoveLocalDeltaX(0.08f);
-	}
-	if (input.ReportKeyState('H')) {
-		boat.MoveLocalDeltaX(-0.08f);
-	}
-	if (input.ReportKeyState('G')) {
-		boat.RotateDeltaY(0.01f);
-	}
-	if (input.ReportKeyState('J')) {
-		boat.RotateDeltaY(-0.01f);
-	}
-	if (input.ReportKeyState('B')) {
-		boat.RotateLocalDeltaZ(0.01f);
-	}
-	if (input.ReportKeyState('V')) {
-		std::cout << "Boat Position: " << boat.GetPosition() << std::endl;
-		std::cout << "Rotation Quaternion: (" << player.GetRotation().s << ", (" << player.GetRotation().x << ", " << player.GetRotation().y << ", " << player.GetRotation().z << "))" << std::endl;
 	}
 
 	if (input.ReportKeyPress('N')) {
@@ -194,9 +203,21 @@ void Application::Debug()
 }
 
 void Application::InitialiseScene()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Create and set up all the objects and lights in the scene	|
+|				push them all to the renderer								|
+|																			|
+|	Parameters:	None.														|
+|																			|
+|	Returns:	None.														|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 
+	//  Set the player's initial position
 	player.SetLocation(50.0f, 50.0f, 50.0f);
+
+	//  Create two lights (one point light fixed to player and one directional light)
 	LightSource playerLight(LightSource::POINT);
 	playerLight.SetColour(0.7f, 0.7f, 0.7f);
 	playerLight.SetAmbient(0.0f);
@@ -209,15 +230,19 @@ void Application::InitialiseScene()
 	player.SetCameraTargetWindow(&window);
 	playerLight.SetParent(player);
 
+	//  Add the camera and lights to the renderer
 	renderer.SetActiveCamera(*player.GetCamera());
 	renderer.AddLight(sunSource);
 	renderer.AddLight(playerLight);
 
+	//  Create the material for the skybox
 	Material skyMat;
 	skyMat.AddTexture(Texture(Texture::DIFFUSE, "stars2.tga"));
 	skyMat.AddShader("skybox.fragmentshader");
 	skyMat.AddShader("skybox.vertexshader");
 
+	//  Create the mesh for the skybox (cube with inward facing sides/normals subdivided
+	//  4 times then warped into a sphere of radius 1)
 	skybox = meshGenerator.InwardCubeSphere(4);
 
 	skybox.AttachMaterial(skyMat);
@@ -268,7 +293,6 @@ void Application::InitialiseScene()
 	boat.SetLocation(105.0f, -12.67f, 44.0f);
 	boat.RotateLocalDeltaZ(-0.15f);
 	boat.RotateLocalDeltaX(0.05f);
-//	boat.SetLocation(-108.047f, -14.376f, -55.7129f);
 	renderer.AddToRenderer(*boat.GetMesh());
 
 	testTerrain.Initialize(renderer, myNoise);
@@ -276,6 +300,15 @@ void Application::InitialiseScene()
 }
 
 void Application::CrossProductBenchmark()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Compare computation time for Cross-Products using SIMD 		|
+|				instructions to linear operations.							|
+|																			|
+|	Parameters:	None.														|
+|																			|
+|	Returns:	Sends times to Console out.									|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 
 	float out = 0;
@@ -320,6 +353,15 @@ void Application::CrossProductBenchmark()
 }
 
 void Application::PerlinSimplexBenchmark()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Compare Perlin SIMD and Linear Noise with Linear Simplex	|
+|				noise														|
+|																			|
+|	Parameters:	None.														|
+|																			|
+|	Returns:	Sends times to Console Out									|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	float out = 0;
 	double myTimer;
@@ -374,6 +416,15 @@ void Application::PerlinSimplexBenchmark()
 }
 
 void Application::SIMDThreadingBenchmark()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Compare Heightmap generation times using linear execution,	|
+|				simd execution and threaded executions						|
+|																			|
+|	Parameters:	None.														|
+|																			|
+|	Returns:	Sends times to Console out.									|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	float out = 0;
 	double myTimer;
