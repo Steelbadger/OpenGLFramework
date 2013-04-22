@@ -24,8 +24,7 @@ void main()
 	//  hardcoded shininess
 	float shininess = 50;
 
-	//  Blue!
-//	vec3 texcolour = vec3(0.4, 0.4, 1.0);
+	//  Water!
 	vec3 texcolour = texture(texture1, globalPos.xz/20).rgb;
 
 
@@ -41,7 +40,6 @@ void main()
 
 	//  Change transparency based on viewing angle
 	float transparency = 1 - clamp(abs(dot(surfaceNormal, fragToView)), 0.2, 1.0);
-	transparency = transparency / (1.0/((depth)+1.0));
 
 	for (int i = 0; i <= numLights; i++) {
 
@@ -82,6 +80,7 @@ void main()
 	}
 
 	transparency = clamp(transparency, 0.25, 0.8);
+	transparency = transparency / (1.0/((depth)+1.0));
 
 	color = vec4(ambient + diffuse, transparency) + vec4(specular, (specular.r+specular.b+specular.g)/4) + vec4(0.6, 0.6, 0.6, 1)*(1-transparency)/10;
 }
