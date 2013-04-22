@@ -25,7 +25,7 @@ struct Generator
 			int counter = j*size;
 			int currentpixel = counter*4;
 			for (float i = 0; i < size; i++) {
-				Vector3 normal = noise.FractalSimplexNormal(i*step + xb, j*step + yb, no, step);
+				Vector3 normal = noise.NormalToPerlin2D(i*step + xb, j*step + yb, no, step);
 				float height = noise.Perlin2D(i*step + xb, j*step + yb, no);
 				//Vector3 normal(0.0f, 0.0f, 0.0f);
 
@@ -102,6 +102,16 @@ Heightmap::~Heightmap(void)
 }
 
 unsigned short* Heightmap::GenerateHeightField(float x, float y, NoiseObject n, float square)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Generate a texture (size x size) using Win32 threading		|
+|																			|
+|	Parameters:	The x and y position of the base of the texture within the 	|
+|				noise function, the noise parameters and the size of the	|
+|				texture in global space (square x square)					|
+|																			|
+|	Returns:	A pointer to the texture array as a collection of short ints|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	const int subdivs = 64;  //  256, 512, 1024
 	const int threads = size/subdivs;
@@ -139,6 +149,16 @@ unsigned short* Heightmap::GenerateHeightField(float x, float y, NoiseObject n, 
 }
 
 unsigned short* Heightmap::TBBGenerateHeightField(float x, float y, NoiseObject n, float square)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Generate a texture (size x size) using TBB threading		|
+|																			|
+|	Parameters:	The x and y position of the base of the texture within the 	|
+|				noise function, the noise parameters and the size of the	|
+|				texture in global space (square x square)					|
+|																			|
+|	Returns:	A pointer to the texture array as a collection of short ints|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	GLushort* map = new GLushort[size*size*4];
 	float step = float((square+2)/size);
@@ -153,6 +173,18 @@ unsigned short* Heightmap::TBBGenerateHeightField(float x, float y, NoiseObject 
 }
 
 unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n, float square)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Generate a texture (size x size) using Win32 threading		|
+|				and send it to OpenGL, return the OpenGL reference to		|
+|				the texture													|
+|																			|
+|	Parameters:	The x and y position of the base of the texture within the 	|
+|				noise function, the noise parameters and the size of the	|
+|				texture in global space (square x square)					|
+|																			|
+|	Returns:	GLuint reference to the texture								|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 
 	GLushort* map = GenerateHeightField(x, y, n, square);
@@ -175,6 +207,16 @@ unsigned int Heightmap::GenerateHeightmap(float x, float y, NoiseObject n, float
 }
 
 unsigned __stdcall Heightmap::GenerateSection(void *data)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Generate a portion of a larger texture, single thread		|
+|																			|
+|	Parameters:	The x and y position of the base of the texture within the 	|
+|				noise function, the noise parameters and the size of the	|
+|				texture in global space (square x square)					|
+|																			|
+|	Returns:	Updates portion of texture array with noise values			|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	ThreadData args = *(ThreadData*)data;
 
@@ -212,6 +254,16 @@ unsigned __stdcall Heightmap::GenerateSection(void *data)
 }
 
 void Heightmap::GenHeightsSIMD(float x, float y, NoiseObject n, float square)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Generate a texture (size x size) using SIMD instructions	|
+|																			|
+|	Parameters:	The x and y position of the base of the texture within the 	|
+|				noise function, the noise parameters and the size of the	|
+|				texture in global space (square x square)					|
+|																			|
+|	Returns:	Writes a texture image file in the executable directory		|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	GLushort* map = new GLushort[size*size*4];
 	float step = float((square+2)/size);
@@ -244,12 +296,23 @@ void Heightmap::GenHeightsSIMD(float x, float y, NoiseObject n, float square)
 		}	
 	}
 
-//	write_tga("SIMDPerlinNoise.tga", size, map);
+	write_tga("SIMDPerlinNoise.tga", size, map);
 
 	delete[] map;
 }
 
 unsigned short* Heightmap::TBBSIMDGenerateHeightField(float x, float y, NoiseObject n, float square)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Generate a texture (size x size) using TBB threading and	|
+|				SIMD instructions
+|																			|
+|	Parameters:	The x and y position of the base of the texture within the 	|
+|				noise function, the noise parameters and the size of the	|
+|				texture in global space (square x square)					|
+|																			|
+|	Returns:	A pointer to the texture array as a collection of short ints|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	GLushort* map = new GLushort[size*size*4];
 	float step = float((square+2)/size);
@@ -264,16 +327,37 @@ unsigned short* Heightmap::TBBSIMDGenerateHeightField(float x, float y, NoiseObj
 }
 
 void Heightmap::GenHeightsTBBSIMD(float x, float y, NoiseObject n, float square)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Generate a texture (size x size) using TBB threading and	|
+|				SIMD instructions											|
+|																			|
+|	Parameters:	The x and y position of the base of the texture within the 	|
+|				noise function, the noise parameters and the size of the	|
+|				texture in global space (square x square)					|
+|																			|
+|	Returns:	Writes to an image file in the executable directory			|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	GLushort* map = new GLushort[size*size*4];
 	float step = float((square+2)/size);
 
 	tbb::parallel_for(tbb::blocked_range<int>(0, size, size/4),SIMDGenerator(x-1, y-1, n, square+2, step, map, size), tbb::simple_partitioner());
-
+	write_tga("TBBSIMDPerlin.tga", size, map);
 	delete[] map;
 }
 
 void Heightmap::GenHeightsLinear(float x, float y, NoiseObject n, float square)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Generate a texture (size x size) using a single threading 	|
+|																			|
+|	Parameters:	The x and y position of the base of the texture within the 	|
+|				noise function, the noise parameters and the size of the	|
+|				texture in global space (square x square)					|
+|																			|
+|	Returns:	Writes to an image file in the executable directory			|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	GLushort* map = new GLushort[size*size*4];
 	float step = float((square+2)/size);
@@ -303,7 +387,7 @@ void Heightmap::GenHeightsLinear(float x, float y, NoiseObject n, float square)
 		}	
 	}
 
-//	write_tga("LinearPerlinNoise.tga", size, map);
+	write_tga("LinearPerlinNoise.tga", size, map);
 
 	delete[] map;
 

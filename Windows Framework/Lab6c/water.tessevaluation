@@ -11,6 +11,7 @@ out vec3 worldPosition;
 out vec3 normal;
 out vec3 vertNorm;
 out vec3 globalPos;
+out float depth;
 
 uniform mat4 projectionMatrix;
 uniform mat4 modelViewMatrix;
@@ -40,7 +41,7 @@ void main()
 	float d2 = gl_TessCoord.y * tcdepth[1];
 	float d3 = gl_TessCoord.z * tcdepth[2];
 
-	float depth = d1 + d2 + d3;
+	depth = d1 + d2 + d3;
 
 	float u = (mapWidth*(-xmul) + gp.x*xmul + gp.x*(1+xmul))+1.0;
 	float v = (mapWidth*(-ymul) + gp.z*ymul + gp.z*(1+ymul))+1.0;

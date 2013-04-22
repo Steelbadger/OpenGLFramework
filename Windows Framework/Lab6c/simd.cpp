@@ -350,12 +350,6 @@ namespace SIMD {
 		__m128 left = _mm_set_ps(lhs.x(), lhs.y(), lhs.z(), 0);
 		__m128 right = _mm_set_ps(rhs.x(), rhs.y(), rhs.z(), 0);
 
-		//__m128 temp1 = _mm_shuffle_ps(left, left, _MM_SHUFFLE(3, 0, 2, 1));
-		//__m128 temp2 = _mm_shuffle_ps(right, right, _MM_SHUFFLE(3, 1, 0, 2));
-
-		//__m128 temp3 = _mm_shuffle_ps(left, left, _MM_SHUFFLE(3, 1, 0, 2));
-		//__m128 temp4 = _mm_shuffle_ps(right, right, _MM_SHUFFLE(3, 0, 2, 1));
-
 		__m128 temp1 = _mm_shuffle_ps(left, left, _MM_SHUFFLE(2, 1, 3, 0));
 		__m128 temp2 = _mm_shuffle_ps(right, right, _MM_SHUFFLE(1, 3, 2, 0));
 
