@@ -1,4 +1,8 @@
 #pragma once
+///////////////////////// By Ross Davies /////////////////////////
+//  This struct is used to hold the uniform addresses for		//
+//	each shader program, this is generalised for simplicity		//
+//////////////////////////////////////////////////////////////////
 #include "glew.h"
 #include "defines.h"
 

@@ -1,4 +1,10 @@
 #pragma once
+///////////////////////// By Ross Davies /////////////////////////
+//	The material class which contains all material properties	//
+//	of the mesh with which it is associated; the textures		//
+//	and shader programs.										//
+//////////////////////////////////////////////////////////////////
+
 #include "glew.h"
 #include "shader.h"
 #include "uniformlocations.h"

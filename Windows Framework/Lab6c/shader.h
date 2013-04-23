@@ -1,4 +1,13 @@
 #pragma once
+///////////////////////// By Ross Davies /////////////////////////
+//	The shader class represents a single shader source file		//
+//	handles parsing and loading of the source file				//
+//////////////////////////////////////////////////////////////////
+//	The shaderprogram class represents a complete shader		//
+//	program, this is the primary object used for manipulating	//
+//	the shaders and material functionality of an object			//
+//////////////////////////////////////////////////////////////////
+
 #include "glew.h"
 #include "texture.h"
 #include "uniformlocations.h"
