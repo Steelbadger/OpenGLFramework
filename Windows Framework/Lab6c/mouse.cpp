@@ -24,14 +24,31 @@ Mouse::~Mouse(void)
 }
 
 void Mouse::UpdatePosition(LPARAM lParam)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Helper function for dealing with Mouse move message			|
+|				updates the mouse's saved position to the new position		|
+|																			|
+|	Parameters:	Windows message LPARAM										|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
+	//  Remember where we were
 	oldx = x;
 	oldy = y;
+
+	//  Find where we are now.  Add some magic number madness to account for the border around the window
 	x = GET_X_LPARAM(lParam)+8; 
 	y = GET_Y_LPARAM(lParam)+30; 
 }
 
 void Mouse::Message(UINT message, WPARAM wParam, LPARAM lParam)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Handle window messages related to the mouse state			|
+|				set the various states to mirror the hardware				|
+|																			|
+|	Parameters:	Windows message parameters									|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	switch (message)
 	{
@@ -64,18 +81,30 @@ void Mouse::Message(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 void Mouse::Update()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Update the input state (mouse buttons states)				|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
+	//  Reset our pressed/released values
 	lmouseclick = false;
 	rmouseclick = false;
 	mmouseclick = false;
 	lrelease = false;
 	rrelease = false;
 	mrelease = false;
+
+	//  Remember if the wheel was moved last frame
 	wheelWasMoved = wheelMoved;
+
+	//  If the wheel has not moved this frame then set distance to zero
 	if (wheelMoved == false) {
 		wheelDelta = 0;
 	}
+	//  Reset the wheel moved state for the new frame
 	wheelMoved = false;
+
+	//  Compare state this frame to state last frame to find changes
 	if (lmouse == true && lastlmouse == false)
 	{
 		lmouseclick = true;
@@ -100,12 +129,23 @@ void Mouse::Update()
 	{
 		mrelease = true;
 	}
+
+	//  And remember our state from this frame
 	lastlmouse = lmouse;
 	lastrmouse = rmouse;
 	lastmmouse = mmouse;
 }
 
 int Mouse::Location(axis Axis)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	DEPRECATED, additional function for getting the position	|
+|				components of the mouse										|
+|																			|
+|	Parameters:	The axis for which we wish to know the mouse's position		|
+|																			|
+|	Returns:	The mouse's position in pixels along requested axis			|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	if (Axis == X)
 		return x;

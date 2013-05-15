@@ -106,7 +106,9 @@ void WindowWizard::OnMove()
 }
 
 
-void WindowWizard::ResizeGLWindow(int width, int height)// Initialize The GL Window
+void WindowWizard::ResizeGLWindow(int width, int height)
+//  Mostly useless with new programmable pipeline (only thing that does anything is
+//  setting height/width and glViewport call
 {
 	gHeight = height;
 	gWidth = width;
@@ -224,14 +226,14 @@ WindowWizard* WindowWizard::GetWindowReference(HWND hwnd)
 
 LRESULT CALLBACK WindowWizard::WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    if(message == WM_CREATE)
-    {
+    if(message == WM_CREATE)		//  Create message gets sent before the window is finished being made
+    {								//  So catch it here
 		cxSource = GetSystemMetrics (SM_CXSIZEFRAME) + GetSystemMetrics (SM_CXSIZE);
 		cySource = GetSystemMetrics (SM_CYSIZEFRAME) + GetSystemMetrics (SM_CYCAPTION);
     }
     else
     {
-		WindowWizard* pWindow = WindowMap[hwnd];
+		WindowWizard* pWindow = WindowMap[hwnd];		//  Find the window of interest using the handle
 		
         switch (message)
         {

@@ -10,7 +10,6 @@
 		spawns another watcher thread						*/
 //////////////////////////////////////////////////////////////
 
-#include "barrier.h"
 #include "myvector2.h"
 #include <map>
 #include "texture.h"

@@ -4,7 +4,6 @@
 //	array, also creates more terrain using noise functions 		//
 //	implemented using tbb parallel for							//
 //////////////////////////////////////////////////////////////////
-#include "barrier.h"
 #include "myvector2.h"
 #include <map>
 #include "texture.h"

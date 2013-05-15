@@ -3,7 +3,7 @@
 #include <string.h>
 #include <windows.h>
 
-
+//  Set up the singleton instance
 Input ourInputSingleton;
 
 Input::Input(void)
@@ -26,6 +26,12 @@ Input::~Input(void)
 }
 
 void Input::Message(UINT message, WPARAM wParam, LPARAM lParam)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Handle the windows messages for input state changes			|
+|																			|
+|	Parameters:	The windows message parameters								|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 
 	switch (message)
@@ -57,25 +63,46 @@ void Input::Message(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 void Input::KeyDown(UINT wParam)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Helper function for dealing with keypress messages			|
+|																			|
+|	Parameters:	The key pressed												|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	oldkey[wParam] = keys[wParam];
 	keys[wParam]=true;
 }
 
 void Input::KeyUp(UINT wParam)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Helper function for dealing with keyrelease messages		|
+|																			|
+|	Parameters:	The key released											|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	oldkey[wParam] = keys[wParam];
 	keys[wParam]=false;	
 }
 
 void Input::Update()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Update the input state (timer and pressed/released states)	|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
+	//  Do the timing
 	lastTime = currentTime;
 	currentTime = clock();
 	timeForLastFrame = currentTime - lastTime;
 
+	//  The window hasn't been resized/moved yet this frame
 	windowResized = false;
 	windowMoved = false;
+
+
+	//  Check for newly pressed or released keys
 	for (int i = 256; i > 0; i--)
 	{
 		if (keys[i-1] == true && oldkey[i-1] == false)
@@ -90,11 +117,22 @@ void Input::Update()
 		else
 			released[i-1] = false;
 	}
+
+	//  Copy the current state into the saved (last frame) state
 	memcpy(oldkey, keys, sizeof(keys));
+
+	//  Then update the mouse
 	mouse.Update();
 }
 
 double Input::GetTimeSinceLastFrame()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Access the timing functionality of the class, get the time	|
+|				between the current frame and the last						|
+|																			|
+|	Returns:	The time elapsed for the last frame in seconds				|
+|																			|
+\*-------------------------------------------------------------------------*/
 {
 	return clock()-currentTime;
 }
