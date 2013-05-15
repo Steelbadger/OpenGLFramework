@@ -3,7 +3,6 @@
 
 
 Player::Player(void):
-	collider(2.0f, GetPosition()),
 		controller(this),
 		camera(this),
 		camController(&camera),
@@ -55,11 +54,6 @@ void Player::CheckGroundCollision(NoiseObject n)
 	if (rigidbody.CheckGroundCollision(n)) {
 		controller.SetJumping(false);
 	}
-}
-
-Collider* Player::GetCollider()
-{
-	return &collider;
 }
 
 CameraModule* Player::GetCamera()

@@ -5,7 +5,6 @@
 //	quaternions) for all meshes, colliders and cameras			//
 //////////////////////////////////////////////////////////////////
 #include "cameramodule.h"
-#include "collider.h"
 #include "controller.h"
 #include "mesh.h"
 #include "rigidbodymodule.h"
@@ -59,7 +58,6 @@ public:
 	Quaternion GetRotation();
 
 	//  Virtual get hooks for inheriting classes
-	virtual Collider* GetCollider();
 	virtual CameraModule* GetCamera();
 	virtual Rigidbody* GetRigidbody();
 	virtual Mesh* GetMesh();

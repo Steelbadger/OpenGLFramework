@@ -1,6 +1,5 @@
 #include "gameobject.h"
 #include "myvector4.h"
-#include "collider.h"
 #include "cameramodule.h"
 #include "rigidbodymodule.h"
 #include "mesh.h"
@@ -246,11 +245,6 @@ Quaternion GameObject::GetRotation()
 	} else {
 		return parent->GetRotation() * rotation;
 	}
-}
-
-Collider* GameObject::GetCollider()
-{
-	return NULL;
 }
 
 CameraModule* GameObject::GetCamera()

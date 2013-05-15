@@ -5,7 +5,6 @@
 //////////////////////////////////////////////////////////////////
 #include "cameramodule.h"
 #include "cameracontroller.h"
-#include "collider.h"
 #include "controller.h"
 #include "gameobject.h"
 #include "mesh.h"
@@ -26,7 +25,6 @@ public:
 
 	void CheckGroundCollision(NoiseObject n);
 
-	virtual Collider* GetCollider();
 	virtual CameraModule* GetCamera();
 	virtual Rigidbody* GetRigidbody();
 	virtual Mesh* GetMesh();
@@ -35,7 +33,6 @@ public:
 private:
 	bool flying;
 
-	SphereCollider collider;
 	CameraModule camera;
 	CameraController camController;
 	Rigidbody rigidbody;

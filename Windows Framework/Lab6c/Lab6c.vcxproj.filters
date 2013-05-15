@@ -120,9 +120,6 @@
     <ClCompile Include="cameramodule.cpp">
       <Filter>Source Files\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="collider.cpp">
-      <Filter>Source Files\Modules</Filter>
-    </ClCompile>
     <ClCompile Include="rigidbodymodule.cpp">
       <Filter>Source Files\Modules</Filter>
     </ClCompile>
@@ -171,12 +168,6 @@
     <ClCompile Include="tex.cpp">
       <Filter>Source Files\Material</Filter>
     </ClCompile>
-    <ClCompile Include="task.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mythread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="glew.c">
       <Filter>Source Files\GLEW</Filter>
     </ClCompile>
@@ -185,9 +176,6 @@
     </ClCompile>
     <ClCompile Include="simd.cpp">
       <Filter>Source Files\Maths</Filter>
-    </ClCompile>
-    <ClCompile Include="barrier.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -234,9 +222,6 @@
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="cameramodule.h">
-      <Filter>Header Files\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="collider.h">
       <Filter>Header Files\Modules</Filter>
     </ClInclude>
     <ClInclude Include="rigidbodymodule.h">
@@ -296,19 +281,10 @@
     <ClInclude Include="simd.h">
       <Filter>Header Files\Maths</Filter>
     </ClInclude>
-    <ClInclude Include="task.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mythread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="terrainmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="terrainupdatetask.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="barrier.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
