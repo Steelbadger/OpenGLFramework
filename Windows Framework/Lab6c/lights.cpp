@@ -14,6 +14,14 @@ LightSource::~LightSource(void)
 }
 
 Light LightSource::GetLightAsStruct(Matrix4x4 view)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Return the Light as a minimalistic struct for passing to	|
+|				shaders														|
+|																			|
+|	Parameter:	The view transformation matrix								|
+|																			|
+|	Returns:	Data struct with all necessary light data for shaders		|
+\*-------------------------------------------------------------------------*/
 {
 	Light out;
 
@@ -42,16 +50,32 @@ Light LightSource::GetLightAsStruct(Matrix4x4 view)
 }
 
 void LightSource::SetAmbient(float b)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Set the level of ambient light provided by this light		|
+|				shaders														|
+|																			|
+|	Parameter:	Proportion of the light which is ambient					|
+\*-------------------------------------------------------------------------*/
 {
 	ambient = b;
 }
 
 void LightSource::SetColour(float r, float g, float b)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Set the colour of the light									|
+|																			|
+|	Parameter:	The r, g, and b components									|
+\*-------------------------------------------------------------------------*/
 {
 	colour = Vector3(r, g, b);
 }
 
 void LightSource::CalculateDirectional(Matrix4x4 view, Light &out)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Calculate the data light struct for a directional light		|
+|																			|
+|	Parameter:	The view matrix, and struct to write to						|
+\*-------------------------------------------------------------------------*/
 {
 	Matrix4x4 transform(Matrix4x4::IDENTITY);
 	for (int i = 0; i < 3; i++) {
@@ -75,6 +99,11 @@ void LightSource::CalculateDirectional(Matrix4x4 view, Light &out)
 }
 
 void LightSource::CalculatePoint(Matrix4x4 view, Light& out)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Calculayte the data light struct for a point light			|
+|																			|
+|	Parameter:	The view matrix, and struct to write to						|
+\*-------------------------------------------------------------------------*/
 {
 	Vector4 pos = GetPosition();
 

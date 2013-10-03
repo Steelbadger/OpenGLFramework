@@ -24,46 +24,65 @@ Texture::~Texture(void)
 }
 
 void Texture::SetTexture(Type t, std::string p)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Create a texture using a file at location p					|
+|																			|
+|	Parameters:	The type of the texture and the pathname of the texture file|
+\*-------------------------------------------------------------------------*/
 {
 	type = t;
 	path = p;
 	GLuint tex;
+	//  Load the texture in to OpenGL at the Gluint Ref
 	CreateGLTexture(p.c_str(), tex);
 	texRef = tex;
+	//  Default wrapping is repeat
 	wrapping = GL_REPEAT;
+	//  Magnitude of non-displacement maps is 0
 	magnitude = 0;
+	//  Remember that this have been uploaded to OpenGL
 	created = true;
+	//  Add the texture to the library
 	TextureLibrary[uid] = texRef;
 }
 
 void Texture::SetTexture(Type t, unsigned short* base, unsigned int length)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Create a texture using an array in memory					|
+|																			|
+|	Parameters:	The type of the texture, a pointer to its location in		|
+|				memory and the square size of the image						|
+\*-------------------------------------------------------------------------*/
 {
 	type = t;
 	path = "POINTER";
 	imgBase = base;
 	imgSize = length;
 
-	//GLuint TexID;
-
-	//glGenTextures(1, &TexID);				// Create The Texture
-	//glBindTexture(GL_TEXTURE_2D, TexID);
-
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, length, length, 0, GL_RGBA, GL_UNSIGNED_SHORT, base);
-	//glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-
-	//texRef = TexID;
 	wrapping = GL_CLAMP;
 	magnitude = 80;
 }
 
 void Texture::SetDisplacementMap(unsigned short* base, unsigned int length, float m)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Create a texture that is a displacement map					|
+|																			|
+|	Parameters:	The type of the texture, a pointer to its location in		|
+|				memory and the square size of the image	and the magnitude	|
+|				of the displacement											|
+\*-------------------------------------------------------------------------*/
 {
 	SetTexture(Type::DISPLACEMENT, base, length);
 	magnitude = m;
 }
 
 void Texture::Apply(int targetUnit, GLuint targetLoc)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Upload the texture to the target texture unit				|
+|																			|
+|	Parameters:	The texture unit to load to and the shader sampler to 		|
+|				reference it												|
+\*-------------------------------------------------------------------------*/
 {
 	if (texRef == 0) {
 		if (TextureLibrary.count(uid) == 0) {
@@ -79,8 +98,6 @@ void Texture::Apply(int targetUnit, GLuint targetLoc)
 			delete[] imgBase;
 
 			texRef = TexID;
-		//	wrapping = GL_CLAMP;
-		//	magnitude = 80;
 			created = true;
 			TextureLibrary[uid] = texRef;
 		} else {

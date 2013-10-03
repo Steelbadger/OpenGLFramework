@@ -255,6 +255,7 @@ Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, int octaves, float zo
 	float y2 = y;
 	float y3 = y+step;
 
+	//  Find the six corners
 	Vector4 A(x1, Perlin2D(x1,y1,octaves,zoom,persistance,amp), y1, 1.0f);
 	Vector4 B(x2, Perlin2D(x2,y1,octaves,zoom,persistance,amp), y1, 1.0f);
 
@@ -265,13 +266,15 @@ Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, int octaves, float zo
 	Vector4 F(x2, Perlin2D(x2,y3,octaves,zoom,persistance,amp), y3, 1.0f);
 	Vector4 G(x3, Perlin2D(x2,y3,octaves,zoom,persistance,amp), y3, 1.0f);
 
+	//  Find all edges
 	Vector4 DC = C - D;
 	Vector4 DA = A - D;
 	Vector4 DB = A - D;
 	Vector4 DE = E - D;
 	Vector4 DG = G - D;
 	Vector4 DF = F - D;
-
+	
+	//  Find 6 neighbouring triangle normals
 	Vector4 Normal1 = DC.Cross(DA);
 	Vector4 Normal2 = DA.Cross(DB);
 	Vector4 Normal3 = DB.Cross(DE);
@@ -279,6 +282,7 @@ Vector3 NoiseGenerator::NormalToPerlin2D(float x, float y, int octaves, float zo
 	Vector4 Normal5 = DG.Cross(DF);
 	Vector4 Normal6 = DF.Cross(DC);
 
+	//  find resultant
 	Vector4 Normal = Normal1 + Normal2 + Normal3 + Normal4 + Normal5 + Normal6;
 
 	Normal.NormaliseSelf();

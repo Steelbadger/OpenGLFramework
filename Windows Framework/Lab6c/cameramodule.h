@@ -21,18 +21,26 @@ public:
 
 	void SetTargetWindow(HWND hWnd);
 	void SetTargetWindow(WindowWizard* window);
+
 	void SetWindowSize(int width, int height);
 	void SetWindowSize();
+
 	void SetClipPlanes(float near, float far);
+
 	void SetFieldOfView(float fov);
+
 	float GetFieldOfView(){return fieldOfView;}
+
 	float GetAspectRatio(){return float(windowWidth/windowHeight);}
+
 	void LockCursorToCentre();
+
 	int GetWindowWidth(){return windowWidth;}
 	int GetWindowHeight(){return windowHeight;}
+
 	float GetNearClipPlane(){return nearClipPlane;}
 	float GetFarClipPlane(){return farClipPlane;}
-	void CalculateModelMatrix();
+
 	Vector4 GetForward();
 	Vector4 GetUp();
 	Vector4 GetPosition();

@@ -39,11 +39,20 @@ WindowWizard::~WindowWizard(void)
 }
 
 void WindowWizard::SetCursorToCentre()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Move the cursor onscreen to the middle of the window		|
+\*-------------------------------------------------------------------------*/
 {
 	SetCursorPos(gWidth/2+windowRect.left,gHeight/2+windowRect.top);
 }
 
 void WindowWizard::InitializeGraphics(GLdouble fov)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Do the graphics initialisation stuff, ideally should be		|
+|				removed from the window class (move to renderer)			|
+|	Parameters:	The field of view of the camera (largely unecessary with	|
+|				new custom camera)											|		
+\*-------------------------------------------------------------------------*/
 {
 	GetClientRect(handleToWindow, &graphicsRect);	//get rect into our handy global rect
 	GetWindowRect(handleToWindow, &windowRect);
@@ -68,6 +77,13 @@ void WindowWizard::InitializeGraphics(GLdouble fov)
 
 
 void WindowWizard::InitializeOpenGL(GLdouble fov)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Create the OpenGL render context and set the OpenGL window	|
+|				size														|
+|																			|
+|	Parameters:	Field of view of the camera, again largely unecessary with	|
+|				new custom camera											|
+\*-------------------------------------------------------------------------*/
 {
     hdc = GetDC(handleToWindow);//  sets  global HDC
 	fieldOfView = fov;
@@ -83,17 +99,29 @@ void WindowWizard::InitializeOpenGL(GLdouble fov)
 }
 
 void WindowWizard::FlipBuffers()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Swap the front and back buffers (draw current frame to		|
+|				screen)														|
+\*-------------------------------------------------------------------------*/
 {
 	SwapBuffers(hdc);
 }
 
 void WindowWizard::PrepareForDrawing()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Clear the OpenGL back buffer and depth buffer ready for		|
+|				drawing														|
+\*-------------------------------------------------------------------------*/
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Clear The Screen And The Depth Buffer
 }
 
 
 void WindowWizard::OnResize()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Update the saved size of the window after a resize and 		|
+|				resize the OpenGL viewport to fit the new window			|
+\*-------------------------------------------------------------------------*/
 {
 	GetClientRect(handleToWindow, &graphicsRect);
 	GetWindowRect(handleToWindow, &windowRect);
@@ -101,14 +129,20 @@ void WindowWizard::OnResize()
 }
 
 void WindowWizard::OnMove()
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Update the saved position of the window with the new  		|
+|				position													|
+\*-------------------------------------------------------------------------*/
 {
 	GetWindowRect(handleToWindow, &windowRect);
 }
 
 
 void WindowWizard::ResizeGLWindow(int width, int height)
-//  Mostly useless with new programmable pipeline (only thing that does anything is
-//  setting height/width and glViewport call
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Mostly useless with new programmable pipeline (only thing	|
+|				that does anything is setting height/width and glViewport)	|
+\*-------------------------------------------------------------------------*/
 {
 	gHeight = height;
 	gWidth = width;
@@ -117,7 +151,7 @@ void WindowWizard::ResizeGLWindow(int width, int height)
 		height=1;// Make the Height Equal One
 	}
 
-	glViewport(0,0,width,height);
+	glViewport(0,0,width,height);		//  Create the OpenGL 'window' to fill the actual window
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -130,7 +164,11 @@ void WindowWizard::ResizeGLWindow(int width, int height)
 }
 
 
-bool WindowWizard::SetWindowPixelFormat(HDC hdc) 
+bool WindowWizard::SetWindowPixelFormat(HDC hdc)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Mostly useless with new programmable pipeline (only thing	|
+|				that does anything is setting height/width and glViewport)	|
+\*-------------------------------------------------------------------------*/
 { 
     PIXELFORMATDESCRIPTOR pfd = {0}; 
     int pixelformat; 
@@ -165,6 +203,14 @@ bool WindowWizard::SetWindowPixelFormat(HDC hdc)
 
 
 void WindowWizard::WindowCreate(LPSTR strWindowName, int width, int height, DWORD dwStyle, bool bFullScreen, HINSTANCE hInstance)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Create the Win32 Window										|
+|																			|
+|	Parameters:	The title string of the window, the width and height of		|
+|				the window, the styles of the window (see MSDN)				|
+|				boolean for fullscreen window and the application			|
+|				instance.													|
+\*-------------------------------------------------------------------------*/
 {
 
 
@@ -219,12 +265,27 @@ void WindowWizard::WindowCreate(LPSTR strWindowName, int width, int height, DWOR
 }
 
 WindowWizard* WindowWizard::GetWindowReference(HWND hwnd)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	Use the window handle to return a pointer to the window		|
+|				object that tracks that window								|
+|																			|
+|	Parameters: Handle to window of interest								|
+|																			|
+|	Returns:	Pointer to the window object of interest					|
+\*-------------------------------------------------------------------------*/
 {
 	return WindowMap[hwnd];
 }
 
 
 LRESULT CALLBACK WindowWizard::WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+/*-------------------------------------------------------------------------*\
+|	Purpose:	The message handling function, this function is static 		|
+|				due to constraints within the windows api, finds the 		|
+|				window concerned by using the handle to the window in a map	|
+|																			|
+|	Parameters: Windows message parameters									|
+\*-------------------------------------------------------------------------*/
 {
     if(message == WM_CREATE)		//  Create message gets sent before the window is finished being made
     {								//  So catch it here

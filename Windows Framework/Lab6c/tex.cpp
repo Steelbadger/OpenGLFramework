@@ -4,6 +4,8 @@
 
 #include <stdio.h>	
 #include "tex.h"
+#include <string>
+#include <sstream>
 
 
 GLubyte uTGAcompare[12] = {0,0,2, 0,0,0,0,0,0,0,0,0};	// Uncompressed TGA Header
@@ -27,8 +29,10 @@ bool LoadTGA(const char *fname)
 
 	if(fTGA == NULL)											// If it didn't open....
 	{
+		std::stringstream warning;
+		warning << "Could not open texture file: " << fname;
 		//possibly do something other than a messagebox here. 
-		MessageBox(NULL, "Could not open texture file", "ERROR", MB_OK);	// Display an error message
+		MessageBox(NULL, warning.str().c_str(), "ERROR", MB_OK);	// Display an error message
 		return false;														// Exit function
 	}
 

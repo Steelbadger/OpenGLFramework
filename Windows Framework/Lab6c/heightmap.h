@@ -33,12 +33,13 @@ public:
 	Heightmap(void);
 	~Heightmap(void);
 
+	//  Heightmap texture generation functions using different methods
 	unsigned int GenerateHeightmap(float x, float y, NoiseObject n, float square);
 	unsigned short* GenerateHeightField(float x, float y, NoiseObject n, float square);
 	unsigned short* TBBGenerateHeightField(float x, float y, NoiseObject n, float square);
 	unsigned short* TBBSIMDGenerateHeightField(float x, float y, NoiseObject n, float square);
 
-
+	//  Benchmarking functions that generate heightmaps and discard them
 	void GenHeightsSIMD(float x, float y, NoiseObject n, float square);
 	void GenHeightsLinear(float x, float y, NoiseObject n, float square);
 	void GenHeightsTBBSIMD(float x, float y, NoiseObject n, float square);
@@ -46,6 +47,7 @@ public:
 private:
 	void write_tga(const char *filename, int size, unsigned char* base);
 	void write_tga(const char *filename, int size, unsigned short* base);
+	//  Win32 threading function for generating a sub-section of a heightmap
 	static unsigned __stdcall GenerateSection(void *data);
 
 	static const int size = 1024;

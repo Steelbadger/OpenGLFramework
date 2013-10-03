@@ -26,29 +26,47 @@ class NoiseGenerator
 public:
 	NoiseGenerator(void);
 	~NoiseGenerator(void);
+	//  Basic Perlin noise function
 	float Perlin2DSinglePass(float x, float y);
+	//  Basic 4-octave SIMD perlin noise function
 	float Perlin2DFourPass(float x, float y, NoiseObject n, int iteration);
-	float Perlin2D(float x, float y, int octaves, float zoom, float persistance, float amplitude);
-	Vector3 NormalToPerlin2D(float x, float y, int octaves, float zoom, float persistance, float amplitude, float step);
-	float Perlin2D(float x, float y, NoiseObject n);
-	float Simplex(float x, float y);
-	float FractalSimplex(float x, float y, NoiseObject n);
-	Vector3 FractalSimplexNormal(float x, float y, NoiseObject n, float step);
-	Vector3 NormalToPerlin2D(float x, float y, NoiseObject n, float step);
-	static void GeneratePermutationTable();
-	void Seed(float s){seed = s;}
-	float NonCoherentNoise2D(float x, float y);
-	float MaxAmplitude(NoiseObject n);
-
-	SIMD::Floats NonCoherentNoise2D(SIMD::Floats& x, SIMD::Floats& y);
 	float Perlin2DFourPass(float x, float y, float zoom, float persistance, int base);
+	//  Fractal perlin function
+	float Perlin2D(float x, float y, NoiseObject n);
+	float Perlin2D(float x, float y, int octaves, float zoom, float persistance, float amplitude);
 	float SIMDPerlin2D(float x, float y, NoiseObject n);
+
+	//  Find normals to the perlin noise function
+	Vector3 NormalToPerlin2D(float x, float y, int octaves, float zoom, float persistance, float amplitude, float step);
+	Vector3 NormalToPerlin2D(float x, float y, NoiseObject n, float step);
 	Vector3 SIMDPerlinNormal(float x, float y, NoiseObject n, float step);
 
+	//  Basic Simplex Noise function
+	float Simplex(float x, float y);
+	//  Fractal simplex noise function
+	float FractalSimplex(float x, float y, NoiseObject n);
+	//  Find normals for the simplex noise function
+	Vector3 FractalSimplexNormal(float x, float y, NoiseObject n, float step);
+
+	//  Generate the simplex permutation table
+	static void GeneratePermutationTable();
+	//  Seed the hashing generator
+	void Seed(float s){seed = s;}
+
+	//  Find the max amplitude after a given number of octaves (for normalization)
+	float MaxAmplitude(NoiseObject n);
 private:
+
+	//  Hashing function
+	float NonCoherentNoise2D(float x, float y);
+	SIMD::Floats NonCoherentNoise2D(SIMD::Floats& x, SIMD::Floats& y);
 	float NonCoherentNoise1D(float x);
+
+	//  Interpolation functions
 	float Interpolate(float a, float b, float x);
 	SIMD::Floats Interpolate (SIMD::Floats& a, SIMD::Floats& b, SIMD::Floats& x);
+
+
 	float seed;
 
 	//  As there's static one-time initialisation data we need to protect it for multi-threaded
